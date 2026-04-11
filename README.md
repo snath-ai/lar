@@ -487,14 +487,13 @@ The DMN implements this exact biological strategy as software architecture:
 
 ---
 
-## Post-LLM Orchestration: Lar-JEPA
+## Post-LLM Orchestration: Lár-JEPA
 
 **[snath-ai/Lar-JEPA](https://github.com/snath-ai/Lar-JEPA)** - A dedicated testbed for routing **Predictive World Models**.
 
-As AI transitions from purely autoregressive text generation to Joint Embedding Predictive Architectures (JEPAs), frameworks must adapt. **Lar-JEPA** is a proof-of-concept repository showing how Lár's deterministic execution spine can safely route massive, abstract mathematical states (Tensors/Embeddings) using System 2 `RouterNodes` without relying on LLM chat generation.
-| **Auditability** | Black box | Complete glass-box audit trail of every thought |
+As AI transitions from purely autoregressive text generation to Joint Embedding Predictive Architectures (JEPAs), frameworks must adapt. **Lár-JEPA** is a proof-of-concept repository demonstrating how Lár's deterministic execution spine can safely route massive, abstract mathematical states (Tensors/Embeddings). By substituting LLM strings for deterministic `RouteDecision` Enums, it prevents structural impasses in complex N-Body spatial kinematics and topological binding models.
 
-**[Explore the DMN Repository →](https://github.com/snath-ai/DMN)**
+**[Explore the Lár-JEPA Repository →](https://github.com/snath-ai/Lar-JEPA)**
 
 ---
 
