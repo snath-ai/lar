@@ -487,15 +487,22 @@ The DMN implements this exact biological strategy as software architecture:
 
 ---
 
-## Post-LLM Orchestration: Lár-JEPA
+## Universal Model Routing: Lár-JEPA
 
-**[snath-ai/Lar-JEPA](https://github.com/snath-ai/Lar-JEPA)** - A dedicated testbed for routing **Predictive World Models**.
+**[snath-ai/Lar-JEPA](https://github.com/snath-ai/Lar-JEPA)** — The cognitive routing nervous system for heterogeneous model architectures.
 
-As AI transitions from purely autoregressive text generation to Joint Embedding Predictive Architectures (JEPAs), frameworks must adapt. **Lár-JEPA** is a proof-of-concept repository demonstrating how Lár's deterministic execution spine can safely route massive, abstract mathematical states (Tensors/Embeddings). By substituting LLM strings for deterministic `RouteDecision` Enums, it prevents structural impasses in complex N-Body spatial kinematics and topological binding models.
+Lár's deterministic execution spine is model-agnostic by construction. The `GraphExecutor` routes between nodes without inspecting their internals — which means **LLMs, JEPA world models, diffusion models, SSMs, GNNs, and any future architecture are all first-class, equally routable nodes** within the same graph. A `BatchNode` can spin up N JEPAs concurrently, N LLMs concurrently, or a heterogeneous mixture of both. An `AbstractContextBridge` wires cross-modal signals — LLMs attending to JEPA latent predictions, JEPAs conditioning on LLM semantic embeddings — without either node being aware of the other's internals.
+
+The Lár-JEPA repository provides:
+- **`AbstractCognitiveNode`** — the universal base that any model type implements to become routable.
+- **`AbstractManifold`** — the JEPA-specific subclass for continuous latent-space world models.
+- **`AbstractContextBridge`** — stateless signal adapters for cross-modal composition.
+- **`JEPA_DMN_Consolidation_Node`** — the live bridge writing committed JEPA trajectories into the DMN episodic store (ChromaDB), completing the first pass of the Consolidation Loop.
 
 **[Explore the Lár-JEPA Repository →](https://github.com/snath-ai/Lar-JEPA)**
 
 ---
+
 
 
 ##  Installation
