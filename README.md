@@ -636,6 +636,8 @@ See the **[Metacognition Docs](https://docs.snath.ai/core-concepts/9-metacogniti
 
 ## The Validation Suite (Kitchen Sink)
 
+> **[View The Validation Suite Docs](https://docs.snath.ai/case-studies/validation-suite/)** for detailed routing diagrams and explanations.
+
 The `/examples/validation_suite` directory contains comprehensive, end-to-end examples that exercise **every single primitive** in the Lár framework simultaneously. 
 
 * `kitchen_sink_agent.py`: Demonstrates dynamic fallback capabilities.

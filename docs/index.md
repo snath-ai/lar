@@ -47,6 +47,7 @@ Lár supports **DeepSeek R1**, **OpenAI o1**, and **Liquid Thinking** out of the
 
 Learn by building with our ready-made demos:
 
+*   **[The Validation Suite](case-studies/validation-suite.md)**: Three "Kitchen Sink" executable scripts proving Deterministic routing and Fractal Agency safety.
 *   **[DMN: The Showcase](https://github.com/snath-ai/DMN)**: A Cognitive Architecture that sleeps, dreams, and remembers.
 *   **[Lar-JEPA: World Model Orchestrator](https://github.com/snath-ai/Lar-JEPA)**: A post-LLM conceptual testbed proving Lár can safely route abstract latent states from Predictive World Models.
 *   **[RAG Agent Demo](https://github.com/snath-ai/rag-demo)**: A self-correcting RAG agent with local vector search.
