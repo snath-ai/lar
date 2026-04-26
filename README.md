@@ -638,7 +638,7 @@ See the **[Metacognition Docs](https://docs.snath.ai/core-concepts/9-metacogniti
 
 > **[View The Validation Suite Docs](https://docs.snath.ai/case-studies/validation-suite/)** for detailed routing diagrams and explanations.
 
-The `/examples/validation_suite` directory contains comprehensive, end-to-end examples that exercise **every single primitive** in the Lár framework simultaneously. 
+The [`/examples/validation_suite`](https://github.com/snath-ai/lar/tree/main/examples/validation_suite) directory contains comprehensive, end-to-end examples that exercise **every single primitive** in the Lár framework simultaneously. 
 
 * `kitchen_sink_agent.py`: Demonstrates dynamic fallback capabilities.
 * `kitchen_sink_agent2.py`: Demonstrates complex fractal agency (dynamic subgraphs with specific constraints).

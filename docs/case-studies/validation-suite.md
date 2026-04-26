@@ -1,6 +1,6 @@
 # The Validation Suite Case Study
 
-Located in the `examples/validation_suite/` directory, these scripts represent the definitive showcase and proof-of-concept for the Lár framework's routing topology and the *"Glass Box"* safety guarantees.
+Located in the [`examples/validation_suite/`](https://github.com/snath-ai/lar/tree/main/examples/validation_suite) directory, these scripts represent the definitive showcase and proof-of-concept for the Lár framework's routing topology and the *"Glass Box"* safety guarantees.
 
 Our Validation Suite consists of three highly robust "Kitchen Sink" files. They are named Kitchen Sink because they run **every single framework primitive simultaneously** inside massive execution loops containing parallel routing (`BatchNode`), context compression (`ReduceNode`), pure execution (`ToolNode`), human gating (`HumanJuryNode`), offline state seeding (`AddValueNode`), and dynamic runtime graph expansion (`DynamicNode`).
 
