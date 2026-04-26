@@ -72,6 +72,7 @@ flowchart TD
 
 This script mirrors the mechanics of the first, but applies it to an intense **Code Review Pipeline** and tasks a massive model (Qwen2.5-14B) with designing a highly structured AI expansion.
 It demonstrates:
+
 1.  **Strict Adherence**: The `DynamicNode` is supplied specific IDs (`security_check`, `performance_check`). The JSON mapped accurately models out a multi-step flow at runtime.
 2.  **Validator Clearance**: The `TopologyValidator` successfully scans the multi-step JSON for cyclic loops and verifies it contains only authorized `LLMNode`s before clearing it.
 3.  **Dict-Merge Tooling**: Proves that `ToolNode` with `output_key=None` can perform bulk, multi-variable dictionary merging onto the root `GraphState` smoothly.
@@ -81,6 +82,7 @@ It demonstrates:
 
 This is the ultimate proof of Lár's framework architecture. It clones the first pipeline but injects a forceful, malicious payload instruction directly into the metacognitive model.
 It demonstrates:
+
 1.  **The Prompt Breach**: Informs the `DynamicNode` AI that it *must* inject a `ToolNode` named `unauthorized_shell_execution`. The LLM precisely generates the hostile graph JSON.
 2.  **The Interception**: The framework refuses to natively interpret the trace object. The `TopologyValidator` checks the newly planned nodes against its `allowed_tools` list. Because the AI attempted a privilege escalation, the validator throws a firm interception error.
 3.  **The Safe Bypass**: The `DynamicNode` instantly catches the validation error securely. Rather than terminating in failure, the state falls cleanly to its predetermined `.next_node` route, blocking the malicious behavior while allowing the pipeline itself to finish executing the non-affected pathways.
