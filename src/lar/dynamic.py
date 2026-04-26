@@ -125,22 +125,32 @@ class DynamicNode(BaseNode):
         # 1. Run LLM to get GraphSpec
         # We manually inject instructions into the prompt about the expected JSON format
         schema_instruction = (
-            "\nOutput a JSON object with this schema:\n"
+            "\n\nOutput a JSON object with this structure:\n"
             "{\n"
             '  "nodes": [\n'
-            '    {"id": "step1", "type": "LLMNode", "prompt": "...", "output_key": "res", "next": "step2"},\n'
-            '    {"id": "step2", "type": "ToolNode", "tool_name": "my_func", "input_keys": ["res"], "output_key": "final", "next": null}\n'
+            '    {"id": "unique_id", "type": "LLMNode", "prompt": "...", "output_key": "result", "next": null}\n'
             '  ],\n'
-            '  "entry_point": "step1"\n'
+            '  "entry_point": "unique_id"\n'
             "}\n"
-            "Use 'next': null to indicate the end of the subgraph (which will proceed to the main graph)."
+            "Supported node types and their required fields:\n"
+            "- LLMNode: 'prompt', 'output_key', 'next'\n"
+            "- ToolNode: 'tool_name', 'input_keys' (array), 'output_key', 'next'\n"
+            "- BatchNode: 'concurrent_nodes' (array of node ids), 'next'\n"
+            "- DynamicNode: 'prompt', 'model' (optional), 'next'\n"
+            "Use 'next': null to indicate the end of the subgraph (which will return to the main graph).\n"
         )
         
-        # Inject context manually if needed, or rely on prompt_template having {context}
-        # For this primitive, we'll append the schema instruction to the LLMNode's internal prompt implicitly
-        # (This is a simplified implementation; in production we might compose prompts more carefully)
+        # Inject context_keys if specified
+        context_str = ""
+        if self.context_keys:
+            context_str = "\n\nAVAILABLE CONTEXT:\n"
+            for k in self.context_keys:
+                val = state.get(k, "<not found>")
+                context_str += f"{k}: {val}\n"
+        
+        # We append the schema and context to the internal LLMNode's prompt template
         original_template = self.llm_node.prompt_template
-        self.llm_node.prompt_template += schema_instruction
+        self.llm_node.prompt_template += context_str + schema_instruction
         
         # Execute the internal LLMNode to populate state["__graph_spec_json__"]
         self.llm_node.execute(state)

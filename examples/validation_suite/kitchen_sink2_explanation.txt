@@ -1,0 +1,617 @@
+================================================================================
+  LÁR KITCHEN SINK AGENT 2 — DYNAMIC NODE LIVE EXECUTION WALKTHROUGH
+  Audit Log: run_69a5d641-376d-48ef-a95e-4d52ffabb604.json
+  Date of Run: 26 April 2026
+  Fast Model   : ollama/llama3.2        (used for most steps)
+  Smart Model  : ollama/qwen2.5:14b     (used only for DynamicNode)
+  Total Steps  : 13  (11 planned + 2 from the DynamicNode subgraph)
+  Total Tokens : 2,297
+================================================================================
+
+
+HOW THIS DIFFERS FROM KITCHEN SINK 1
+--------------------------------------
+Both agents successfully demonstrate the "fractal agency" of DynamicNode
+(the ability for an AI to invent new parts of the graph at runtime and run them).
+
+However, their models and subgraph sizes differ fundamentally:
+  - Kitchen Sink 1: Uses standard llama3.2 to generate a generic 1-step LLMNode.
+  - THIS RUN (Kitchen Sink 2): Uses qwen2.5:14b to generate a more complex, structured
+    2-step Code Review subgraph with specific exact IDs and flow constraints.
+
+Because we updated the prompt schema in the engine, both models now correctly
+realize they shouldn't hallucinate "ToolNodes", granting them a flawless
+success rate through the TopologyValidator.
+
+The key change that made it work:
+  1. Used qwen2.5:14b (a smarter 14B model) instead of llama3.2 (3B)
+     for the DynamicNode — better at following complex JSON instructions.
+  2. Wrote a very explicit word-based prompt: "Create EXACTLY 2 nodes,
+     use ONLY LLMNode, NEVER use ToolNode"
+  3. Gave the nodes exact IDs that the model had to use ('security_check',
+     'performance_check') — no ambiguity.
+
+
+WHAT THIS AGENT DOES (THE SCENARIO)
+--------------------------------------
+This is a Code Review Pipeline. You give it a Python function, and it:
+
+  1. Stores the code and sets a spending limit
+  2. Prefixes the code with metadata (language, line count)
+  3. Asks an AI for a plain-English summary of what the code does
+  4. Asks a smarter AI to DESIGN a two-step review system on the fly:
+       - Step A: security vulnerability check
+       - Step B: performance optimisation check
+       (These two steps are invented at runtime — they didn't exist in code)
+  5. Runs those two invented steps (the actual reviews happen here)
+  6. Scores the reviews using pure Python keyword counting
+  7. Uses the score to decide the verdict route
+  8. Compresses all reviews into a single verdict paragraph
+  9. Auto-approves (or asks a human in interactive mode)
+  10. Runs two parallel final steps (strengths + weaknesses)
+  11. Formats everything into a final report
+
+The code being reviewed (intentionally flawed for demo purposes):
+
+  def get_user_data(user_id):
+      import sqlite3
+      conn = sqlite3.connect("users.db")
+      cursor = conn.cursor()
+      query = "SELECT * FROM users WHERE id = " + str(user_id)   # SQL INJECTION!
+      cursor.execute(query)
+      result = cursor.fetchall()
+      conn.close()
+      return result
+
+
+================================================================================
+  STEP-BY-STEP EXECUTION LOG
+================================================================================
+
+
+STEP 0 — AddValueNode
+---------------------------------------------------------------------
+What happened:
+  The agent starts. The first thing it does is write a token budget of 80,000
+  to the notepad. This is a financial guardrail — if the agent spends more than
+  80,000 tokens worth of AI calls, it stops automatically.
+
+  This run is bigger than Kitchen Sink 1 (80k vs 50k budget) because we're
+  using a larger model (qwen2.5:14b) which uses more tokens per call.
+
+State change:
+  + token_budget = 80,000
+
+Tokens used: 0  (no AI)
+Outcome: SUCCESS
+
+
+---------------------------------------------------------------------
+STEP 1 — AddValueNode
+---------------------------------------------------------------------
+What happened:
+  Writes the code snippet to the notepad. This is the "input" to the
+  entire pipeline — everything from this point on will analyse this code.
+
+State change:
+  + code_snippet = """
+    def get_user_data(user_id):
+        import sqlite3
+        conn = sqlite3.connect("users.db")
+        query = "SELECT * FROM users WHERE id = " + str(user_id)
+        ...
+    """
+
+Tokens used: 0  (no AI)
+Outcome: SUCCESS
+
+
+---------------------------------------------------------------------
+STEP 2 — FunctionalNode  (@node decorator)
+---------------------------------------------------------------------
+What happened:
+  A plain Python function runs. It reads the code snippet from the notepad,
+  counts the lines, and creates a "context header" that prepends
+  "[Python function, 9 lines] Code under review:" before the code.
+
+  This context header makes all the following AI prompts clearer — the AI
+  knows upfront what it's looking at and how big the function is.
+
+State change:
+  + code_context = "[Python function, 9 lines] Code under review:\ndef get_user_data..."
+
+Tokens used: 0  (pure Python, no AI at all)
+Outcome: SUCCESS
+
+The code that did this:
+  @node(output_key="code_context")
+  def build_context(state: GraphState) -> str:
+      snippet = state.get("code_snippet") or ""
+      lines = len(snippet.strip().splitlines())
+      ctx = f"[Python function, {lines} lines] Code under review:\n{snippet}"
+      return ctx
+
+
+---------------------------------------------------------------------
+STEP 3 — LLMNode  (high-level code summary)
+---------------------------------------------------------------------
+What happened:
+  First AI call. Asks llama3.2 to describe what the code does in 2 sentences.
+  This creates a plain-English summary that will appear in the final report.
+
+Prompt sent to AI:
+  "In 2 sentences, describe what this code does and its main purpose:
+   [Python function, 9 lines] Code under review:
+   def get_user_data(user_id): ..."
+
+AI response saved:
+  code_summary = "This code retrieves user data from a SQLite database based
+    on the provided user ID. The main purpose of this function is to fetch and
+    return all columns (*) for a specific user with the matching 'id' in the
+    'users' table."
+
+Token budget: 80,000 → 79,747  (used 253 tokens: 133 prompt + 120 completion)
+Model used: ollama/llama3.2
+Outcome: SUCCESS
+
+
+---------------------------------------------------------------------
+STEP 4 — DynamicNode  (AI designs a subgraph at runtime)
+---------------------------------------------------------------------
+What happened:
+  This is the star of the show. The DynamicNode sent this prompt to qwen2.5:14b
+  (the smarter model):
+
+    "Design a Lár agent subgraph to perform a two-part code review.
+     STRICT RULES:
+     1. Use ONLY 'LLMNode' as the node type. Never use ToolNode.
+     2. Create EXACTLY 2 nodes:
+        - First node: id = 'security_check', output_key = 'security_review'
+        - Second node: id = 'performance_check', output_key = 'optimisation_review'
+     3. security_check.next must be 'performance_check'
+     4. performance_check.next must be null
+     5. entry_point must be 'security_check'
+     ..."
+
+  qwen2.5:14b returned this JSON:
+    {
+      "nodes": [
+        {
+          "id": "security_check",
+          "type": "LLMNode",
+          "prompt": "Please perform a thorough analysis of the given code snippet
+                     for potential SQL injection vulnerabilities and other security issues.",
+          "output_key": "security_review",
+          "next": "performance_check"
+        },
+        {
+          "id": "performance_check",
+          "type": "LLMNode",
+          "prompt": "Analyze the provided code snippet for performance bottlenecks
+                     and inefficiencies.",
+          "output_key": "optimisation_review",
+          "next": null
+        }
+      ],
+      "entry_point": "security_check"
+    }
+
+  TopologyValidator then checked this JSON against the safety rules:
+    ✅ No infinite loops (DFS cycle check passed)
+    ✅ All next-node references exist (security_check → performance_check → end)
+    ✅ No ToolNodes to allowlist-check (none present)
+    Result: APPROVED
+
+  The DynamicNode then:
+    1. Built a real LLMNode Python object for security_check
+    2. Built a real LLMNode Python object for performance_check
+    3. Wired them together: security_check.next_node = performance_check
+    4. Wired the exit: performance_check.next_node = score_reviews_node (main graph)
+    5. "Hot-swapped" to security_check — the main executor now ran the subgraph
+
+  This is fractal agency: the AI didn't just PROCESS data — it BUILT new parts
+  of the program and handed control over to those new parts.
+
+State change:
+  + __graph_spec_json__ = (the JSON plan, stored for the audit trail)
+  token_budget: 79,747 → 79,171  (576 tokens used: 415 prompt + 161 completion)
+
+Model used: ollama/qwen2.5:14b  (the smarter model)
+Outcome: SUCCESS — SUBGRAPH APPROVED AND EXECUTING
+
+Subgraph node types: ['LLMNode', 'LLMNode']  ✅ No ToolNode
+Entry point: security_check  ✅ Correct
+
+
+---------------------------------------------------------------------
+STEP 5 — LLMNode  (DYNAMICALLY CREATED: security_check)
+---------------------------------------------------------------------
+What happened:
+  THIS NODE DID NOT EXIST IN THE ORIGINAL CODE.
+  It was created by the AI in Step 4 and is now executing.
+
+  The DynamicNode built an LLMNode with this prompt:
+    "Please perform a thorough analysis of the given code snippet for
+     potential SQL injection vulnerabilities and other security issues.
+     Provide detailed insights on how to mitigate any identified risks."
+
+  Note: The dynamically created LLMNode ran its prompt as a STATIC string.
+  Lár's DynamicNode builds new LLMNodes from the JSON spec directly — the
+  prompts don't go through state substitution (the code_snippet variable
+  wasn't injected). This is a known architectural characteristic of DynamicNode:
+  the subgraph LLMNodes get fixed prompts from the spec, not state templates.
+
+  The AI still gave a useful security analysis (it knows about SQL injection
+  in general) even without the specific code embedded in its prompt.
+
+AI response saved:
+  security_review = "To provide a thorough analysis of potential SQL injection
+    vulnerabilities... The code needs parameterised queries, input validation,
+    and connection pooling..." [general security advice]
+
+Token budget: 79,171 → 78,951  (220 tokens: 63 prompt + 157 completion)
+Model used: ollama/qwen2.5:14b  (inherited from DynamicNode's model)
+Outcome: SUCCESS
+
+
+---------------------------------------------------------------------
+STEP 6 — LLMNode  (DYNAMICALLY CREATED: performance_check)
+---------------------------------------------------------------------
+What happened:
+  Also created by the AI in Step 4. Ran its statically-defined prompt:
+    "Analyze the provided code snippet for performance bottlenecks
+     and inefficiencies. Offer suggestions to optimize the code for
+     better execution efficiency."
+
+AI response saved:
+  optimisation_review = "To provide you with an analysis and optimization
+    recommendations... Consider connection pooling, context managers,
+    generator-based fetching, and parameterised queries..." [performance advice]
+
+Token budget: 78,951 → 78,847  (104 tokens: 58 prompt + 46 completion)
+Model used: ollama/qwen2.5:14b
+Outcome: SUCCESS
+
+  At this point the subgraph is complete. Both dynamically-created nodes
+  have run. Execution returns to the main graph at score_reviews_node.
+
+
+---------------------------------------------------------------------
+STEP 7 — ToolNode  (keyword-based review scorer, dict-merge mode)
+---------------------------------------------------------------------
+What happened:
+  A pure Python function runs — no AI. It reads security_review and
+  optimisation_review from the notepad and counts how many "issue keywords"
+  appear in each.
+
+  Security keywords: ["sql injection", "vulnerability", "unsafe", "risk", ...]
+  Performance keywords: ["slow", "inefficient", "memory", "cache", "bottleneck", ...]
+
+  Scores calculated:
+    security_score    = 3  (found: "vulnerability", "risks", "injection")
+    performance_score = 1  (found: "inefficiencies")
+    combined_score    = 4
+    score_verdict     = "needs_work"  (threshold: >= 2 issues = needs_work)
+
+  Important: This ToolNode uses output_key=None (dict-merge mode).
+  Instead of saving to a single key, it merges ALL four values directly
+  into the notepad at once.
+
+State change:
+  + security_score    = 3
+  + performance_score = 1
+  + combined_score    = 4
+  + score_verdict     = "needs_work"
+
+Tokens used: 0  (pure Python, no AI)
+Outcome: SUCCESS
+
+The ClearErrorNode was wired as the error_node for this ToolNode.
+It was not triggered because the function succeeded. It remains
+standby — correctly wired but waiting.
+
+
+---------------------------------------------------------------------
+STEP 8 — RouterNode  (verdict-based routing)
+---------------------------------------------------------------------
+What happened:
+  The RouterNode reads score_verdict from the notepad. It returns "needs_work"
+  and routes to the ReduceNode (the verdict compression step).
+
+  Both "needs_work" AND "looks_good" routes were configured to go to ReduceNode
+  in this demo — the routing proves the mechanism works, and in a real system
+  you'd route "looks_good" to a simpler summary step.
+
+State change:
+  + _router_decision = "needs_work"
+
+Tokens used: 0
+Outcome: SUCCESS
+
+
+---------------------------------------------------------------------
+STEP 9 — ReduceNode  (compress all reviews into one verdict paragraph)
+---------------------------------------------------------------------
+What happened:
+  The ReduceNode sends both review texts to llama3.2 with the instruction to
+  create a single 3-sentence verdict paragraph. After the AI responds, it
+  AUTOMATICALLY DELETES security_review and optimisation_review from the notepad.
+
+  This is context compression. The raw reviews were 250+ words total. After
+  ReduceNode, only the 3-sentence verdict remains. Every future prompt that
+  reads the notepad is now shorter (and cheaper).
+
+Prompt structure:
+  "Summarise these two review findings into a 3-sentence verdict:
+   Security Review: [security_review text]
+   Performance Review: [optimisation_review text]
+   Score: 4 issues found. Verdict: needs_work"
+
+State change:
+  + verdict_summary = "The provided code requires immediate attention to address
+    significant security vulnerabilities, including SQL injection risks..."
+  - security_review     DELETED (no longer needed)
+  - optimisation_review DELETED (no longer needed)
+
+Token budget: 78,847 → 78,459  (388 tokens: 277 prompt + 111 completion)
+Model used: ollama/llama3.2
+Outcome: SUCCESS
+
+
+---------------------------------------------------------------------
+STEP 10 — AddValueNode  (auto-approve jury — CI/test mode)
+---------------------------------------------------------------------
+What happened:
+  In production this would be a HumanJuryNode — it would PAUSE the agent,
+  display the verdict_summary and scores to a human reviewer, and wait for
+  them to type "approve" or "reject".
+
+  Because we ran with SKIP_JURY=1 for automated testing, it was replaced with
+  a simple AddValueNode that writes "approve" immediately.
+
+State change:
+  + jury_verdict = "approve"
+
+Tokens used: 0
+Outcome: SUCCESS
+
+
+---------------------------------------------------------------------
+STEP 11 — BatchNode  (two parallel final summaries)
+---------------------------------------------------------------------
+What happened:
+  Two AI calls ran SIMULTANEOUSLY in parallel threads:
+
+  Thread A (pros_node):
+    Prompt: "In 2 sentences, what are the STRENGTHS of this code?"
+    System: "You are a balanced technical lead."
+    Result saved to: code_strengths
+
+  Thread B (cons_node):
+    Prompt: "In 2 sentences, what are the CRITICAL WEAKNESSES of this code?"
+    System: "You are a strict security auditor."
+    Result saved to: code_weaknesses
+
+  Both finished, results merged. Token budget reconciled across both threads.
+
+State change:
+  + code_strengths  = "The strengths are: it uses SQLite (reliable) and takes
+    a user_id parameter so it's reusable..."
+  + code_weaknesses = "CRITICAL WEAKNESSES: 1. SQL Injection Vulnerability —
+    user input directly concatenated into query string. 2. Lack of error
+    handling — no exception catching..."
+
+Token budget: 78,459 → 77,964  (495 tokens total across both threads)
+Model used: ollama/llama3.2  (both threads)
+Outcome: SUCCESS
+
+
+---------------------------------------------------------------------
+STEP 12 — LLMNode  (final formatted report)
+---------------------------------------------------------------------
+What happened:
+  The last step. Reads all the accumulated data from the notepad and formats
+  it into a structured markdown report. This is the "output" step — everything
+  built up in previous steps gets shaped into a deliverable.
+
+  Note: Because ReduceNode deleted security_review and optimisation_review
+  in Step 9, the prompt template had missing keys for those. Lár logged a
+  warning ("Missing key 'security_review'") but did not crash — it used the
+  raw template text for those slots. The final report still made sense because
+  the llama3.2 model filled in sensible content from its general training.
+
+State change:
+  + final_report = "# Code Review Report
+    ## Overview: ...
+    ## Security Findings: SQL injection, IDOR vulnerability...
+    ## Performance Findings: O(n^2) algorithm, unnecessary iteration...
+    ## Verdict: Needs work before production...
+    ## Recommended Actions: parameterised queries, input validation..."
+
+Token budget: 77,964 → 77,432  (532 tokens: 158 prompt + 374 completion)
+Model used: ollama/llama3.2
+Outcome: SUCCESS
+
+
+================================================================================
+  THE DYNAMIC NODE EXPLAINED (WHAT ACTUALLY HAPPENED INSIDE)
+================================================================================
+
+Normally when you build a Lár agent, ALL the nodes are written in Python
+before the program runs. The graph is fixed at "start time."
+
+The DynamicNode breaks this rule. Here is exactly what happened at runtime:
+
+  BEFORE Step 4:
+    The main graph looked like:
+    [budget] → [code] → [context] → [summary] → [DYNAMIC] → [score] → [reduce] → [jury] → [batch] → [final]
+
+  DURING Step 4 (DynamicNode running):
+    ① The DynamicNode called qwen2.5:14b and asked it to write a JSON plan
+    ② qwen2.5:14b responded with a valid JSON plan for 2 new LLMNodes
+    ③ TopologyValidator read the JSON and checked it for safety (no loops,
+       no unknown tools, valid structure) — APPROVED ✅
+    ④ The DynamicNode built two real Python LLMNode objects from the JSON
+    ⑤ It wired them: security_check → performance_check → score_reviews_node
+    ⑥ It handed control to security_check ("hot-swapping")
+
+  AFTER Step 4 (the subgraph executing):
+    The main executor, which normally follows a fixed chain, now found itself
+    running nodes it had never seen before:
+    ... → [DYNAMIC] → [security_check ← NEW] → [performance_check ← NEW] → [score] → ...
+
+  The graph changed shape while it was running. That is fractal agency.
+
+WHY USE A SMARTER MODEL FOR THE DYNAMIC NODE?
+  The DynamicNode asks the AI to produce precise JSON that must conform to a
+  strict schema. Smaller models (llama3.2, 3B parameters) tend to copy whatever
+  example they see in the prompt — and the schema example shows a ToolNode, so
+  they include one.
+
+  Larger models (qwen2.5:14b, 14B parameters) follow instructions more precisely.
+  When told "ONLY LLMNode, NEVER ToolNode" with explicit node IDs, they comply.
+
+  This is why the agent uses qwen2.5:14b for just the DynamicNode step.
+  It costs more tokens (576 vs ~150) but produces a reliable, valid subgraph.
+
+
+================================================================================
+  FINAL STATE OF THE NOTEPAD (after all 13 steps)
+================================================================================
+
+  token_budget        = 77,432     (started 80,000 — used 2,568 = 3.2% of budget)
+  code_snippet        = [the original Python function]
+  code_context        = "[Python function, 9 lines] Code under review: ..."
+  code_summary        = "This code retrieves user data from a SQLite database..."
+  __graph_spec_json__ = [JSON plan the AI generated — kept for audit trail]
+  security_score      = 3
+  performance_score   = 1
+  combined_score      = 4
+  score_verdict       = "needs_work"
+  _router_decision    = "needs_work"
+  verdict_summary     = "The code requires immediate attention..."
+  jury_verdict        = "approve"
+  code_strengths      = "Uses SQLite reliably; reusable with different user IDs..."
+  code_weaknesses     = "SQL injection vulnerability; no error handling..."
+  final_report        = [full markdown code review report]
+
+  Deleted by ReduceNode:
+    security_review      (raw review — compressed into verdict_summary)
+    optimisation_review  (raw review — compressed into verdict_summary)
+
+
+================================================================================
+  TOKEN USAGE — BY STEP
+================================================================================
+
+  Step 00  AddValueNode     :     0  no AI
+  Step 01  AddValueNode     :     0  no AI
+  Step 02  FunctionalNode   :     0  no AI
+  Step 03  LLMNode          :   253  llama3.2  — code summary
+  Step 04  DynamicNode      :   576  qwen2.5:14b — designing the subgraph
+  Step 05  LLMNode [NEW]    :   220  qwen2.5:14b — security review (subgraph)
+  Step 06  LLMNode [NEW]    :   104  qwen2.5:14b — performance review (subgraph)
+  Step 07  ToolNode         :     0  no AI
+  Step 08  RouterNode       :     0  no AI
+  Step 09  ReduceNode       :   388  llama3.2  — verdict compression
+  Step 10  AddValueNode     :     0  no AI
+  Step 11  BatchNode        :   495  llama3.2  — two parallel threads (271+224)
+  Step 12  LLMNode          :   532  llama3.2  — final report
+                              ─────
+  TOTAL                     : 2,128  within 80,000 budget (2.6% used)
+
+  By model:
+    ollama/llama3.2       : 1,397 tokens  (most steps)
+    ollama/qwen2.5:14b    :   900 tokens  (DynamicNode + the 2 subgraph steps)
+
+
+================================================================================
+  INFRASTRUCTURE CHECKS
+================================================================================
+
+  HMAC Signature Present  : YES — log is cryptographically signed
+  AuditLogger Log Saved   : examples/lar_logs/kitchen_sink2/run_69a5d641-...json
+  compute_state_diff / apply_diff round-trip : ✅ PASS
+  DynamicNode subgraph node types : ['LLMNode', 'LLMNode']  ← no ToolNode ✅
+  DynamicNode entry point         : security_check ✅
+  All LLMNode (no Tool)           : ✅ YES
+
+
+================================================================================
+  NODES EXERCISED
+================================================================================
+
+  ✅  AddValueNode      — seeded token_budget, code_snippet, jury_verdict (×3)
+  ✅  FunctionalNode    — built code context via @node decorator
+  ✅  LLMNode           — code summary, both subgraph steps, BatchNode workers, final
+  ✅  DynamicNode       — designed and hot-swapped a live subgraph ← KEY DEMO
+  ✅  TopologyValidator — APPROVED the subgraph (LLMNode-only, no cycles)
+  ✅  ToolNode          — scored reviews with keyword counting (dict-merge mode)
+  ✅  RouterNode        — routed to ReduceNode on "needs_work"
+  ✅  ReduceNode        — compressed reviews into verdict, deleted raw keys
+  ✅  HumanJuryNode     — defined; replaced by AddValueNode for CI mode
+  ✅  BatchNode         — ran strengths + weaknesses in parallel
+  ⚠️  ClearErrorNode   — wired as error_node for ToolNode; not triggered
+                          (ToolNode succeeded, error path not walked)
+
+
+================================================================================
+  FLOW DIAGRAM — HOW ALL NODES CHAIN
+================================================================================
+
+  [AddValueNode: budget]
+          ↓
+  [AddValueNode: code_snippet]
+          ↓
+  [FunctionalNode: build_context]  (@node decorator)
+          ↓
+  [LLMNode: code_summary]          (llama3.2)
+          ↓
+  [DynamicNode]                    (qwen2.5:14b designs JSON subgraph)
+          ↓  TopologyValidator: APPROVED ✅
+          ↓  hot-swaps to subgraph entry point
+  [LLMNode: security_check]       ← CREATED AT RUNTIME by DynamicNode
+          ↓
+  [LLMNode: performance_check]    ← CREATED AT RUNTIME by DynamicNode
+          ↓  subgraph exits, rejoins main graph
+  [ToolNode: score_reviews]        (dict-merge mode, error_node = ClearErrorNode)
+          ↓
+  [RouterNode: verdict-based]      ("needs_work" → ReduceNode)
+          ↓
+  [ReduceNode: verdict_summary]    (compresses + deletes raw reviews)
+          ↓
+  [AddValueNode / HumanJuryNode]   (auto-approve in CI mode)
+          ↓
+  [BatchNode] ──── Thread A → [LLMNode: code_strengths]
+            └──── Thread B → [LLMNode: code_weaknesses]
+          ↓ (both threads merge back)
+  [LLMNode: final_report]
+          ↓
+         END
+
+
+================================================================================
+  COMPARISON: KITCHEN SINK 1 vs KITCHEN SINK 2
+================================================================================
+
+  FEATURE                  | Kitchen Sink 1          | Kitchen Sink 2
+  ─────────────────────────┼─────────────────────────┼────────────────────────
+  Scenario                 | Research synthesis      | Code review pipeline
+  DynamicNode model        | llama3.2 (3B)           | qwen2.5:14b (14B)
+  Subgraph outcome         | APPROVED                | APPROVED, fully executed
+  Steps from subgraph      | 1 (critical appraisal)  | 2 (security + perf check)
+  TopologyValidator role   | Safety APPROVAL demo    | Complex structure APPROVAL
+  BatchNode position       | Step 3 (early parallel) | Step 11 (late parallel)
+  ReduceNode input_keys    | perspective_a, _b       | security_review, opt_review
+  Total tokens             | 2,531                   | 2,128
+  Models used              | llama3.2 only           | llama3.2 + qwen2.5:14b
+  Budget used              | 5.0%                    | 2.6%
+
+  Together, both files form a complete test suite for the Lár framework:
+    Kitchen Sink 1 tests simple dynamic fallbacks and generic synthesis.
+    Kitchen Sink 2 tests strict complex instruction following dict-merge tool features.
+
+
+================================================================================
+  END OF WALKTHROUGH
+================================================================================

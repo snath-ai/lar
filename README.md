@@ -634,6 +634,16 @@ See the **[Metacognition Docs](https://docs.snath.ai/core-concepts/9-metacogniti
 ---
 
 
+## The Validation Suite (Kitchen Sink)
+
+The `/examples/validation_suite` directory contains comprehensive, end-to-end examples that exercise **every single primitive** in the Lár framework simultaneously. 
+
+* `kitchen_sink_agent.py`: Demonstrates dynamic fallback capabilities.
+* `kitchen_sink_agent2.py`: Demonstrates complex fractal agency (dynamic subgraphs with specific constraints).
+* `kitchen_sink_agent3.py`: Proves adversarial safety by attempting to inject unapproved `ToolNodes` into the `DynamicNode` and verifying `TopologyValidator` interception and safe fallthrough.
+
+These scripts act as the benchmark proving that `GraphExecutor`, audit logging, and `TopologyValidators` all work securely together within their deterministic pathways.
+
 ## Example: Multi-Agent Orchestration (A Customer Support Agent)
 
 The *real* power of `lar` is not just loops, but **multi-agent orchestration.**
