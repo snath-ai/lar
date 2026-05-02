@@ -824,6 +824,10 @@ Lár provides the **infrastructure** for building **High-Risk AI Systems** under
 > **Who is the "Provider"?**
 > Under the EU AI Act (Art. 3), Lár is a software component, not an AI system. The organisation that uses Lár to build and deploy a high-risk agent (e.g., a bank deploying a credit-scorer) is the legal **Provider** (or Deployer). Lár provides the 12 architectural primitives you need to generate the *evidence* (audit logs, manifests, human-oversight records) to prove your compliance to regulators.
 
+> [!WARNING]
+> **Legal Disclaimer:** Lár is open-source software infrastructure, not legal or compliance advice. Using Lár does not automatically guarantee compliance with the EU AI Act, GDPR, HIPAA, or any other regulation. Organizations are solely responsible for ensuring their AI systems undergo proper legal review and conformity assessments.
+
+
 | Regulation | Requirement | Lár Implementation |
 | :--- | :--- | :--- |
 | **EU AI Act Art. 12** | **Record-Keeping** | **State-Diff Ledger**: Automatically creates an immutable, forensic JSON log of every step, variable change, and model decision. |

@@ -1,6 +1,7 @@
 # Compliance & Safety (EU AI Act Ready - Aug 2026)
 
-> **Legal Disclaimer**: The Lár framework provides architectural patterns to *assist* with compliance. It does not guarantee compliance on its own. You are responsible for the final validation of your system.
+!!! warning "Legal Disclaimer"
+    Lár is open-source software infrastructure, not legal or compliance advice. Using Lár does not automatically guarantee compliance with the EU AI Act, GDPR, HIPAA, or any other regulation. Organizations are solely responsible for ensuring their AI systems undergo proper legal review and conformity assessments.
 
 Lár is engineered to meet the stringent requirements of the **EU AI Act (2026)** and **FDA 21 CFR Part 11** for High-Risk AI Systems.
 

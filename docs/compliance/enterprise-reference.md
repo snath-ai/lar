@@ -6,6 +6,9 @@
 - [`src/lar/enterprise/backbone.py`](../../src/lar/enterprise/backbone.py) — domain-agnostic engine
 - [`src/lar/enterprise/run.py`](../../src/lar/enterprise/run.py) — domain-selecting runner
 
+!!! warning "Legal Disclaimer"
+    Lár is open-source software infrastructure, not legal or compliance advice. Using Lár does not automatically guarantee compliance with the EU AI Act, GDPR, HIPAA, or any other regulation. Organizations are solely responsible for ensuring their AI systems undergo proper legal review and conformity assessments.
+
 ---
 
 ## Quick Start

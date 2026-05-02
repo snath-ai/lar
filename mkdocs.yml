@@ -77,8 +77,7 @@ nav:
     - 'Enterprise Reference Implementation': compliance/enterprise-reference.md
     - 'EU AI Act Deep Dive': compliance/eu-ai-act-deep-dive.md
     - 'For Auditors': compliance/auditor_guide.md
-    - 'LethalTrifectaGuard (AEPD Rule of 2)': compliance/eu-ai-act-deep-dive.md#9-the-lethal-trifecta-aepd-rule-of-2
-    - 'AuthorityLedger (Fourth Tier)': compliance/eu-ai-act-deep-dive.md#10-the-fourth-tier-action-level-authority-records
+
   - 'API Reference':
     - 'GraphExecutor': api-reference/graphexecutor.md
     - 'LLMNode': api-reference/llmnode.md
