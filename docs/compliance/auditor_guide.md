@@ -1,90 +1,78 @@
 # Auditor's Guide: Inspecting Lár Agents
 
-> **Audience**: Compliance Officers, Quality Assurance (QA), and external Auditors.
-> **Scope**: This guide explains how to verify the behavior of a "High-Risk AI System" built with the Lár engine, in accordance with **EU AI Act Article 13 (Transparency)**.
+> **Audience**: Compliance Officers, Quality Assurance (QA), Notified Bodies, and external Auditors.
+> **Scope**: This guide explains how to verify the behavior of a "High-Risk AI System" built with the Lár engine, in accordance with the **EU AI Act (2026)**.
 
 ---
 
 ## 1. The "Glass Box" Concept
 
-Most AI systems are "Black Boxes"—a prompt goes in, and an answer comes out, with no visibility into the intermediate steps.
+Most AI systems are "Black Boxes"—a prompt goes in, and an answer comes out, with no visibility into the intermediate steps or causal logic.
 
 **Lár is different.** It is a "Glass Box." 
-Every Lár agent is a **Graph** (a flowchart) of explicit steps. Nothing happens "magically."
+Every Lár agent is a **Graph** (a deterministic flowchart) of explicit steps. 
 
-*   **Nodes**: The boxes in the flowchart (Steps).
-*   **Edges**: The arrows connecting them (Logic).
-*   **State**: The memory passed between them.
-
-As an auditor, you have the right to inspect all three.
+As an auditor, you have the right to mathematically inspect the state changes and causal links between every step.
 
 ---
 
-## 2. The Artifacts
+## 2. The Three Required Artifacts
 
-For every execution of a Lár Agent, the system produces two artifacts. You should request these from the engineering team for any incident you are investigating.
+For every execution of a Lár Enterprise agent, the system produces three critical compliance artifacts. You should request these from the engineering team for any conformity assessment or incident investigation.
 
-### A. The Graph Definition (`architecture.mermaid`)
+### A. The Action Inventory (`compliance_manifest.json`)
+*Regulatory Basis: Annex IV & Step 9 of the EU AI Act Compliance Workflow*
 
-This is the map of *what could happen*. It is usually a Mermaid diagram or a Python file defining the nodes.
+This is the map of *what could happen*. It is generated statically before the agent ever runs.
 
 **What to look for:**
+* **Tool Inventory**: An exhaustive list of every external API, database, and system the agent can touch.
+* **Risk Classifications**: The predefined risk level (e.g., HIGH, CRITICAL) for each action.
+* **JIT Constraints**: Validation that tools rely on Just-In-Time (`CredentialVault`) tokens, rather than static global API keys.
 
-* **Loops**: Are there infinite loops? (Lár automatically caps loops at 100 steps to prevent this).
-* **Gates**: Is there a "Human-in-the-Loop" before sensitive actions (e.g., "Refund Tool")?
-* **Separation**: Is the "Reasoning" (LLM) separated from the "Action" (Tool)?
+### B. The Causal Trace (`run_<uuid>.json`)
+*Regulatory Basis: Article 12 (Record-Keeping)*
 
-### B. The Flight Recorder (`state.json` / `flight_recorder.json`)
-
-This is the map of *what actually happened*.
-
-Lár generates a **State-Diff Ledger**. It does not just dump logs; it records exactly what changed at every step.
-
-**Example Trace:**
-
-```json
-[
-  {
-    "step": 1,
-    "node": "TriageNode",
-    "diff": { "classification": "high_risk" }
-  },
-  {
-    "step": 2,
-    "node": "SupervisorNode",
-    "diff": { "next_action": "escalate_to_human" }
-  }
-]
-```
+This is the map of *what actually happened*. Lár generates a **State-Diff Ledger**. It does not just dump logs; it records exactly what changed at every step, what prompt was used, and what reasoning trace was generated.
 
 **Verification Steps:**
+1. **Traceability**: Can you follow the `step` numbers sequentially?
+2. **Causality**: Can you see the exact variable added to the state diff that caused a router to branch?
+3. **Data Erasure**: Verify that Personally Identifiable Information (PII) was scrubbed by the `PIIRedactionEngine` before the log was finalized (to satisfy GDPR Art. 17).
 
-1. **Traceability**: Can you follow the `step` numbers 1, 2, 3...?
-2. **Causality**: Did Step 2 happen *because* Step 1 output "high_risk"?
-3. **Completeness**: Are there any gaps in the sequence?
+### C. The Authority Ledger (`authority_ledger.json`)
+*Regulatory Basis: Article 14 (Human Oversight)*
 
----
+For high-risk decisions, Lár halts execution and requires a human stakeholder to approve or reject the action.
 
-## 3. Proving Determinism
-
-The "Golden Rule" of Lár is **Determinism**.
-*   **Rule**: If you provide the same Input and the same Random Seed (for the LLM), the agent MUST produce the exact same Output.
-
-**The Test:**
-
-1. Ask the engineer for the **Input State** of the incident.
-2. Ask them to re-run the agent with that Input.
-3. Compare the new `flight_recorder.json` with the original.
-4. **They must match.**
-
-If they do not match, the system is not compliant with "Repeatability" standards. Lár is designed to pass this test.
+**What to look for:**
+* **Who & Role**: E.g., `dr.smith@hospital.org` (Attending Physician).
+* **Rationale**: Did the human provide a documented reason for their approval/rejection?
+* **Rubber-Stamping**: Are approvals happening faster than a human could feasibly read the context?
 
 ---
 
-## 4. Common Failure Modes
+## 3. Cryptographic Verification (HMAC-SHA256)
 
-As an auditor, look for these common "Anti-Patterns":
+A log is only useful if it hasn't been tampered with. Lár natively signs the causal trace and the authority ledger using an enterprise secret key.
 
-*   **"The Hallucinating Jury"**: In a Juried Layer (Proposer -> Jury), did the Jury ignore a policy violation? Check the `JuryNode` log in the flight recorder.
-*   **"The Magic Loop"**: Did the agent spin in a loop (Planner -> Executor -> Planner) without making progress? Check if the `step` count hit the limit (100).
-*   **"The Silent Fail"**: Did a tool fail (e.g., API Error) but the LLM ignored it? Check the `ToolNode` output in the JSON.
+**How to Verify a Log's Authenticity:**
+We provide a standalone verification script for auditors.
+
+1. Obtain the generated JSON log (e.g., `run_037c96e8.json`).
+2. Obtain the enterprise HMAC Secret Key from the engineering team.
+3. Run the verification script:
+   ```bash
+   python examples/compliance/11_verify_audit_log.py run_037c96e8.json your_enterprise_secret_key
+   ```
+   **Outcome:** The script will output either `[+] VERIFICATION SUCCESSFUL` (authentic) or `[-] VERIFICATION FAILED` (tampered).
+
+---
+
+## 4. Common Failure Modes & Anti-Patterns
+
+When reviewing an agent's architecture, look for these compliance violations:
+
+* **The Hallucinating Jury**: Did the LLM attempt an action, but the human jury (`HumanJuryNode`) approved it without a stated rationale?
+* **The Lethal Trifecta**: Did the system process untrusted input, access sensitive data, AND take autonomous action without hitting a `HumanJuryNode`? (The `LethalTrifectaGuard` should catch this).
+* **Behavioral Drift**: Did the agent attempt to use a tool that wasn't declared in the `compliance_manifest.json`? (The `RuntimeStateVersioner` should flag this as a Substantial Modification under Art. 3(23)).
