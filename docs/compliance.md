@@ -18,6 +18,22 @@ The EU AI Act (fully enforceable August 2026) imposes strict obligations on "Hig
 It is critical to understand that **Lár is infrastructure, not an AI system.** 
 
 *   **You (The Organisation):** If you use Lár to build and deploy a high-risk agentic workflow, you are legally the **Provider** (Art. 3(3)) or **Deployer** (Art. 3(4)). The legal burden of compliance falls on you.
+
+### The Infrastructure vs. Liability Boundary
+
+Lár handles the **mechanical infrastructure** of compliance. It provides the architectural primitives (immutable audit trails, runtime policy enforcement, and algorithmic transparency) required by law. However, compliance is a sociotechnical process, meaning it relies on both code and organizational governance.
+
+**What Lár Solves:**
+* **Mechanical Record-Keeping:** Lár flawlessly records the exact causal chain of every decision (Art. 12) to cryptographically signed ledgers. 
+* **Oversight Routing:** The framework provides hardware-level routing to guarantee high-risk actions halt and await human approval before proceeding (Art. 14).
+* **Documentation Baselines:** Automated generators export your graph's specific technical boundaries directly into Annex IV documentation templates.
+
+**What Lár CANNOT Solve:**
+* **Model Suitability:** If you plug a highly biased or unsafe open-source model into Lár, the outputs will be biased. Lár will accurately record that biased decision, but the legal liability remains with the organization.
+* **Human Negligence:** If the `HumanJuryNode` routes a critical medical decision to a stakeholder who blindly approves cases without reading them ("rubber-stamping"), the organization will fail its audit for negligent oversight.
+* **Data Provenance:** Lár cannot guarantee that the training data or RAG context used by your models was legally acquired or accurately representative.
+
+In short: Lár provides the "flight recorder" and "emergency brakes." The organization must bring the safe model, the responsible human operators, and the governance policies.
 *   **Lár (The Framework):** Lár acts as a component supplier. We provide the architectural primitives (nodes, executor, loggers) that generate the forensic *evidence* you need to pass a conformity assessment. 
 
 Lár implements a complete **"Fourth Tier"** compliance architecture natively, providing 12 production-ready primitives that seamlessly integrate into the execution graph:

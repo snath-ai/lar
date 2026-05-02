@@ -30,7 +30,7 @@ Lár is the first agentic framework to ship with a complete, production-ready **
 *   **Action-Level Authority Ledger (Art. 14)**: The "Fourth Tier" of human oversight.
 *   **Rule of 2 Enforcement (GDPR Art. 5)**: Hardware-level block on untrusted input + sensitive data.
 
-**[Read the EU AI Act Deep Dive →](docs/compliance/eu-ai-act-deep-dive.md)** | **[Explore the Enterprise Reference Implementation →](docs/compliance/enterprise-reference.md)**
+**[Read the EU AI Act Deep Dive →](https://docs.snath.ai/compliance/eu-ai-act-deep-dive/)** | **[Explore the Enterprise Reference Implementation →](https://docs.snath.ai/compliance/enterprise-reference/)**
 
 ---
 
@@ -838,6 +838,22 @@ Lár provides the **infrastructure** for building **High-Risk AI Systems** under
 
 > [!WARNING]
 > **Legal Disclaimer:** Lár is open-source software infrastructure, not legal or compliance advice. Using Lár does not automatically guarantee compliance with the EU AI Act, GDPR, HIPAA, or any other regulation. Organizations are solely responsible for ensuring their AI systems undergo proper legal review and conformity assessments.
+
+### The Infrastructure vs. Liability Boundary
+
+Lár handles the **mechanical infrastructure** of compliance. It provides the architectural primitives (immutable audit trails, runtime policy enforcement, and algorithmic transparency) required by law. However, compliance is a sociotechnical process, meaning it relies on both code and organizational governance.
+
+**What Lár Solves:**
+* **Mechanical Record-Keeping:** Lár flawlessly records the exact causal chain of every decision (Art. 12) to cryptographically signed ledgers. 
+* **Oversight Routing:** The framework provides hardware-level routing to guarantee high-risk actions halt and await human approval before proceeding (Art. 14).
+* **Documentation Baselines:** Automated generators export your graph's specific technical boundaries directly into Annex IV documentation templates.
+
+**What Lár CANNOT Solve:**
+* **Model Suitability:** If you plug a highly biased or unsafe open-source model into Lár, the outputs will be biased. Lár will accurately record that biased decision, but the legal liability remains with the organization.
+* **Human Negligence:** If the `HumanJuryNode` routes a critical medical decision to a stakeholder who blindly approves cases without reading them ("rubber-stamping"), the organization will fail its audit for negligent oversight.
+* **Data Provenance:** Lár cannot guarantee that the training data or RAG context used by your models was legally acquired or accurately representative.
+
+In short: Lár provides the "flight recorder" and "emergency brakes." The organization must bring the safe model, the responsible human operators, and the governance policies.
 
 
 | Regulation | Requirement | Lár Implementation |
