@@ -188,7 +188,7 @@ Lár treats "Human Intervention" as a first-class citizen in the graph.
 *   **Pause & Resume**: You can execute the graph up to a checkpoint (e.g., `before="ExecuteTool"`), inspect the state, and resume.
 *   **State Modification**: A human supervisor can manually edit the memory (e.g., correcting a hallucinated argument) before approving the next step.
 
-#### 🔋 The Compliance-Relevant Superpower: Resumable Graphs
+#### The Compliance-Relevant Superpower: Resumable Graphs
 
 Most frameworks block the LLM loop waiting for human input — burning API time and accumulating context. Lár's generator architecture means you can **checkpoint the state to disk, kill the process, and resume later** with zero LLM calls wasted.
 

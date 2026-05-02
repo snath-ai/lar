@@ -24,7 +24,7 @@ It is a **"define-by-run"** framework that acts as a **Flight Recorder** for you
 
 ---
 
-### 🇪🇺 The First EU AI Act-Ready Framework (August 2026 Enforcement)
+### The First EU AI Act-Ready Framework (August 2026 Enforcement)
 Lár is the first agentic framework to ship with a complete, production-ready **Enterprise Compliance Backbone**. It provides all 12 primitives required to pass an EU AI Act conformity assessment out of the box.
 *   **Immutable Audit Trails (Art. 12)**: Cryptographically signed causal traces.
 *   **Action-Level Authority Ledger (Art. 14)**: The "Fourth Tier" of human oversight.
@@ -344,7 +344,7 @@ node = LLMNode(
 
 ---
 
-## 🔋 Resumable Graphs — The Cost-Saving Killer Feature
+## Resumable Graphs — The Cost-Saving Killer Feature
 
 Every other framework sends the **entire conversation history** to the LLM on every step. When a 10-step pipeline crashes on Step 8, retrying it means re-sending Steps 0–7 to the API — burning tokens and money for work already done.
 

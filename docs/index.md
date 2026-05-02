@@ -43,7 +43,7 @@ Lár supports **DeepSeek R1**, **OpenAI o1**, and **Liquid Thinking** out of the
 [Read the Reasoning Models Guide](core-concepts/5-reasoning-models.md)
 
 
-## 🇪🇺 EU AI Act Ready (August 2026 Enforcement)
+## EU AI Act Ready (August 2026 Enforcement)
 
 Lár is the first agentic framework to ship with a complete, production-ready **Compliance Backbone**. It provides all 12 primitives required to pass an EU AI Act conformity assessment out of the box, including:
 
