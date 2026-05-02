@@ -22,6 +22,18 @@
 
 It is a **"define-by-run"** framework that acts as a **Flight Recorder** for your agent, creating a complete audit trail for every single step.
 
+---
+
+### 🇪🇺 The First EU AI Act-Ready Framework (August 2026 Enforcement)
+Lár is the first agentic framework to ship with a complete, production-ready **Enterprise Compliance Backbone**. It provides all 12 primitives required to pass an EU AI Act conformity assessment out of the box.
+*   **Immutable Audit Trails (Art. 12)**: Cryptographically signed causal traces.
+*   **Action-Level Authority Ledger (Art. 14)**: The "Fourth Tier" of human oversight.
+*   **Rule of 2 Enforcement (GDPR Art. 5)**: Hardware-level block on untrusted input + sensitive data.
+
+**[Read the EU AI Act Deep Dive →](docs/compliance/eu-ai-act-deep-dive.md)** | **[Explore the Enterprise Reference Implementation →](docs/compliance/enterprise-reference.md)**
+
+---
+
 > [!NOTE]
 > **Lár is NOT a wrapper.**
 > It is a standalone, ground-up engine designed for reliability. It does not wrap LangChain, OpenAI Swarm, or any other library. It is pure, dependency-lite Python code optimized for "Code-as-Graph" execution.
