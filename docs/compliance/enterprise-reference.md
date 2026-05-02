@@ -3,6 +3,7 @@
 > **This is the canonical, working reference that ticks every compliance box the April 2026 EU AI Act research paper identifies for agentic systems.**
 
 **Files:**
+
 - [`src/lar/enterprise/backbone.py`](../../src/lar/enterprise/backbone.py) — domain-agnostic engine
 - [`src/lar/enterprise/run.py`](../../src/lar/enterprise/run.py) — domain-selecting runner
 
@@ -132,6 +133,7 @@ The `RiskScorerNode` evaluates the `PolicyRegistry` against the live confidence 
 **How the backbone solves it:**
 
 Every `HumanJuryNode` in the backbone is wired to an `AuthorityLedger`. On each decision it captures:
+
 - **Who:** `stakeholder_id` (e.g., `dr.smith@hospital.org`)
 - **Role:** `stakeholder_role` (e.g., `Attending Physician`)
 - **What:** the exact AI-proposed action description

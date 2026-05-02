@@ -12,6 +12,7 @@ Lár was explicitly re-engineered to solve the unique, agent-specific legal chal
 The EU AI Act's logging requirements (Article 12, operationalized via prEN ISO/IEC 24970) demand sufficient traceability. The paper notes: *"logging must capture not only each individual step but the causal relationships between them: why did the agent select this tool rather than that one? ... none produce audit trails that meet Article 12’s requirement."* Furthermore, because agents can hallucinate or misreport their actions, the audit must independently verify the system state.
 
 **The Lár Solution: Causal Trace Logging**
+
 *   **Independent State Verification:** Instead of asking the LLM what it did, Lár's `GraphExecutor` computes an exact, mathematical `state_diff` (additions, modifications, deletions) after every single node executes.
 *   **Causal Linking:** Lár captures explicit `__reasoning_trace` variables directly from the node (e.g., catching DeepSeek R1's `<think>` tags or OpenAI o1's reasoning logs), along with the exact `prompt` and `system_instruction` used, and binds them cryptographically to the exact state diff in the `AuditLogger`'s JSON output. This mathematically proves *why* an action occurred.
 
@@ -48,6 +49,7 @@ Agents interact with the world via "tools". Under the AI Cyber Resilience standa
 
 **The Lár Solution: The Credential Vault**
 Lár implements a `CredentialVault` directly inside the `ToolNode`. 
+
 *   **Just-in-Time (JIT) Provisioning:** Tools do not hold static global credentials. When a tool is invoked, the vault provisions a time-scoped, scope-restricted token strictly bound to the immediate action.
 *   **NHI Governance:** This creates an explicit Non-Human Identity (NHI) boundary, isolating compromised nodes from escalating privileges.
 
@@ -57,6 +59,7 @@ Lár implements a `CredentialVault` directly inside the `ToolNode`.
 Article 14 requires human oversight for high-risk systems to "override or reverse the system’s output". The paper notes that current architectures lack infrastructure to safely pause, await human review, and selectively resume an autonomous process without breaking the session.
 
 **The Lár Solution: Risk-Scored Routing & Human Juries**
+
 *   **The `PolicyRegistry`:** Every tool and action is mapped to an ontology defining its regulatory domain and risk tier.
 *   **The `RiskScorerNode`:** This node evaluates the runtime state against the policy. If the action exceeds a predefined risk threshold (e.g., executing a financial transaction or making a medical assessment), it physically halts the autonomous loop.
 *   **The `HumanJuryNode`:** The system yields control to a human stakeholder securely over the CLI or via API webhook. The human can approve, reject, or *modify* the state manually before the graph is allowed to resume.
@@ -68,6 +71,7 @@ If an agent dynamically discovers or invents new tools during runtime, it fundam
 
 **The Lár Solution: The Runtime State Versioner**
 Lár uses a `RuntimeStateVersioner` plugged directly into the `GraphExecutor`'s main loop.
+
 *   It takes cryptographic snapshots of the active `tool_catalogue`, schema boundaries, and policy bindings every N steps.
 *   If the agent attempts to load an unauthorized tool (e.g., a newly discovered bash executor), the `DriftDetector` triggers an immediate alert and can automatically halt the graph, ensuring the system never drifts outside its legally assessed envelope.
 
@@ -77,6 +81,7 @@ Lár uses a `RuntimeStateVersioner` plugged directly into the `GraphExecutor`'s 
 Article 50 mandates that affected third parties must be informed when interacting with an AI, and any synthetic content (text, image, audio) must be marked as artificially generated.
 
 **The Lár Solution: Transparency Engine & Synthetic Marking**
+
 *   **`TransparencyEngine`:** Attached to `ToolNode`s, this primitive evaluates whether a tool (e.g., a `send_email` function) affects external natural persons, automatically appending regulatory disclosure notices to the outgoing payload.
 *   **`SyntheticMarkerNode`:** A dedicated node that safely modifies final generation strings or state payloads by appending visible AI disclaimers or injecting simulated machine-readable metadata (e.g., C2PA manifests).
 
@@ -87,6 +92,7 @@ Cryptographically immutable audit logs are a regulatory requirement (Art 12), bu
 
 **The Lár Solution: Pre-Hash PII Redaction**
 Lár's `PIIRedactionEngine` acts as a middleware layer *inside* the `AuditLogger`. 
+
 *   Before the state payload is serialized and signed via HMAC-SHA256, the redactor recursively cleans specified sensitive keys (e.g., `email`, `ssn`, `health_data`). 
 *   The log is then cryptographically signed *after* redaction. This ensures complete audit integrity while maintaining 100% GDPR compliance.
 
