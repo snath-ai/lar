@@ -1,0 +1,536 @@
+{
+  "run_id": "037c96e8-5da4-4717-b1c0-33beadf399c7",
+  "user_id": null,
+  "timestamp": "2026-05-02T23:18:08.184397",
+  "steps": [
+    {
+      "step": 0,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        }
+      },
+      "state_diff": {
+        "added": {
+          "jit_token_present": true
+        },
+        "removed": {},
+        "updated": {}
+      },
+      "run_metadata": {},
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        },
+        "jit_token_present": true
+      }
+    },
+    {
+      "step": 1,
+      "node": "LLMNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\",\n  \"confidence\": 0.9\n}\n```"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 119,
+        "output_tokens": 51,
+        "total_tokens": 170,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "prompt": "You are a credit risk analyst. Assess the following loan/credit application.\nApplication: Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).\n\nReply with ONLY a single JSON object: risk_level (LOW/MEDIUM/HIGH/CRITICAL), recommendation (max 2 sentences), confidence (float 0.0-1.0). No prose.",
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\",\n  \"confidence\": 0.9\n}\n```"
+      }
+    },
+    {
+      "step": 2,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\",\n  \"confidence\": 0.9\n}\n```"
+      },
+      "state_diff": {
+        "added": {
+          "recommendation": "Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.",
+          "model_confidence": 0.9,
+          "risk_level": "HIGH"
+        },
+        "removed": {
+          "__last_prompt": null,
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.",
+        "model_confidence": 0.9
+      }
+    },
+    {
+      "step": 3,
+      "node": "RiskScorerNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.",
+        "model_confidence": 0.9
+      },
+      "state_diff": {
+        "added": {
+          "computed_oversight_level": "PRE_EXECUTION"
+        },
+        "removed": {
+          "__last_prompt": null,
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION"
+      }
+    },
+    {
+      "step": 4,
+      "node": "HumanJuryNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION"
+      },
+      "state_diff": {
+        "added": {
+          "jury_decision": "approve"
+        },
+        "removed": {
+          "__last_prompt": null,
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      }
+    },
+    {
+      "step": 5,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      },
+      "state_diff": {
+        "added": {
+          "_trifecta_check": {
+            "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+            "timestamp": "2026-05-02T22:18:08.184090Z",
+            "action": "external_write",
+            "leg1_untrusted_input": true,
+            "leg2_sensitive_data": true,
+            "leg3_autonomous_action": true,
+            "all_three_active": true,
+            "human_prior_approval": true,
+            "violation": false,
+            "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+          }
+        },
+        "removed": {
+          "__last_prompt": null,
+          "__last_run_metadata": null
+        },
+        "updated": {
+          "drift_report": {
+            "drift_detected": true,
+            "changed_keys": [
+              "state_schema_keys"
+            ],
+            "severity": "MEDIUM"
+          }
+        }
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T22:18:08.184090Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      }
+    },
+    {
+      "step": 6,
+      "node": "SyntheticMarkerNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T22:18:08.184090Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "final_output": "Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T22:18:08.184278.]"
+        },
+        "removed": {
+          "__last_prompt": null,
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T22:18:08.184090Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "Decline the credit application due to high leverage, payment delinquency history, and elevated sector risk.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T22:18:08.184278.]"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 7,
+    "total_prompt_tokens": 119,
+    "total_completion_tokens": 51,
+    "total_tokens": 170,
+    "tokens_by_model": {
+      "ollama/phi4:latest": 170
+    }
+  },
+  "signature": "55931245a2c8117f1c1dc4f6b4499b866f272d99bd9273cd01d313e435a658a5"
+}

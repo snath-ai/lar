@@ -1,0 +1,534 @@
+{
+  "run_id": "c84c642c-28fd-4037-aee1-5ec03158801c",
+  "user_id": null,
+  "timestamp": "2026-05-02T17:49:17.298613",
+  "steps": [
+    {
+      "step": 0,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        }
+      },
+      "state_diff": {
+        "added": {
+          "jit_token_present": true
+        },
+        "removed": {},
+        "updated": {}
+      },
+      "run_metadata": {},
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        },
+        "jit_token_present": true
+      }
+    },
+    {
+      "step": 1,
+      "node": "LLMNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 61,
+        "output_tokens": 38,
+        "total_tokens": 99,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```"
+      }
+    },
+    {
+      "step": 2,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```"
+      },
+      "state_diff": {
+        "added": {
+          "recommendation": "Escalate to senior clinician.",
+          "risk_level": "HIGH",
+          "model_confidence": 0.8
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Escalate to senior clinician.",
+        "model_confidence": 0.8
+      }
+    },
+    {
+      "step": 3,
+      "node": "RiskScorerNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Escalate to senior clinician.",
+        "model_confidence": 0.8
+      },
+      "state_diff": {
+        "added": {
+          "computed_oversight_level": "PRE_EXECUTION"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Escalate to senior clinician.",
+        "model_confidence": 0.8,
+        "computed_oversight_level": "PRE_EXECUTION"
+      }
+    },
+    {
+      "step": 4,
+      "node": "HumanJuryNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Escalate to senior clinician.",
+        "model_confidence": 0.8,
+        "computed_oversight_level": "PRE_EXECUTION"
+      },
+      "state_diff": {
+        "added": {
+          "jury_decision": "approve"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Escalate to senior clinician.",
+        "model_confidence": 0.8,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      }
+    },
+    {
+      "step": 5,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Escalate to senior clinician.",
+        "model_confidence": 0.8,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      },
+      "state_diff": {
+        "added": {
+          "_trifecta_check": {
+            "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+            "timestamp": "2026-05-02T16:49:17.298418Z",
+            "action": "external_write",
+            "leg1_untrusted_input": true,
+            "leg2_sensitive_data": true,
+            "leg3_autonomous_action": true,
+            "all_three_active": true,
+            "human_prior_approval": true,
+            "violation": false,
+            "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+          }
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {
+          "drift_report": {
+            "drift_detected": true,
+            "changed_keys": [
+              "state_schema_keys"
+            ],
+            "severity": "MEDIUM"
+          }
+        }
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Escalate to senior clinician.",
+        "model_confidence": 0.8,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T16:49:17.298418Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      }
+    },
+    {
+      "step": 6,
+      "node": "SyntheticMarkerNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Escalate to senior clinician.",
+        "model_confidence": 0.8,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T16:49:17.298418Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "final_output": "Escalate to senior clinician.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T16:49:17.298541.]"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Escalate to senior clinician.",
+        "model_confidence": 0.8,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T16:49:17.298418Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "Escalate to senior clinician.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T16:49:17.298541.]"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 7,
+    "total_prompt_tokens": 61,
+    "total_completion_tokens": 38,
+    "total_tokens": 99,
+    "tokens_by_model": {
+      "ollama/phi4:latest": 99
+    }
+  },
+  "signature": "925d665dbedf49b3b987a353185c11e8a37f8ed3d900d937c10145a3e1346673"
+}

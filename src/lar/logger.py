@@ -4,6 +4,7 @@ import datetime
 import hmac
 import hashlib
 from typing import List, Dict, Any, Optional
+from .compliance.pii_redactor import PIIRedactionEngine
 
 
 class AuditLogger:
@@ -14,16 +15,18 @@ class AuditLogger:
     it to JSON files for compliance and debugging purposes.
     """
     
-    def __init__(self, log_dir: str = "lar_logs", hmac_secret: str = None):
+    def __init__(self, log_dir: str = "lar_logs", hmac_secret: str = None, pii_redactor: Optional[PIIRedactionEngine] = None):
         """
         Initialize the AuditLogger.
         
         Args:
             log_dir (str): Directory where audit logs will be saved.
             hmac_secret (str, optional): Secret key for cryptographically signing the log.
+            pii_redactor (PIIRedactionEngine, optional): Engine to redact PII before logging.
         """
         self.log_dir = log_dir
         self.hmac_secret = hmac_secret
+        self.pii_redactor = pii_redactor
         self.history: List[Dict[str, Any]] = []
         
         # Create log directory if it doesn't exist
@@ -42,8 +45,11 @@ class AuditLogger:
                 - state_before (dict): State snapshot before execution
                 - state_diff (dict): What changed in this step
                 - run_metadata (dict): Token usage and model info
+                - reasoning_trace (str): Causal relationship metadata (Art 12)
                 - outcome (str): "success" or "error"
         """
+        if self.pii_redactor:
+            step_data = self.pii_redactor.process_dict(step_data)
         self.history.append(step_data)
     
     def get_history(self) -> List[Dict[str, Any]]:

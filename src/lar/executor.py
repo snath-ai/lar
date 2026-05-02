@@ -6,6 +6,7 @@ from .state import GraphState
 from .utils import compute_state_diff
 from .logger import AuditLogger
 from .tracker import TokenTracker
+from .compliance.runtime_versioner import RuntimeStateVersioner
 
 
 class SecurityError(Exception):
@@ -26,7 +27,8 @@ class GraphExecutor:
                  logger: Optional[AuditLogger] = None,
                  tracker: Optional[TokenTracker] = None,
                  hmac_secret: Optional[str] = None,
-                 max_node_fatigue: int = 20):
+                 max_node_fatigue: int = 20,
+                 versioner: Optional[RuntimeStateVersioner] = None):
         """
         Initialize the GraphExecutor.
         
@@ -44,6 +46,7 @@ class GraphExecutor:
         self.logger = logger if logger is not None else AuditLogger(log_dir, hmac_secret=hmac_secret)
         self.tracker = tracker if tracker is not None else TokenTracker()
         self.max_node_fatigue = max_node_fatigue
+        self.versioner = versioner
 
     def run_step_by_step(self, start_node: BaseNode, initial_state: dict, max_steps: int = 100):
         """
@@ -137,10 +140,36 @@ class GraphExecutor:
                 # Clear metadata from the actual state so it doesn't persist
                 state.set("__last_run_metadata", None)
 
+                # --- Art. 12 Compliance: capture rendered prompt & system instruction ---
+                # These are set by LLMNode before the API call so they are always
+                # present in state_after for any step that involved an LLM call.
+                if "__last_prompt" in state_after:
+                    log_entry["prompt"] = state_after.pop("__last_prompt")
+                    state.set("__last_prompt", None)
+                if "__last_system_instruction" in state_after:
+                    log_entry["system_instruction"] = state_after.pop("__last_system_instruction")
+                    state.set("__last_system_instruction", None)
+
+                # --- COMPLIANCE: Causal Trace Logging (Art. 12) ---
+                if "__reasoning_trace" in state_after:
+                    trace = state_after.pop("__reasoning_trace")
+                    log_entry["reasoning_trace"] = trace
+                    state.set("__reasoning_trace", None)
+
                 # Compute the diff (now on the *cleaned* state_after)
                 state_diff = compute_state_diff(state_before, state_after)
                 log_entry["state_diff"] = state_diff
                 log_entry["state_after"] = state_after
+
+                # --- COMPLIANCE: Runtime State Versioner (Drift Detection) ---
+                if self.versioner and step_index % 10 == 0:
+                    tool_catalogue = state.get("tool_catalogue", [])
+                    schema_keys = list(state.get_all().keys())
+                    policy_bindings = state.get("policy_bindings", {})
+                    snap = self.versioner.snapshot(tool_catalogue, schema_keys, policy_bindings)
+                    if "drift_report" in snap:
+                        state.set("drift_flag", True)
+                        state.set("drift_report", snap["drift_report"])
 
                 # Delegate logging
                 self.logger.log_step(log_entry)

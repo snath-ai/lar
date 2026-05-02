@@ -199,7 +199,14 @@ class LLMNode(BaseNode):
             prompt = template
 
         print(f"  [LLMNode]: Sending prompt to {self.model_identifier}: {truncate_for_log(prompt)}")
-        
+
+        # --- Art. 12 Compliance: persist the full prompt & system instruction to state ---
+        # The executor's state_diff will capture these, making the exact LLM call
+        # reproducible by auditors without needing to re-run the agent.
+        state.set("__last_prompt", prompt)
+        if self.system_instruction:
+            state.set("__last_system_instruction", self.system_instruction)
+
         retries = 0
         base_delay = 1
         
@@ -303,8 +310,8 @@ class LLMNode(BaseNode):
                     raise ValueError("LLM response was empty or blocked by safety filters.")
                 
                 llm_response_text = response.choices[0].message.content
+                # Save the initial raw response to state (will be overwritten if reasoning trace exists)
                 state.set(self.output_key, llm_response_text)
-                print(f"  [LLMNode]: Saved response to state['{self.output_key}']")
                 
                 # 4. Extract and Log Unified Metadata (CRITICAL for Glass Box)
                 if response.usage:
@@ -455,7 +462,12 @@ class ToolNode(BaseNode):
                  input_keys: List[str],
                  output_key: str,
                  next_node: BaseNode,
-                 error_node: BaseNode = None):
+                 error_node: BaseNode = None,
+                 action_type: str = None,
+                 credential_vault: Any = None,
+                 credential_key: str = None,
+                 affected_parties: str = "USER_ONLY",
+                 transparency_engine: Any = None):
         """
         Initialize a Tool Execution Node.
 
@@ -488,9 +500,29 @@ class ToolNode(BaseNode):
         self.output_key = output_key
         self.next_node = next_node
         self.error_node = error_node
+        self.action_type = action_type
+        self.credential_vault = credential_vault
+        self.credential_key = credential_key
+        self.affected_parties = affected_parties
+        self.transparency_engine = transparency_engine
 
     def execute(self, state: GraphState):
         try:
+            func_name = getattr(self.tool_function, "__name__", str(self.tool_function))
+            
+            # --- COMPLIANCE: Credential Vault (JIT Provisioning) ---
+            if self.credential_vault and self.credential_key:
+                cred = self.credential_vault.get(tool_name=func_name, scope=self.action_type or "default", credential_key=self.credential_key)
+                state.set(self.credential_key, cred)
+                
+            # --- COMPLIANCE: Transparency Engine ---
+            if self.affected_parties in ["THIRD_PARTY", "BOTH"] and self.transparency_engine:
+                self.transparency_engine.flag(
+                    action_type=self.action_type or "unknown",
+                    tool_name=func_name,
+                    affected_description=f"Action '{self.action_type}' affects third parties."
+                )
+
             # Special handling for full state access
             if self.input_keys == ["__state__"]:
                 inputs = [state]
@@ -498,7 +530,18 @@ class ToolNode(BaseNode):
                 inputs = [state.get(key) for key in self.input_keys]
             
             func_name = getattr(self.tool_function, "__name__", str(self.tool_function))
-            print(f"  [ToolNode]: Running {func_name} with inputs: {truncate_for_log(inputs)}")
+            
+            # For clean logging, hide internal __ variables
+            log_inputs = []
+            for arg in inputs:
+                if hasattr(arg, 'get_all'):
+                    # It's a GraphState object
+                    clean_state = {k: v for k, v in arg.get_all().items() if not k.startswith('__')}
+                    log_inputs.append(f"GraphState({clean_state})")
+                else:
+                    log_inputs.append(arg)
+                    
+            print(f"  [ToolNode]: Running {func_name} with inputs: {truncate_for_log(log_inputs)}")
             result = self.tool_function(*inputs)
             
             # Special handling for merging dict results
@@ -686,21 +729,44 @@ class ReduceNode(LLMNode):
 class HumanJuryNode(BaseNode):
     """
     A blocking node that pauses execution to request Human-in-the-Loop feedback via the CLI.
-    Useful for "Article 14" Oversight compliance.
+    
+    Satisfies:
+      - EU AI Act Art. 14 (Human Oversight / Automation Boundary)
+      - EU AI Act Art. 12 (Action-level Authority Record — Fourth Tier Governance)
+
+    When an AuthorityLedger is attached, every human decision produces an immutable,
+    timestamped, cryptographically-signable AuthorityRecord — the evidence chain that
+    Articles 12-14 require and that the paper (Section 9, Finding 10) identifies as
+    absent from all current governance tooling.
     """
     def __init__(self, 
                  prompt: str, 
                  choices: List[str], 
                  output_key: str, 
                  context_keys: List[str] = [],
-                 next_node: BaseNode = None):
+                 next_node: BaseNode = None,
+                 # --- Art. 12/14 Authority Record ---
+                 authority_ledger: Optional[Any] = None,
+                 stakeholder_id: str = "UNKNOWN",
+                 stakeholder_role: str = "REVIEWER",
+                 action_description: str = None,
+                 risk_score_key: str = None):
         """
         Args:
-            prompt: The question to ask the user.
-            choices: List of valid lowecase strings (e.g. ['approve', 'reject']).
-            output_key: Where to store the user's choice in state.
-            context_keys: Keys from state to display to the user for context.
+            prompt: The question to ask the human stakeholder.
+            choices: List of valid lowercase strings (e.g. ['approve', 'reject']).
+            output_key: Where to store the human's choice in state.
+            context_keys: Keys from state to display to the stakeholder for context.
             next_node: The next node to execute.
+            authority_ledger: An AuthorityLedger instance. If provided, every decision
+                is recorded with stakeholder identity, role, rationale, and timestamp.
+                Required for full Art. 12/14 compliance under the paper's Finding (10).
+            stakeholder_id: Email/ID of the human stakeholder (for the authority record).
+            stakeholder_role: Job role/title of the stakeholder (e.g., 'CFO', 'Clinician').
+            action_description: Description of the AI-proposed action under review.
+                Defaults to the prompt text if not provided.
+            risk_score_key: Optional state key containing the risk score from a
+                RiskScorerNode, to include in the authority record for full evidence chain.
         """
         # Validation
         if not isinstance(prompt, str) or not prompt:
@@ -721,11 +787,19 @@ class HumanJuryNode(BaseNode):
         self.output_key = output_key
         self.context_keys = context_keys
         self.next_node = next_node
+        # Authority Record fields
+        self.authority_ledger = authority_ledger
+        self.stakeholder_id = stakeholder_id
+        self.stakeholder_role = stakeholder_role
+        self.action_description = action_description or prompt
+        self.risk_score_key = risk_score_key
 
     def execute(self, state: GraphState):
-        print("\n" + "="*40)
+        print("\n" + "="*60)
         print("  [!] HUMAN JURY INTERVENTION REQUIRED")
-        print("="*40)
+        if self.authority_ledger:
+            print(f"  [!] Stakeholder: {self.stakeholder_id} ({self.stakeholder_role})")
+        print("="*60)
         
         # 1. Show Context
         if self.context_keys:
@@ -737,19 +811,40 @@ class HumanJuryNode(BaseNode):
                 else:
                     val_str = str(val)
                 print(f"  - {key}: {val_str}")
-            print("-" * 40)
+            print("-" * 60)
             
         # 2. Loop until valid input
+        rationale = ""
         while True:
             user_input = input(f"{self.prompt} ({'/'.join(self.choices)}): ").strip().lower()
             if user_input in self.choices:
-                print(f"  [HumanJuryNode]: User selected '{user_input}'")
+                print(f"  [HumanJuryNode]: Stakeholder selected '{user_input}'")
                 state.set(self.output_key, user_input)
+                # Capture rationale for authority record
+                if self.authority_ledger:
+                    rationale = input("  Rationale (required for compliance record): ").strip()
+                    if not rationale:
+                        rationale = f"No rationale provided. Decision: {user_input}."
                 break
             else:
                 print(f"  [HumanJuryNode]: Invalid input. Please type one of: {self.choices}")
                 
-        print("="*40 + "\n")
+        # 3. Write Authority Record to ledger (Art. 12/14 Fourth Tier)
+        if self.authority_ledger:
+            risk_score = None
+            if self.risk_score_key:
+                risk_score = state.get(self.risk_score_key)
+            self.authority_ledger.record(
+                action_description=self.action_description,
+                stakeholder_id=self.stakeholder_id,
+                stakeholder_role=self.stakeholder_role,
+                decision=user_input,
+                rationale=rationale,
+                context_snapshot={k: state.get(k) for k in self.context_keys},
+                risk_score=risk_score,
+            )
+                
+        print("="*60 + "\n")
         return self.next_node
 
 class FunctionalNode(BaseNode):

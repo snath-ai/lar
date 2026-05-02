@@ -1,0 +1,24 @@
+{
+  "ledger_type": "AUTHORITY_EXERCISE_LEDGER",
+  "eu_ai_act_reference": "Articles 12\u201314: Human Oversight Evidence Chain",
+  "total_records": 1,
+  "records": [
+    {
+      "record_type": "AUTHORITY_EXERCISE",
+      "eu_ai_act_article": "Art. 12, 14",
+      "timestamp": "2026-05-02T22:18:08.183967Z",
+      "action_description": "FINANCE AI case analysis \u2014 external action pending",
+      "stakeholder_id": "reviewer@enterprise.org",
+      "stakeholder_role": "Risk Officer",
+      "decision": "approve",
+      "rationale": "Reviewed FINANCE case. AI recommendation verified against policy.",
+      "risk_score_at_decision": 0.9,
+      "context_snapshot_keys": [
+        "risk_level",
+        "recommendation",
+        "model_confidence"
+      ]
+    }
+  ],
+  "signature": "be0a9ec684baeb8828161e38c5c843c21bdd50bcc9cb516d58196230de82ccd1"
+}

@@ -1,0 +1,520 @@
+{
+  "run_id": "f172b331-2248-49e5-be7d-c02b23d1f799",
+  "user_id": null,
+  "timestamp": "2026-05-02T17:52:19.240681",
+  "steps": [
+    {
+      "step": 0,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        }
+      },
+      "state_diff": {
+        "added": {
+          "jit_token_present": true
+        },
+        "removed": {},
+        "updated": {}
+      },
+      "run_metadata": {},
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        },
+        "jit_token_present": true
+      }
+    },
+    {
+      "step": 1,
+      "node": "LLMNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\",\n    \"confidence\": 0.95\n}\n```"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 119,
+        "output_tokens": 64,
+        "total_tokens": 183,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\",\n    \"confidence\": 0.95\n}\n```"
+      }
+    },
+    {
+      "step": 2,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\",\n    \"confidence\": 0.95\n}\n```"
+      },
+      "state_diff": {
+        "added": {
+          "risk_level": "CRITICAL",
+          "recommendation": "Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.",
+          "model_confidence": 0.95
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\",\n    \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.",
+        "model_confidence": 0.95
+      }
+    },
+    {
+      "step": 3,
+      "node": "RiskScorerNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\",\n    \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.",
+        "model_confidence": 0.95
+      },
+      "state_diff": {
+        "added": {
+          "computed_oversight_level": "PRE_EXECUTION"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\",\n    \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION"
+      }
+    },
+    {
+      "step": 4,
+      "node": "HumanJuryNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\",\n    \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION"
+      },
+      "state_diff": {
+        "added": {
+          "jury_decision": "approve"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\",\n    \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      }
+    },
+    {
+      "step": 5,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\",\n    \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      },
+      "state_diff": {
+        "added": {
+          "_trifecta_check": {
+            "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+            "timestamp": "2026-05-02T16:52:19.240504Z",
+            "action": "external_write",
+            "leg1_untrusted_input": true,
+            "leg2_sensitive_data": true,
+            "leg3_autonomous_action": true,
+            "all_three_active": true,
+            "human_prior_approval": true,
+            "violation": false,
+            "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+          }
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {
+          "drift_report": {
+            "drift_detected": true,
+            "changed_keys": [
+              "state_schema_keys"
+            ],
+            "severity": "MEDIUM"
+          }
+        }
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\",\n    \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T16:52:19.240504Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      }
+    },
+    {
+      "step": 6,
+      "node": "SyntheticMarkerNode",
+      "state_before": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\",\n    \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T16:52:19.240504Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "final_output": "Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T16:52:19.240616.]"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Credit application from business client. Requested limit: \u20ac500,000. Current D/E ratio: 4.2. Three missed payments in the last 18 months. Industry: commercial real estate (elevated sector risk).",
+        "account_number": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\",\n    \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T16:52:19.240504Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "Do not approve the loan application due to high debt-equity ratio, missed payments, and elevated sector risk. Consider alternative financing solutions or restructuring strategies for the client.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T16:52:19.240616.]"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 7,
+    "total_prompt_tokens": 119,
+    "total_completion_tokens": 64,
+    "total_tokens": 183,
+    "tokens_by_model": {
+      "ollama/phi4:latest": 183
+    }
+  },
+  "signature": "aea72524ac5b07f6c7bc75c42f23f686d7d4e79a04b6729e1eaf7200312a1732"
+}

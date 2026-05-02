@@ -1,0 +1,522 @@
+{
+  "run_id": "312dd604-a395-4d6e-acad-c0fbaffd50e0",
+  "user_id": null,
+  "timestamp": "2026-05-02T23:10:12.774964",
+  "steps": [
+    {
+      "step": 0,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        }
+      },
+      "state_diff": {
+        "added": {
+          "jit_token_present": true
+        },
+        "removed": {},
+        "updated": {}
+      },
+      "run_metadata": {},
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        },
+        "jit_token_present": true
+      }
+    },
+    {
+      "step": 1,
+      "node": "LLMNode",
+      "state_before": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "ai_output": "```json\n{\n  \"risk_level\": \"UNKNOWN\",\n  \"recommendation\": \"A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\",\n  \"confidence\": 0.2\n}\n``` \n\n(Note: The confidence value is low due to insufficient information provided in the summary.)"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 75,
+        "output_tokens": 70,
+        "total_tokens": 145,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "prompt": "You are a clinical AI assistant. Review the following patient summary.\nSummary: Test case for healthcare\n\nReply with ONLY a single JSON object: risk_level (LOW/MEDIUM/HIGH/CRITICAL), recommendation (max 2 sentences), confidence (float 0.0-1.0). No prose.",
+      "state_after": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"UNKNOWN\",\n  \"recommendation\": \"A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\",\n  \"confidence\": 0.2\n}\n``` \n\n(Note: The confidence value is low due to insufficient information provided in the summary.)"
+      }
+    },
+    {
+      "step": 2,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"UNKNOWN\",\n  \"recommendation\": \"A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\",\n  \"confidence\": 0.2\n}\n``` \n\n(Note: The confidence value is low due to insufficient information provided in the summary.)"
+      },
+      "state_diff": {
+        "added": {
+          "risk_level": "UNKNOWN",
+          "model_confidence": 0.2,
+          "recommendation": "A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level."
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"UNKNOWN\",\n  \"recommendation\": \"A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\",\n  \"confidence\": 0.2\n}\n``` \n\n(Note: The confidence value is low due to insufficient information provided in the summary.)",
+        "risk_level": "UNKNOWN",
+        "recommendation": "A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.",
+        "model_confidence": 0.2
+      }
+    },
+    {
+      "step": 3,
+      "node": "RiskScorerNode",
+      "state_before": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"UNKNOWN\",\n  \"recommendation\": \"A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\",\n  \"confidence\": 0.2\n}\n``` \n\n(Note: The confidence value is low due to insufficient information provided in the summary.)",
+        "risk_level": "UNKNOWN",
+        "recommendation": "A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.",
+        "model_confidence": 0.2
+      },
+      "state_diff": {
+        "added": {
+          "computed_oversight_level": "PRE_EXECUTION"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"UNKNOWN\",\n  \"recommendation\": \"A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\",\n  \"confidence\": 0.2\n}\n``` \n\n(Note: The confidence value is low due to insufficient information provided in the summary.)",
+        "risk_level": "UNKNOWN",
+        "recommendation": "A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.",
+        "model_confidence": 0.2,
+        "computed_oversight_level": "PRE_EXECUTION"
+      }
+    },
+    {
+      "step": 4,
+      "node": "HumanJuryNode",
+      "state_before": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"UNKNOWN\",\n  \"recommendation\": \"A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\",\n  \"confidence\": 0.2\n}\n``` \n\n(Note: The confidence value is low due to insufficient information provided in the summary.)",
+        "risk_level": "UNKNOWN",
+        "recommendation": "A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.",
+        "model_confidence": 0.2,
+        "computed_oversight_level": "PRE_EXECUTION"
+      },
+      "state_diff": {
+        "added": {
+          "jury_decision": "approve"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"UNKNOWN\",\n  \"recommendation\": \"A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\",\n  \"confidence\": 0.2\n}\n``` \n\n(Note: The confidence value is low due to insufficient information provided in the summary.)",
+        "risk_level": "UNKNOWN",
+        "recommendation": "A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.",
+        "model_confidence": 0.2,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      }
+    },
+    {
+      "step": 5,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"UNKNOWN\",\n  \"recommendation\": \"A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\",\n  \"confidence\": 0.2\n}\n``` \n\n(Note: The confidence value is low due to insufficient information provided in the summary.)",
+        "risk_level": "UNKNOWN",
+        "recommendation": "A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.",
+        "model_confidence": 0.2,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      },
+      "state_diff": {
+        "added": {
+          "_trifecta_check": {
+            "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+            "timestamp": "2026-05-02T22:10:12.774584Z",
+            "action": "external_write",
+            "leg1_untrusted_input": true,
+            "leg2_sensitive_data": true,
+            "leg3_autonomous_action": true,
+            "all_three_active": true,
+            "human_prior_approval": true,
+            "violation": false,
+            "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+          }
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {
+          "drift_report": {
+            "drift_detected": true,
+            "changed_keys": [
+              "state_schema_keys"
+            ],
+            "severity": "MEDIUM"
+          }
+        }
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"UNKNOWN\",\n  \"recommendation\": \"A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\",\n  \"confidence\": 0.2\n}\n``` \n\n(Note: The confidence value is low due to insufficient information provided in the summary.)",
+        "risk_level": "UNKNOWN",
+        "recommendation": "A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.",
+        "model_confidence": 0.2,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T22:10:12.774584Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      }
+    },
+    {
+      "step": 6,
+      "node": "SyntheticMarkerNode",
+      "state_before": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"UNKNOWN\",\n  \"recommendation\": \"A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\",\n  \"confidence\": 0.2\n}\n``` \n\n(Note: The confidence value is low due to insufficient information provided in the summary.)",
+        "risk_level": "UNKNOWN",
+        "recommendation": "A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.",
+        "model_confidence": 0.2,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T22:10:12.774584Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "final_output": "A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T22:10:12.774832.]"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Test case for healthcare",
+        "patient_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"UNKNOWN\",\n  \"recommendation\": \"A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\",\n  \"confidence\": 0.2\n}\n``` \n\n(Note: The confidence value is low due to insufficient information provided in the summary.)",
+        "risk_level": "UNKNOWN",
+        "recommendation": "A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.",
+        "model_confidence": 0.2,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T22:10:12.774584Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "A comprehensive review of the patient's medical history, current symptoms, and test results is necessary to determine risk level.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T22:10:12.774832.]"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 7,
+    "total_prompt_tokens": 75,
+    "total_completion_tokens": 70,
+    "total_tokens": 145,
+    "tokens_by_model": {
+      "ollama/phi4:latest": 145
+    }
+  },
+  "signature": "d309bbec2eeb486abb87639bb101606f5c119831b1b668048f18fb5fa91e6a6a"
+}

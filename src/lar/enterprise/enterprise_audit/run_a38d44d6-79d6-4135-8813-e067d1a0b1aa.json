@@ -1,0 +1,534 @@
+{
+  "run_id": "a38d44d6-79d6-4135-8813-e067d1a0b1aa",
+  "user_id": null,
+  "timestamp": "2026-05-02T17:51:13.641483",
+  "steps": [
+    {
+      "step": 0,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        }
+      },
+      "state_diff": {
+        "added": {
+          "jit_token_present": true
+        },
+        "removed": {},
+        "updated": {}
+      },
+      "run_metadata": {},
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        },
+        "jit_token_present": true
+      }
+    },
+    {
+      "step": 1,
+      "node": "LLMNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a high-risk situation requiring escalation based on clinical judgment or AI analysis with an associated confidence level. Without specific details from `{case_summary}`, this is a generalized template. Adjustments may be necessary if additional context is provided."
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 61,
+        "output_tokens": 97,
+        "total_tokens": 158,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a high-risk situation requiring escalation based on clinical judgment or AI analysis with an associated confidence level. Without specific details from `{case_summary}`, this is a generalized template. Adjustments may be necessary if additional context is provided."
+      }
+    },
+    {
+      "step": 2,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a high-risk situation requiring escalation based on clinical judgment or AI analysis with an associated confidence level. Without specific details from `{case_summary}`, this is a generalized template. Adjustments may be necessary if additional context is provided."
+      },
+      "state_diff": {
+        "added": {
+          "recommendation": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a",
+          "risk_level": "HIGH",
+          "model_confidence": 0.5
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a high-risk situation requiring escalation based on clinical judgment or AI analysis with an associated confidence level. Without specific details from `{case_summary}`, this is a generalized template. Adjustments may be necessary if additional context is provided.",
+        "risk_level": "HIGH",
+        "recommendation": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a",
+        "model_confidence": 0.5
+      }
+    },
+    {
+      "step": 3,
+      "node": "RiskScorerNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a high-risk situation requiring escalation based on clinical judgment or AI analysis with an associated confidence level. Without specific details from `{case_summary}`, this is a generalized template. Adjustments may be necessary if additional context is provided.",
+        "risk_level": "HIGH",
+        "recommendation": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a",
+        "model_confidence": 0.5
+      },
+      "state_diff": {
+        "added": {
+          "computed_oversight_level": "PRE_EXECUTION"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a high-risk situation requiring escalation based on clinical judgment or AI analysis with an associated confidence level. Without specific details from `{case_summary}`, this is a generalized template. Adjustments may be necessary if additional context is provided.",
+        "risk_level": "HIGH",
+        "recommendation": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a",
+        "model_confidence": 0.5,
+        "computed_oversight_level": "PRE_EXECUTION"
+      }
+    },
+    {
+      "step": 4,
+      "node": "HumanJuryNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a high-risk situation requiring escalation based on clinical judgment or AI analysis with an associated confidence level. Without specific details from `{case_summary}`, this is a generalized template. Adjustments may be necessary if additional context is provided.",
+        "risk_level": "HIGH",
+        "recommendation": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a",
+        "model_confidence": 0.5,
+        "computed_oversight_level": "PRE_EXECUTION"
+      },
+      "state_diff": {
+        "added": {
+          "jury_decision": "approve"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a high-risk situation requiring escalation based on clinical judgment or AI analysis with an associated confidence level. Without specific details from `{case_summary}`, this is a generalized template. Adjustments may be necessary if additional context is provided.",
+        "risk_level": "HIGH",
+        "recommendation": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a",
+        "model_confidence": 0.5,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      }
+    },
+    {
+      "step": 5,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a high-risk situation requiring escalation based on clinical judgment or AI analysis with an associated confidence level. Without specific details from `{case_summary}`, this is a generalized template. Adjustments may be necessary if additional context is provided.",
+        "risk_level": "HIGH",
+        "recommendation": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a",
+        "model_confidence": 0.5,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      },
+      "state_diff": {
+        "added": {
+          "_trifecta_check": {
+            "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+            "timestamp": "2026-05-02T16:51:13.641229Z",
+            "action": "external_write",
+            "leg1_untrusted_input": true,
+            "leg2_sensitive_data": true,
+            "leg3_autonomous_action": true,
+            "all_three_active": true,
+            "human_prior_approval": true,
+            "violation": false,
+            "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+          }
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {
+          "drift_report": {
+            "drift_detected": true,
+            "changed_keys": [
+              "state_schema_keys"
+            ],
+            "severity": "MEDIUM"
+          }
+        }
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a high-risk situation requiring escalation based on clinical judgment or AI analysis with an associated confidence level. Without specific details from `{case_summary}`, this is a generalized template. Adjustments may be necessary if additional context is provided.",
+        "risk_level": "HIGH",
+        "recommendation": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a",
+        "model_confidence": 0.5,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T16:51:13.641229Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      }
+    },
+    {
+      "step": 6,
+      "node": "SyntheticMarkerNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a high-risk situation requiring escalation based on clinical judgment or AI analysis with an associated confidence level. Without specific details from `{case_summary}`, this is a generalized template. Adjustments may be necessary if additional context is provided.",
+        "risk_level": "HIGH",
+        "recommendation": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a",
+        "model_confidence": 0.5,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T16:51:13.641229Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "final_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T16:51:13.641369.]"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a high-risk situation requiring escalation based on clinical judgment or AI analysis with an associated confidence level. Without specific details from `{case_summary}`, this is a generalized template. Adjustments may be necessary if additional context is provided.",
+        "risk_level": "HIGH",
+        "recommendation": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a",
+        "model_confidence": 0.5,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T16:51:13.641229Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Escalate to senior clinician.\",\n  \"confidence\": 0.80\n}\n```\n\nNote: This JSON response assumes the evaluation of a patient summary that indicates a\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T16:51:13.641369.]"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 7,
+    "total_prompt_tokens": 61,
+    "total_completion_tokens": 97,
+    "total_tokens": 158,
+    "tokens_by_model": {
+      "ollama/phi4:latest": 158
+    }
+  },
+  "signature": "0965a65b48993cbdcfd84e68436d31ebbfa05f1f0bf9371172eeb17581029f22"
+}

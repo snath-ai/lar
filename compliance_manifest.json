@@ -1,0 +1,93 @@
+{
+  "manifest_version": "1.0",
+  "system_name": "Customer Service Agent v1.0",
+  "generated_at": "2026-04-28T01:56:22.015888Z",
+  "eu_ai_act_reference": "Step 9 \u2014 External Action Inventory (Section 8.1, Nannini et al., 2026)",
+  "summary": {
+    "total_nodes_inventoried": 4,
+    "node_type_breakdown": {
+      "RouterNode": 1,
+      "ToolNode": 2,
+      "LLMNode": 1
+    },
+    "total_external_actions": 2,
+    "third_party_affecting_actions": 1,
+    "tools_without_credential_vault": 1,
+    "dynamic_topology_nodes": 0,
+    "llm_inference_nodes": 1
+  },
+  "risk_flags": [
+    {
+      "severity": "HIGH",
+      "article": "Art. 15(4) / prEN 18282",
+      "message": "1 ToolNode(s) execute without a CredentialVault. This violates the privilege minimization requirement. Affected tools: ['lookup_crm']"
+    },
+    {
+      "severity": "MEDIUM",
+      "article": "Art. 50",
+      "message": "1 tool(s) affect third parties and trigger Art. 50 transparency obligations. Verify TransparencyEngine is attached. Tools: ['send_customer_email']"
+    }
+  ],
+  "action_inventory": [
+    {
+      "node_type": "RouterNode",
+      "decision_function": "route_by_tier",
+      "routes": [
+        "HIGH",
+        "STANDARD"
+      ],
+      "has_default_fallback": true,
+      "eu_act_relevance": {
+        "article": "Art. 14 (Human Oversight), Art. 9 (Risk Management)",
+        "note": "Branching logic. Ensure at least one route leads to HumanJuryNode for high-risk decisions."
+      }
+    },
+    {
+      "node_type": "ToolNode",
+      "tool_function": "lookup_crm",
+      "tool_module": "__main__",
+      "input_keys": [
+        "customer_id"
+      ],
+      "output_key": "crm_data",
+      "action_type": "READ_CRM",
+      "affected_parties": "USER_ONLY",
+      "jit_credential_vault_attached": false,
+      "credential_key": null,
+      "eu_act_relevance": {
+        "article": "Art. 15(4) (Cybersecurity/Privilege), Art. 14 (Oversight)",
+        "note": "EXTERNAL ACTION \u2014 activates regulatory triggers. Affects: USER_ONLY. WARNING: No CredentialVault attached."
+      }
+    },
+    {
+      "node_type": "LLMNode",
+      "model_name": "ollama/phi4",
+      "output_key": "response_text",
+      "prompt_template_preview": "Draft a helpful customer service reply for: {crm_data}...",
+      "system_instruction": null,
+      "fallbacks": null,
+      "eu_act_relevance": {
+        "article": "Art. 12 (Logging), Art. 13 (Transparency)",
+        "note": "LLM inference. Prompt and output are logged to the Causal Audit Trail."
+      }
+    },
+    {
+      "node_type": "ToolNode",
+      "tool_function": "send_customer_email",
+      "tool_module": "__main__",
+      "input_keys": [
+        "response_text"
+      ],
+      "output_key": "email_status",
+      "action_type": "SEND_EMAIL",
+      "affected_parties": "THIRD_PARTY",
+      "jit_credential_vault_attached": true,
+      "credential_key": "smtp_cred",
+      "eu_act_relevance": {
+        "article": "Art. 15(4) (Cybersecurity/Privilege), Art. 14 (Oversight), Art. 50 (Transparency to third parties)",
+        "note": "EXTERNAL ACTION \u2014 activates regulatory triggers. Affects: THIRD_PARTY. JIT CredentialVault provisioned.",
+        "art_50_triggered": true
+      }
+    }
+  ]
+}

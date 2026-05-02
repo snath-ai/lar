@@ -1,0 +1,91 @@
+{
+  "manifest_version": "1.0",
+  "system_name": "AI Credit / Trading Decision Agent",
+  "generated_at": "2026-05-02T22:41:59.886494Z",
+  "eu_ai_act_reference": "Step 9 \u2014 External Action Inventory (Section 8.1, Nannini et al., 2026)",
+  "summary": {
+    "total_nodes_inventoried": 8,
+    "node_type_breakdown": {
+      "FunctionalNode": 3,
+      "LLMNode": 1,
+      "RiskScorerNode": 1,
+      "BiasFilterNode": 1,
+      "ProhibitedPracticeGuard": 1,
+      "SyntheticMarkerNode": 1
+    },
+    "total_external_actions": 0,
+    "third_party_affecting_actions": 0,
+    "tools_without_credential_vault": 0,
+    "dynamic_topology_nodes": 0,
+    "llm_inference_nodes": 1
+  },
+  "risk_flags": [
+    {
+      "severity": "INFO",
+      "message": "No critical risk flags detected. Proceed to manual review of action_inventory."
+    }
+  ],
+  "action_inventory": [
+    {
+      "node_type": "FunctionalNode",
+      "eu_act_relevance": {
+        "article": "Review required",
+        "note": "Custom node type 'FunctionalNode'. Manual review needed to determine regulatory triggers."
+      }
+    },
+    {
+      "node_type": "LLMNode",
+      "model_name": "ollama/phi4:latest",
+      "output_key": "ai_output",
+      "prompt_template_preview": "You are a credit risk analyst. Assess the following loan/credit application.\nApplication: {case_summary}\n\nReply with ONL...",
+      "system_instruction": null,
+      "fallbacks": null,
+      "eu_act_relevance": {
+        "article": "Art. 12 (Logging), Art. 13 (Transparency)",
+        "note": "LLM inference. Prompt and output are logged to the Causal Audit Trail."
+      }
+    },
+    {
+      "node_type": "FunctionalNode",
+      "eu_act_relevance": {
+        "article": "Review required",
+        "note": "Custom node type 'FunctionalNode'. Manual review needed to determine regulatory triggers."
+      }
+    },
+    {
+      "node_type": "RiskScorerNode",
+      "eu_act_relevance": {
+        "article": "Art. 9, 14 (Risk Management & Oversight)",
+        "note": "Pre-execution risk scoring gate. Scores risk tier and routes to HumanJury if threshold exceeded."
+      }
+    },
+    {
+      "node_type": "BiasFilterNode",
+      "eu_act_relevance": {
+        "article": "prEN 18283 (Bias Management), Art. 10(2)(f-g)",
+        "note": "Bias heuristic check before output. Escalates to HumanJury if bias detected."
+      }
+    },
+    {
+      "node_type": "FunctionalNode",
+      "eu_act_relevance": {
+        "article": "Review required",
+        "note": "Custom node type 'FunctionalNode'. Manual review needed to determine regulatory triggers."
+      }
+    },
+    {
+      "node_type": "ProhibitedPracticeGuard",
+      "eu_act_relevance": {
+        "article": "Review required",
+        "note": "Custom node type 'ProhibitedPracticeGuard'. Manual review needed to determine regulatory triggers."
+      }
+    },
+    {
+      "node_type": "SyntheticMarkerNode",
+      "eu_act_relevance": {
+        "article": "Art. 50(2) (Synthetic Content Marking)",
+        "note": "Injects AI-generated content disclaimer before final output delivery."
+      }
+    }
+  ]
+}

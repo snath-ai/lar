@@ -1,0 +1,520 @@
+{
+  "run_id": "beba4dc8-99fa-4309-9671-20be3550e799",
+  "user_id": null,
+  "timestamp": "2026-05-02T17:52:36.664182",
+  "steps": [
+    {
+      "step": 0,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        }
+      },
+      "state_diff": {
+        "added": {
+          "jit_token_present": true
+        },
+        "removed": {},
+        "updated": {}
+      },
+      "run_metadata": {},
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        },
+        "jit_token_present": true
+      }
+    },
+    {
+      "step": 1,
+      "node": "LLMNode",
+      "state_before": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\",\n  \"confidence\": 0.9\n}\n```"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 119,
+        "output_tokens": 61,
+        "total_tokens": 180,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\",\n  \"confidence\": 0.9\n}\n```"
+      }
+    },
+    {
+      "step": 2,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\",\n  \"confidence\": 0.9\n}\n```"
+      },
+      "state_diff": {
+        "added": {
+          "recommendation": "Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.",
+          "model_confidence": 0.9,
+          "risk_level": "HIGH"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.",
+        "model_confidence": 0.9
+      }
+    },
+    {
+      "step": 3,
+      "node": "RiskScorerNode",
+      "state_before": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.",
+        "model_confidence": 0.9
+      },
+      "state_diff": {
+        "added": {
+          "computed_oversight_level": "PRE_EXECUTION"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION"
+      }
+    },
+    {
+      "step": 4,
+      "node": "HumanJuryNode",
+      "state_before": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION"
+      },
+      "state_diff": {
+        "added": {
+          "jury_decision": "approve"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      }
+    },
+    {
+      "step": 5,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      },
+      "state_diff": {
+        "added": {
+          "_trifecta_check": {
+            "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+            "timestamp": "2026-05-02T16:52:36.664025Z",
+            "action": "external_write",
+            "leg1_untrusted_input": true,
+            "leg2_sensitive_data": true,
+            "leg3_autonomous_action": true,
+            "all_three_active": true,
+            "human_prior_approval": true,
+            "violation": false,
+            "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+          }
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {
+          "drift_report": {
+            "drift_detected": true,
+            "changed_keys": [
+              "state_schema_keys"
+            ],
+            "severity": "MEDIUM"
+          }
+        }
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T16:52:36.664025Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      }
+    },
+    {
+      "step": 6,
+      "node": "SyntheticMarkerNode",
+      "state_before": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T16:52:36.664025Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "final_output": "Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T16:52:36.664123.]"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Employment dispute: alleged constructive dismissal following whistleblowing disclosure under ERA 1996 s.47B. Client employed 7 years, dismissed 3 weeks after protected disclosure. Limitation period: 3 months less one day from effective termination date.",
+        "name": "[REDACTED]",
+        "case_id": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"HIGH\",\n  \"recommendation\": \"Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\",\n  \"confidence\": 0.9\n}\n```",
+        "risk_level": "HIGH",
+        "recommendation": "Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.",
+        "model_confidence": 0.9,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T16:52:36.664025Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "Advise the client to seek immediate legal advice and gather all relevant documentation related to their employment and dismissal, as well as details of the whistleblowing disclosure.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T16:52:36.664123.]"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 7,
+    "total_prompt_tokens": 119,
+    "total_completion_tokens": 61,
+    "total_tokens": 180,
+    "tokens_by_model": {
+      "ollama/phi4:latest": 180
+    }
+  },
+  "signature": "b22eb5ab2808256e02dc61d0f7ce40111815f31a2217ef2a596725e6539ba52b"
+}

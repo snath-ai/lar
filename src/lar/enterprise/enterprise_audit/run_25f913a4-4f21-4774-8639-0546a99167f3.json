@@ -1,0 +1,550 @@
+{
+  "run_id": "25f913a4-4f21-4774-8639-0546a99167f3",
+  "user_id": null,
+  "timestamp": "2026-05-02T23:09:52.077079",
+  "steps": [
+    {
+      "step": 0,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        }
+      },
+      "state_diff": {
+        "added": {
+          "jit_token_present": true
+        },
+        "removed": {},
+        "updated": {}
+      },
+      "run_metadata": {},
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1
+        },
+        "jit_token_present": true
+      }
+    },
+    {
+      "step": 1,
+      "node": "LLMNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "ai_output": "```json\n{\n  \"risk_level\": \"CRITICAL\",\n  \"recommendation\": \"Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\",\n  \"confidence\": 0.95\n}\n```"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 136,
+        "output_tokens": 52,
+        "total_tokens": 188,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "prompt": "You are a clinical AI assistant. Review the following patient summary.\nSummary: Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.\n\nReply with ONLY a single JSON object: risk_level (LOW/MEDIUM/HIGH/CRITICAL), recommendation (max 2 sentences), confidence (float 0.0-1.0). No prose.",
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"CRITICAL\",\n  \"recommendation\": \"Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\",\n  \"confidence\": 0.95\n}\n```"
+      }
+    },
+    {
+      "step": 2,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"CRITICAL\",\n  \"recommendation\": \"Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\",\n  \"confidence\": 0.95\n}\n```"
+      },
+      "state_diff": {
+        "added": {
+          "recommendation": "Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.",
+          "model_confidence": 0.95,
+          "risk_level": "CRITICAL"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"CRITICAL\",\n  \"recommendation\": \"Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\",\n  \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.",
+        "model_confidence": 0.95
+      }
+    },
+    {
+      "step": 3,
+      "node": "RiskScorerNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"CRITICAL\",\n  \"recommendation\": \"Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\",\n  \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.",
+        "model_confidence": 0.95
+      },
+      "state_diff": {
+        "added": {
+          "computed_oversight_level": "PRE_EXECUTION"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"CRITICAL\",\n  \"recommendation\": \"Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\",\n  \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION"
+      }
+    },
+    {
+      "step": 4,
+      "node": "HumanJuryNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"CRITICAL\",\n  \"recommendation\": \"Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\",\n  \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION"
+      },
+      "state_diff": {
+        "added": {
+          "jury_decision": "approve"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"CRITICAL\",\n  \"recommendation\": \"Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\",\n  \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      }
+    },
+    {
+      "step": 5,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "tool_catalogue",
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "HIGH"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"CRITICAL\",\n  \"recommendation\": \"Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\",\n  \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      },
+      "state_diff": {
+        "added": {
+          "_trifecta_check": {
+            "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+            "timestamp": "2026-05-02T22:09:52.076925Z",
+            "action": "external_write",
+            "leg1_untrusted_input": true,
+            "leg2_sensitive_data": true,
+            "leg3_autonomous_action": true,
+            "all_three_active": true,
+            "human_prior_approval": true,
+            "violation": false,
+            "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+          }
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {
+          "drift_report": {
+            "drift_detected": true,
+            "changed_keys": [
+              "state_schema_keys"
+            ],
+            "severity": "MEDIUM"
+          }
+        }
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"CRITICAL\",\n  \"recommendation\": \"Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\",\n  \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T22:09:52.076925Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      }
+    },
+    {
+      "step": 6,
+      "node": "SyntheticMarkerNode",
+      "state_before": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n  \"risk_level\": \"CRITICAL\",\n  \"recommendation\": \"Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\",\n  \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T22:09:52.076925Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "final_output": "Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T22:09:52.077019.]"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Patient presents with BP 178/110, eGFR 38, HbA1c 9.2%. Current medications: metformin 1g BD, amlodipine 10mg. AI flagged Stage 3 CKD with high cardiovascular risk. Recommendation pending physician sign-off before treatment change.",
+        "patient_id": "[REDACTED]",
+        "dob": "[REDACTED]",
+        "name": "[REDACTED]",
+        "action_type": "case_analysis",
+        "__node_counts": {
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "jit_token_present": true,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "ai_output": "```json\n{\n  \"risk_level\": \"CRITICAL\",\n  \"recommendation\": \"Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\",\n  \"confidence\": 0.95\n}\n```",
+        "risk_level": "CRITICAL",
+        "recommendation": "Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.",
+        "model_confidence": 0.95,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-02T22:09:52.076925Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "Consider adding an ACE inhibitor or ARB for BP and CKD management, after consulting with the physician.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-02T22:09:52.077019.]"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 7,
+    "total_prompt_tokens": 136,
+    "total_completion_tokens": 52,
+    "total_tokens": 188,
+    "tokens_by_model": {
+      "ollama/phi4:latest": 188
+    }
+  },
+  "signature": "7ed9ed2a725b9124f0f26dc5090d046b0ffda75056020a9f021e85142bb5dd3c"
+}

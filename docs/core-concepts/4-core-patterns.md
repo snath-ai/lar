@@ -31,6 +31,8 @@
 | **2** | **[`2_openai_o1.py`](../../examples/reasoning_models/2_openai_o1.py)** | High-IQ O1 Planner Nodes |
 | **3** | **[`3_liquid_thinking.py`](../../examples/reasoning_models/3_liquid_thinking.py)** | Fast Local Edge Inferencing |
 | **4** | **[`langchain_swarm_fail.py`](../../examples/comparisons/langchain_swarm_fail.py)** | Proof of Context Crashes |
+| **5** | **[`langchain_firewall_cost.py`](../../examples/comparisons/langchain_firewall_cost.py)** | API Cost Explosion (Firewall) |
+| **6** | **[`langchain_tree_fail.py`](../../examples/comparisons/langchain_tree_fail.py)** | Agent Cycle Traps |
 
 #### 4. Compliance & Safety (`examples/compliance/`)
 | # | Pattern | Concept |
@@ -46,6 +48,17 @@
 | **9** | **[`9_high_risk_trading_hmac.py`](../../examples/compliance/9_high_risk_trading_hmac.py)** | Algorithmic Trading (SEC) |
 | **10** | **[`10_pharma_clinical_trials_hmac.py`](../../examples/compliance/10_pharma_clinical_trials_hmac.py)** | FDA 21 CFR Part 11 Trial Logic |
 | **11** | **[`11_verify_audit_log.py`](../../examples/compliance/11_verify_audit_log.py)** | Standalone Auditor Script |
+| **12** | **[`12_post_market_monitoring.py`](../../examples/compliance/12_post_market_monitoring.py)** | Post-Market Monitoring (Art. 72) |
+| **13** | **[`12_transparency_disclosure.py`](../../examples/compliance/12_transparency_disclosure.py)** | Transparency Engine (Art. 13) |
+| **14** | **[`13_risk_scored_routing.py`](../../examples/compliance/13_risk_scored_routing.py)** | Risk-Scored Routing (Art. 14) |
+| **15** | **[`14_runtime_drift_detection.py`](../../examples/compliance/14_runtime_drift_detection.py)** | Drift Detection (Art. 3(23)) |
+| **16** | **[`15_jit_credential_vault.py`](../../examples/compliance/15_jit_credential_vault.py)** | JIT Credential Vault (Art. 15(4)) |
+| **17** | **[`16_pii_redaction.py`](../../examples/compliance/16_pii_redaction.py)** | PII Redaction (GDPR Art. 17) |
+| **18** | **[`17_causal_trace_logging.py`](../../examples/compliance/17_causal_trace_logging.py)** | Causal Trace Logging (Art. 12) |
+| **19** | **[`18_synthetic_content_marking.py`](../../examples/compliance/18_synthetic_content_marking.py)** | Synthetic Content Marking (Art. 50) |
+| **20** | **[`19_runtime_bias_detection.py`](../../examples/compliance/19_runtime_bias_detection.py)** | Bias Detection (prEN 18283) |
+| **21** | **[`20_compliance_manifest.py`](../../examples/compliance/20_compliance_manifest.py)** | Compliance Manifest (Step 9) |
+| **22** | **[`21_authority_and_trifecta.py`](../../examples/compliance/21_authority_and_trifecta.py)** | Rule of 2 Trifecta Guard |
 
 #### 5. High Scale & Advanced (`examples/scale/`, `examples/advanced/`)
 | # | Pattern | Concept |

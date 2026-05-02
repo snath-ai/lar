@@ -77,7 +77,7 @@ def run_time_travel():
         
         print("\n✅ GRAPH FINISHED SUCCESSFULLY")
         if final_step:
-            print(f"📝 Final Output: {final_step['state_diff'].get('history_summary')}")
+            print(f"📝 Final Output: {final_step['state_after'].get('history_summary')}")
         
         # Cleanup
         if os.path.exists(SAVE_FILE):
