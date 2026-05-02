@@ -43,6 +43,17 @@ Lár supports **DeepSeek R1**, **OpenAI o1**, and **Liquid Thinking** out of the
 [Read the Reasoning Models Guide](core-concepts/5-reasoning-models.md)
 
 
+## 🇪🇺 EU AI Act Ready (August 2026 Enforcement)
+
+Lár is the first agentic framework to ship with a complete, production-ready **Compliance Backbone**. It provides all 12 primitives required to pass an EU AI Act conformity assessment out of the box, including:
+
+*   **Immutable Audit Trails (Art. 12)**: Cryptographically signed causal traces.
+*   **Action-Level Authority Ledger (Art. 14)**: The "Fourth Tier" of human oversight tracking.
+*   **Rule of 2 Enforcement (GDPR Art. 5)**: Belt-and-suspenders runtime blocking (`LethalTrifectaGuard`).
+*   **Automated Annex IV Manifests (Art. 11)**: Auto-generated static inventory of your agent's capabilities.
+
+[Read the EU AI Act Deep Dive](compliance/eu-ai-act-deep-dive.md) | [Explore the Enterprise Reference Implementation](compliance/enterprise-reference.md)
+
 ## Demos & Examples
 
 Learn by building with our ready-made demos:

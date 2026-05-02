@@ -241,7 +241,7 @@ The generator statically traverses the entire graph and produces a structured re
 
 ---
 
-## 9. The "Lethal Trifecta" — AEPD Rule of 2 (GDPR Art. 5 / Art. 14)
+## 9. The Lethal Trifecta (AEPD Rule of 2)
 
 **The Problem:**
 In February 2026, the Spanish Data Protection Authority (AEPD) published the first EU supervisory authority guidance treating the **agentic architecture** itself — not just its outputs — as the primary object of data protection analysis. The paper identifies the core ruling (Section 7.2): *"An agent should not simultaneously combine all three of the following without human oversight — (1) processing untrusted input, (2) accessing sensitive data, and (3) taking autonomous action affecting individuals."*
@@ -271,7 +271,7 @@ If all three conditions are active and no `HumanJuryNode` has run upstream (chec
 
 ---
 
-## 10. The "Fourth Tier" — Action-Level Authority Records (Art. 12 & 14)
+## 10. The Fourth Tier (Action-Level Authority Records)
 
 **The Problem:**
 Section 9, Finding (10) of the paper is the harshest compliance critique of the entire AI governance tooling market:
