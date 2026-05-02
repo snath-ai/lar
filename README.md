@@ -17,7 +17,6 @@
 # Lár: The PyTorch for Agents
 
 
-
 **Lár** (Irish for "core" or "center") is the open source standard for **Deterministic, Auditable, and Air-Gap Capable** AI agents.
 
 It is a **"define-by-run"** framework that acts as a **Flight Recorder** for your agent, creating a complete audit trail for every single step.
@@ -59,7 +58,6 @@ This means you get:
 *Stop guessing. Start building agents you can trust.*
 
 
-
 ## Why Lár is Better: The "Glass Box" Advantage
 
 | Feature | The "Black Box" (LangChain / CrewAI) | The "Glass Box" (Lár) |
@@ -73,70 +71,6 @@ This means you get:
 | **Core Philosophy** | Sells "Magic." | Sells "Trust." |
 
 ---
-
-## Universal Model Support: Powered by LiteLLM
-
-**Lár runs on 100+ Providers.**
-Because Lár is built on the robust **[LiteLLM](https://docs.litellm.ai/docs/)** adapter, you are not locked into one vendor.
-
-Start with **OpenAI** for prototyping. Deploy with **Azure/Bedrock** for compliance. Switch to **Ollama** for local privacy. All with **Zero Refactoring**.
-
-| **Task** | **LangChain / CrewAI** | **Lár (The Unified Way)** |
-| :--- | :--- | :--- |
-| **Switching Providers** | 1. Import new provider class.<br>2. Instantiate specific object.<br>3. Refactor logic. | **Change 1 string.**<br>`model="gpt-4o"` → `model="ollama/phi4"` |
-| **Code Changes** | **High.** `ChatOpenAI` vs `ChatBedrock` classes. | **Zero.** The API contract is identical for every model. |
-
-**[Read the Full LiteLLM Setup Guide](https://docs.snath.ai/guides/litellm_setup/)** to learn how to configure:
--   **Local Models** (Ollama, Llama.cpp, LocalAI)
--   **Cloud Providers** (OpenAI, Anthropic, Vertex, Bedrock, Azure)
--   **Advanced Config** (Temperature, API Base, Custom Headers)
-
-```python
-# Want to save money? Switch to local.
-# No imports to change. No logic to refactor.
-
-# Before (Cloud)
-node = LLMNode(model_name="gpt-4o", ...)
-
-# After (Local - Ollama)
-node = LLMNode(model_name="ollama/phi4", ...)
-
-# After (Local - Generic Server)
-node = LLMNode(
-    model_name="openai/custom",
-    generation_config={"api_base": "http://localhost:8080/v1"}
-)
-```
-
----
-
-## Quick Start (`v1.4.0`)
-
-**The fastest way to build an agent is the CLI.**
-
-### 1. Install & Scaffold
-```bash
-pip install lar-engine
-lar new agent my-bot
-cd my-bot
-poetry install  # or pip install -e .
-python agent.py
-```
-> This generates a production-ready folder structure with `pyproject.toml`, `.env`, and a template agent.
-> *(For Lár v1.4.0+)*
-
-### 2. The "Low Code" Way (`@node`)
-Define nodes as simple functions. No boilerplate.
-```python
-from lar import node
-
-@node(output_key="summary")
-def summarize_text(state):
-    # Access state like a dictionary (New in v1.4.0!)
-    text = state["text"] 
-    return llm.generate(text)
-```
-*(See `examples/v1_4_showcase.py` for a full comparison)*
 
 ## The Game Changer: Hybrid Cognitive Architecture
 
@@ -185,45 +119,96 @@ LangGraph Engine stopped execution due to Recursion Limit.
 ---
 
 
-### A Simple Self-Correcting Loop
+## Why Lár?
+- **Economic Constraints:** Guarantee that agents cannot exceed mathematically set Token Budgets before execution. (v1.6+)
+- **Memory Compression:** explicitly delete context from state via `ReduceNode` map-reduce patterns to prevent "black hole" token bloat. (v1.6+)
+- **Fractal Agency:** Agents can spawn sub-agents recursively (`DynamicNode`). (v1.5+)
+- **True Parallelism:** Run multiple agents in parallel threads (`BatchNode`). (v1.5+)
+- **Lightweight:** No vector DB required. Just Python.
+- **Model Agnostic:** Works with OpenAI, Gemini, Claude, DeepSeek, Ollama, etc.
+- **Glass Box:** Every step, prompt, `system_instruction`, and reasoning trace is logged to `lar_logs/` for audit. (Art. 12)
+- **Automatic Capture**: The "thinking process" is extracted and saved to `run_metadata`. Prompts and system instructions captured at top-level.
+- **Clean Output**: Your downstream nodes only see the final answer.
+- **Robustness**: Works with both API-based reasoning (o1) and local raw reasoning (DeepSeek R1 via Ollama).
+- **BatchNode Isolation:** Each parallel branch gets a `copy.deepcopy()` of state — a hallucinating branch cannot poison another. (Systemic risk)
+- **DynamicNode Safety:** Runtime self-modification is gated by `TopologyValidator` (cycle detection + tool allowlist) — the agent's legal CE envelope cannot expand at runtime. (Art. 3(23))
 
-```mermaid
-graph TD
-    A[Start] --> B[Step 0: PlannerNode - Writer]
-    B --> C1[Step 1: ToolNode - Tester]
-    C1 --> D{Step 2: RouteNode - Judge}
-
-    %% Success path
-    subgraph Success_Path
-        direction TB
-        G[Step 5: AddValueNode - Finalize]
-    end
-
-    %% Correction loop
-    subgraph Correction_Loop
-        direction TB
-        E[Step 3: LLMNode - Corrector]
-        F[Step 4: ClearErrorNode - Cleanup]
-    end
-
-    D -- Success --> G
-    D -- Failure --> E
-    E --> F
-    F --> C1
-    G --> H[End]
-
-
-    classDef default stroke:#8FA3B0, color:#FFFFFF, fill:#1E293B;
-    classDef decision stroke:#8FA3B0, color:#FFFFFF, fill:#1E293B;
-    classDef startend stroke:#8FA3B0, color:#FFFFFF, fill:#1E293B;
-
-    class A,H startend;
-    class B,C1,E,F,G default;
-    class D decision;
+```python
+# examples/reasoning_models/1_deepseek_r1.py
+node = LLMNode(
+    model_name="ollama/deepseek-r1:7b",
+    prompt_template="Solve: {puzzle}",
+    output_key="answer"
+)
+# Result: 
+# state['answer'] = "The answer is 42."
+# log['metadata']['reasoning_content'] = "<think>First, I calculate...</think>"
 ```
 
 ---
 
+##  Installation
+
+This project is managed with [Poetry](https://python-poetry.org/).
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone https://github.com/snath-ai/lar.git
+    cd lar
+    ```
+
+2. **Set Up Environment Variables**
+Lár uses the unified LiteLLM adapter under the hood. This means if a model is supported by LiteLLM (100+ providers including Azure, Bedrock, VertexAI), it is supported by Lár.
+
+Create a `.env` file:
+
+```bash
+# Required for running Gemini models:
+GEMINI_API_KEY="YOUR_GEMINI_KEY_HERE" 
+# Required for running OpenAI models (e.g., gpt-4o):
+OPENAI_API_KEY="YOUR_OPENAI_KEY_HERE"
+# Required for running Anthropic models (e.g., Claude):
+ANTHROPIC_API_KEY="YOUR_ANTHROPIC_KEY_HERE"
+```
+
+3.  **Install dependencies:**
+    This command creates a virtual environment and installs all packages from `pyproject.toml`.
+
+    ```bash
+    poetry install
+    ```
+
+
+---
+
+## Quick Start (`v1.4.0`)
+
+**The fastest way to build an agent is the CLI.**
+
+### 1. Install & Scaffold
+```bash
+pip install lar-engine
+lar new agent my-bot
+cd my-bot
+poetry install  # or pip install -e .
+python agent.py
+```
+> This generates a production-ready folder structure with `pyproject.toml`, `.env`, and a template agent.
+> *(For Lár v1.4.0+)*
+
+### 2. The "Low Code" Way (`@node`)
+Define nodes as simple functions. No boilerplate.
+```python
+from lar import node
+
+@node(output_key="summary")
+def summarize_text(state):
+    # Access state like a dictionary (New in v1.4.0!)
+    text = state["text"] 
+    return llm.generate(text)
+```
+*(See `examples/v1_4_showcase.py` for a full comparison)*
 
 ## The `Lár` Architecture: Core Primitives
 
@@ -307,6 +292,42 @@ def fix_date(state):
 
 ---
 
+## Universal Model Support: Powered by LiteLLM
+
+**Lár runs on 100+ Providers.**
+Because Lár is built on the robust **[LiteLLM](https://docs.litellm.ai/docs/)** adapter, you are not locked into one vendor.
+
+Start with **OpenAI** for prototyping. Deploy with **Azure/Bedrock** for compliance. Switch to **Ollama** for local privacy. All with **Zero Refactoring**.
+
+| **Task** | **LangChain / CrewAI** | **Lár (The Unified Way)** |
+| :--- | :--- | :--- |
+| **Switching Providers** | 1. Import new provider class.<br>2. Instantiate specific object.<br>3. Refactor logic. | **Change 1 string.**<br>`model="gpt-4o"` → `model="ollama/phi4"` |
+| **Code Changes** | **High.** `ChatOpenAI` vs `ChatBedrock` classes. | **Zero.** The API contract is identical for every model. |
+
+**[Read the Full LiteLLM Setup Guide](https://docs.snath.ai/guides/litellm_setup/)** to learn how to configure:
+-   **Local Models** (Ollama, Llama.cpp, LocalAI)
+-   **Cloud Providers** (OpenAI, Anthropic, Vertex, Bedrock, Azure)
+-   **Advanced Config** (Temperature, API Base, Custom Headers)
+
+```python
+# Want to save money? Switch to local.
+# No imports to change. No logic to refactor.
+
+# Before (Cloud)
+node = LLMNode(model_name="gpt-4o", ...)
+
+# After (Local - Ollama)
+node = LLMNode(model_name="ollama/phi4", ...)
+
+# After (Local - Generic Server)
+node = LLMNode(
+    model_name="openai/custom",
+    generation_config={"api_base": "http://localhost:8080/v1"}
+)
+```
+
+---
+
 ## Reasoning Models (System 2 Support)
 
 **Lár treats "Thinking" as a first-class citizen.**
@@ -315,34 +336,6 @@ Native support for **DeepSeek R1**, **OpenAI o1**, and **Liquid**.
 - **Audit Logic:** Distinct `<think>` tags are captured in metadata, keeping your main context window clean.
 - **Robustness:** Handles malformed tags and fallback logic automatically.
 - **Example:** `examples/reasoning_models/1_deepseek_r1.py`
-
-## Why Lár?
-- **Economic Constraints:** Guarantee that agents cannot exceed mathematically set Token Budgets before execution. (v1.6+)
-- **Memory Compression:** explicitly delete context from state via `ReduceNode` map-reduce patterns to prevent "black hole" token bloat. (v1.6+)
-- **Fractal Agency:** Agents can spawn sub-agents recursively (`DynamicNode`). (v1.5+)
-- **True Parallelism:** Run multiple agents in parallel threads (`BatchNode`). (v1.5+)
-- **Lightweight:** No vector DB required. Just Python.
-- **Model Agnostic:** Works with OpenAI, Gemini, Claude, DeepSeek, Ollama, etc.
-- **Glass Box:** Every step, prompt, `system_instruction`, and reasoning trace is logged to `lar_logs/` for audit. (Art. 12)
-- **Automatic Capture**: The "thinking process" is extracted and saved to `run_metadata`. Prompts and system instructions captured at top-level.
-- **Clean Output**: Your downstream nodes only see the final answer.
-- **Robustness**: Works with both API-based reasoning (o1) and local raw reasoning (DeepSeek R1 via Ollama).
-- **BatchNode Isolation:** Each parallel branch gets a `copy.deepcopy()` of state — a hallucinating branch cannot poison another. (Systemic risk)
-- **DynamicNode Safety:** Runtime self-modification is gated by `TopologyValidator` (cycle detection + tool allowlist) — the agent's legal CE envelope cannot expand at runtime. (Art. 3(23))
-
-```python
-# examples/reasoning_models/1_deepseek_r1.py
-node = LLMNode(
-    model_name="ollama/deepseek-r1:7b",
-    prompt_template="Solve: {puzzle}",
-    output_key="answer"
-)
-# Result: 
-# state['answer'] = "The answer is 42."
-# log['metadata']['reasoning_content'] = "<think>First, I calculate...</think>"
-```
-
----
 
 ## Resumable Graphs — The Cost-Saving Killer Feature
 
@@ -400,6 +393,89 @@ python examples/patterns/10_resumable_cost_demo.py
 # Second run: detects checkpoint, skips steps 0+1, resumes at step 3
 python examples/patterns/10_resumable_cost_demo.py
 ```
+
+---
+
+## Metacognition (Level 4 Agency)
+
+**New in v1.3**: Lár introduces the **Dynamic Graph**, allowing agents to rewrite their own topology at runtime.
+
+This unlocks capabilities previously impossible in static DAGs:
+- **Self-Healing**: Detects errors and injects recovery subgraphs.
+- **Tool Invention**: Writes and executes its own Python tools on the fly.
+- **Adaptive Depth**: Decides between "Quick Answer" (1 node) vs "Deep Research" (N nodes).
+- **Custom Observability**: Inject custom logger/tracker instances for advanced cost tracking and audit trail management (`examples/patterns/16_custom_logger_tracker.py`).
+
+> [!IMPORTANT]
+> **Risk Mitigation**: Self-Modifying Code is inherently risky. Lár ensures **Compliance** by:
+> 1. Logging the exact JSON of the generated graph (Audit Trail).
+> 2. Using a deterministic `TopologyValidator` (Non-AI) to prevent unauthorized tools, infinite loops, or **malformed graph structures** (Structural Integrity).
+
+See `examples/metacognition/` for 5 working Proof-of-Concepts.
+
+---
+
+## Fractal Agency (v1.5+)
+
+**Scale without limits.**
+
+Using the `DynamicNode` and `BatchNode`, Lár graphs can explicitly spawn recursive copies of themselves or launch entirely new nested graph topologies dynamically.
+
+- **Recursive Sub-Agents:** An agent can stop reasoning, define a new specialized graph, and execute it as a sub-process before resuming its original thread.
+- **Deep Research Trees:** Allow agents to dynamically branch out and perform parallelized deep-dives based on data complexity.
+- **Perfect Isolation:** Each spawned graph runs in its own memory space, ensuring no context bleed back to the parent—only the final synthesized answer is returned.
+
+**[Read the Full Concept Guide](https://docs.snath.ai/core-concepts/11-fractal-agency)** | **[See the Advanced Showcase](examples/advanced/fractal_polymath.py)**
+
+---
+
+##  Just-in-Time Integrations
+
+**Stop waiting for "HubSpot Support" to merge.**
+
+Lár does not ship with 500+ brittle API wrappers. Instead, we ship the **Integration Builder**.
+
+1.  **Drag** [`IDE_INTEGRATION_PROMPT.md`](IDE_INTEGRATION_PROMPT.md) into your AI Chat (Cursor/Windsurf).
+2.  **Ask**: *"Make me a tool that queries the Stripe API for failed payments."*
+3.  **Done**: You get a production-ready, type-safe `ToolNode` in 30 seconds.
+
+ **[Read the Full Guide](https://docs.snath.ai/guides/integrations/)** | **[See Example](examples/patterns/7_integration_test.py)**
+
+
+## Compliance & Safety (EU AI Act Ready - Aug 2026)
+
+Lár provides the **infrastructure** for building **High-Risk AI Systems** under the **EU AI Act (2026)** and **FDA 21 CFR Part 11**.
+
+> [!IMPORTANT]
+> **Who is the "Provider"?**
+> Under the EU AI Act (Art. 3), Lár is a software component, not an AI system. The organisation that uses Lár to build and deploy a high-risk agent (e.g., a bank deploying a credit-scorer) is the legal **Provider** (or Deployer). Lár provides the 12 architectural primitives you need to generate the *evidence* (audit logs, manifests, human-oversight records) to prove your compliance to regulators.
+
+> [!WARNING]
+> **Legal Disclaimer:** Lár is open-source software infrastructure, not legal or compliance advice. Using Lár does not automatically guarantee compliance with the EU AI Act, GDPR, HIPAA, or any other regulation. Organizations are solely responsible for ensuring their AI systems undergo proper legal review and conformity assessments.
+
+### The Infrastructure vs. Liability Boundary
+
+Lár handles the **mechanical infrastructure** of compliance. It provides the architectural primitives (immutable audit trails, runtime policy enforcement, and algorithmic transparency) required by law. However, compliance is a sociotechnical process, meaning it relies on both code and organizational governance.
+
+**What Lár Solves:**
+* **Mechanical Record-Keeping:** Lár flawlessly records the exact causal chain of every decision (Art. 12) to cryptographically signed ledgers. 
+* **Oversight Routing:** The framework provides hardware-level routing to guarantee high-risk actions halt and await human approval before proceeding (Art. 14).
+* **Documentation Baselines:** Automated generators export your graph's specific technical boundaries directly into Annex IV documentation templates.
+
+**What Lár CANNOT Solve:**
+* **Model Suitability:** If you plug a highly biased or unsafe open-source model into Lár, the outputs will be biased. Lár will accurately record that biased decision, but the legal liability remains with the organization.
+* **Human Negligence:** If the `HumanJuryNode` routes a critical medical decision to a stakeholder who blindly approves cases without reading them ("rubber-stamping"), the organization will fail its audit for negligent oversight.
+* **Data Provenance:** Lár cannot guarantee that the training data or RAG context used by your models was legally acquired or accurately representative.
+
+In short: Lár provides the "flight recorder" and "emergency brakes." The organization must bring the safe model, the responsible human operators, and the governance policies.
+
+
+| Regulation | Requirement | Lár Implementation |
+| :--- | :--- | :--- |
+| **EU AI Act Art. 12** | **Record-Keeping** | **State-Diff Ledger**: Automatically creates an immutable, forensic JSON log of every step, variable change, and model decision. |
+| **EU AI Act Art. 13** | **Transparency** | **"Glass Box" Architecture**: No hidden prompts or "magic" loops. Every node is explicit code that can be audited by non-technical reviewers. |
+| **EU AI Act Art. 14** | **Human Oversight** | **Interrupt Pattern**: Native support for "Human-in-the-Loop". Pause execution, modify state, and resume—ensuring human control over high-stakes decisions. |
+| **FDA 21 CFR Part 11** | **Audit Trails** | **Cryptographic Determinism**: The engine is deterministic by design, ensuring reproducible runs for clinical validation. |
 
 ---
 
@@ -507,159 +583,6 @@ python examples/compliance/11_verify_audit_log.py secure_logs/run_xyz.json your_
 *   [`examples/compliance/11_verify_audit_log.py`](examples/compliance/11_verify_audit_log.py) (Standalone Auditor Script)
 
 
-##  Just-in-Time Integrations
-
-**Stop waiting for "HubSpot Support" to merge.**
-
-Lár does not ship with 500+ brittle API wrappers. Instead, we ship the **Integration Builder**.
-
-1.  **Drag** [`IDE_INTEGRATION_PROMPT.md`](IDE_INTEGRATION_PROMPT.md) into your AI Chat (Cursor/Windsurf).
-2.  **Ask**: *"Make me a tool that queries the Stripe API for failed payments."*
-3.  **Done**: You get a production-ready, type-safe `ToolNode` in 30 seconds.
-
- **[Read the Full Guide](https://docs.snath.ai/guides/integrations/)** | **[See Example](examples/patterns/7_integration_test.py)**
-
-
-## Metacognition (Level 4 Agency)
-
-**New in v1.3**: Lár introduces the **Dynamic Graph**, allowing agents to rewrite their own topology at runtime.
-
-This unlocks capabilities previously impossible in static DAGs:
-- **Self-Healing**: Detects errors and injects recovery subgraphs.
-- **Tool Invention**: Writes and executes its own Python tools on the fly.
-- **Adaptive Depth**: Decides between "Quick Answer" (1 node) vs "Deep Research" (N nodes).
-- **Custom Observability**: Inject custom logger/tracker instances for advanced cost tracking and audit trail management (`examples/patterns/16_custom_logger_tracker.py`).
-
-> [!IMPORTANT]
-> **Risk Mitigation**: Self-Modifying Code is inherently risky. Lár ensures **Compliance** by:
-> 1. Logging the exact JSON of the generated graph (Audit Trail).
-> 2. Using a deterministic `TopologyValidator` (Non-AI) to prevent unauthorized tools, infinite loops, or **malformed graph structures** (Structural Integrity).
-
-See `examples/metacognition/` for 5 working Proof-of-Concepts.
-
----
-
-## Fractal Agency (v1.5+)
-
-**Scale without limits.**
-
-Using the `DynamicNode` and `BatchNode`, Lár graphs can explicitly spawn recursive copies of themselves or launch entirely new nested graph topologies dynamically.
-
-- **Recursive Sub-Agents:** An agent can stop reasoning, define a new specialized graph, and execute it as a sub-process before resuming its original thread.
-- **Deep Research Trees:** Allow agents to dynamically branch out and perform parallelized deep-dives based on data complexity.
-- **Perfect Isolation:** Each spawned graph runs in its own memory space, ensuring no context bleed back to the parent—only the final synthesized answer is returned.
-
-**[Read the Full Concept Guide](https://docs.snath.ai/core-concepts/11-fractal-agency)** | **[See the Advanced Showcase](examples/advanced/fractal_polymath.py)**
-
----
-
-## The DMN Showcase: A Cognitive Architecture
-
-**[snath-ai/DMN](https://github.com/snath-ai/DMN)** - The flagship demonstration of Lár's capabilities.
-
-DMN (Default Mode Network) is a **complete cognitive architecture** built entirely on Lár, showcasing what's possible when you combine:
-- **Bicameral Mind**: Fast/Slow thinking systems running in parallel
-- **Sleep Cycles**: Automatic memory consolidation during "rest" periods  
-- **Episodic Memory**: Long-term storage with vectorized recall
-- **Self-Awareness**: Metacognitive introspection and adaptive behavior
-
-> [!NOTE]
-> **DMN proves that Lár isn't just for chatbots.** It's a platform for building genuinely intelligent systems with memory, learning, and self-improvement capabilities.
-
-### What Makes DMN Special?
-
-| Feature | Traditional Agents | DMN (Built on Lár) |
-|---------|-------------------|---------------------|
-| **Memory** | Context window only | Persistent episodic memory with sleep consolidation |
-| **Learning** | Static prompts | Learns from interactions and self-corrects |
-| **Architecture** | Single-path logic | Dual-process (Fast + Slow) cognitive system |
-
-### Solving Catastrophic Forgetting
-
-Standard LLM agents suffer from **agent-level catastrophic forgetting**: once the context window fills up, old messages are silently truncated and the agent permanently loses all knowledge of past interactions. Talk to any chatbot for two hours, and it forgets the first hour.
-
-The DMN solves this **architecturally**, without retraining or modifying model weights:
-
-1.  **Consolidation, not Accumulation.** The Dreamer synthesizes raw interaction logs into dense semantic narratives during idle periods. Meaning is preserved; raw tokens are discarded.
-2.  **Tiered Retrieval.** Hot Memory provides immediate conversational flow. Warm and Cold Memory provide deep, long-term recall — routed through the Prefrontal Cortex so only compressed, relevant context enters the prompt.
-3.  **Infinite Horizon.** Because memories are permanently stored in ChromaDB and retrieved on demand, the agent can run indefinitely without ever hitting a context window limit.
-
-#### The Human Analogy
-
-This is not a novel strategy — it is how biological brains actually work.
-
-Human brains do not rewrite their neural weights every night. Instead, the **Hippocampus** consolidates the day's experiences into long-term cortical storage during sleep. You don't remember every pixel of your morning commute; you remember that it rained and traffic was bad. The raw sensory data is gone, but the *meaning* persists.
-
-The DMN implements this exact biological strategy as software architecture:
-
-| Human Brain | Lár DMN |
-|---|---|
-| Sensory Input | User Messages (Raw Logs) |
-| Hippocampal Consolidation (Sleep) | Dreamer Daemon (Idle Trigger) |
-| Long-Term Cortical Storage | ChromaDB (Warm + Cold Tiers) |
-| Prefrontal Filtering (Attention) | PrefrontalNode (Compression Gateway) |
-| Working Memory | Hot Memory (Last 5 Turns) |
-
-> [!IMPORTANT]
-> **Key Insight:** Researchers have spent billions trying to solve catastrophic forgetting at the model weight level through continual learning. The DMN takes a different approach: *don't fix the brain — build an external Hippocampus.* The base LLM remains frozen. Memory is an architectural concern, not a training concern.
-
-**[Read the Full DMN Concept Guide](https://docs.snath.ai/core-concepts/12-catastrophic-forgetting)** | **[Explore the DMN Repository →](https://github.com/snath-ai/DMN)**
-
----
-
-## Universal Model Routing: Lár-JEPA
-
-**[snath-ai/Lar-JEPA](https://github.com/snath-ai/Lar-JEPA)** — The cognitive routing nervous system for heterogeneous model architectures.
-
-Lár's deterministic execution spine is model-agnostic by construction. The `GraphExecutor` routes between nodes without inspecting their internals — which means **LLMs, JEPA world models, diffusion models, SSMs, GNNs, and any future architecture are all first-class, equally routable nodes** within the same graph. A `BatchNode` can spin up N JEPAs concurrently, N LLMs concurrently, or a heterogeneous mixture of both. An `AbstractContextBridge` wires cross-modal signals — LLMs attending to JEPA latent predictions, JEPAs conditioning on LLM semantic embeddings — without either node being aware of the other's internals.
-
-The Lár-JEPA repository provides:
-- **`AbstractCognitiveNode`** — the universal base that any model type implements to become routable.
-- **`AbstractManifold`** — the JEPA-specific subclass for continuous latent-space world models.
-- **`AbstractContextBridge`** — stateless signal adapters for cross-modal composition.
-- **`JEPA_DMN_Consolidation_Node`** — the live bridge writing committed JEPA trajectories into the DMN episodic store (ChromaDB), completing the first pass of the Consolidation Loop.
-
-**[Explore the Lár-JEPA Repository →](https://github.com/snath-ai/Lar-JEPA)**
-
----
-
-
-
-##  Installation
-
-This project is managed with [Poetry](https://python-poetry.org/).
-
-1.  **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/snath-ai/lar.git
-    cd lar
-    ```
-
-2. **Set Up Environment Variables**
-Lár uses the unified LiteLLM adapter under the hood. This means if a model is supported by LiteLLM (100+ providers including Azure, Bedrock, VertexAI), it is supported by Lár.
-
-Create a `.env` file:
-
-```bash
-# Required for running Gemini models:
-GEMINI_API_KEY="YOUR_GEMINI_KEY_HERE" 
-# Required for running OpenAI models (e.g., gpt-4o):
-OPENAI_API_KEY="YOUR_OPENAI_KEY_HERE"
-# Required for running Anthropic models (e.g., Claude):
-ANTHROPIC_API_KEY="YOUR_ANTHROPIC_KEY_HERE"
-```
-
-3.  **Install dependencies:**
-    This command creates a virtual environment and installs all packages from `pyproject.toml`.
-
-    ```bash
-    poetry install
-    ```
-
-
----
-
 ## Ready to build with Lár? (Agentic IDEs)
 
 Lár is designed for **Agentic IDEs** (Cursor, Windsurf, Antigravity) and strict code generation.
@@ -677,108 +600,45 @@ Instead of pasting massive prompts, simply **reference** the master files in the
 **Example Prompt to Cursor/Windsurf:**
 > "Using the rules in @lar/IDE_MASTER_PROMPT.md, implement the agent described in @lar/IDE_PROMPT_TEMPLATE.md."
 
-### 2. Learn by Example
+### A Simple Self-Correcting Loop
 
-We have provided **21 robust patterns** in the **[`examples/`](examples/)** directory, organized by category:
+```mermaid
+graph TD
+    A[Start] --> B[Step 0: PlannerNode - Writer]
+    B --> C1[Step 1: ToolNode - Tester]
+    C1 --> D{Step 2: RouteNode - Judge}
 
-> **[View the Visual Library](https://snath.ai/examples)**: Browse all patterns with diagrams and use-cases on our website.
+    %% Success path
+    subgraph Success_Path
+        direction TB
+        G[Step 5: AddValueNode - Finalize]
+    end
 
-#### 1. Basic Primitives (`examples/basic/`)
-| # | Pattern | Concept |
-| :---: | :--- | :--- |
-| **1** | **[`1_simple_triage.py`](examples/basic/1_simple_triage.py)** | Classification & Linear Routing |
-| **2** | **[`2_reward_code_agent.py`](examples/basic/2_reward_code_agent.py)** | Code-First Agent Logic |
-| **3** | **[`3_support_helper_agent.py`](examples/basic/3_support_helper_agent.py)** | Lightweight Tool Assistant |
-| **4** | **[`4_fastapi_server.py`](examples/basic/4_fastapi_server.py)** | FastAPI Wrapper (Deploy Anywhere) |
+    %% Correction loop
+    subgraph Correction_Loop
+        direction TB
+        E[Step 3: LLMNode - Corrector]
+        F[Step 4: ClearErrorNode - Cleanup]
+    end
 
-#### 2. Core Patterns (`examples/patterns/`)
-| # | Pattern | Concept |
-| :---: | :--- | :--- |
-| **1** | **[`1_rag_researcher.py`](examples/patterns/1_rag_researcher.py)** | RAG (ToolNode) & State Merging |
-| **2** | **[`2_self_correction.py`](examples/patterns/2_self_correction.py)** | "Judge" Pattern & Error Loops |
-| **3** | **[`3_parallel_execution.py`](examples/patterns/3_parallel_execution.py)** | Fan-Out / Fan-In Aggregation |
-| **4** | **[`4_structured_output.py`](examples/patterns/4_structured_output.py)** | Strict JSON Enforcement |
-| **5** | **[`5_multi_agent_handoff.py`](examples/patterns/5_multi_agent_handoff.py)** | Multi-Agent Collaboration |
-| **6** | **[`6_meta_prompt_optimizer.py`](examples/patterns/6_meta_prompt_optimizer.py)** | Self-Modifying Agents (Meta-Reasoning) |
-| **7** | **[`7_integration_test.py`](examples/patterns/7_integration_test.py)** | Integration Builder (CoinCap) |
-| **8** | **[`8_ab_tester.py`](examples/patterns/8_ab_tester.py)** | A/B Tester (Parallel Prompts) |
-| **9** | **[`9_resumable_graph.py`](examples/patterns/9_resumable_graph.py)** | Time Traveller (Crash & Resume) |
-| **10** | **[`10_resumable_cost_demo.py`](examples/patterns/10_resumable_cost_demo.py)** | ⭐ Resumable Graphs: Token Cost Savings Demo |
-| **11** | **[`16_custom_logger_tracker.py`](examples/patterns/16_custom_logger_tracker.py)** | Advanced Observability |
+    D -- Success --> G
+    D -- Failure --> E
+    E --> F
+    F --> C1
+    G --> H[End]
 
-#### 3. Reasoners & Comparisons (`examples/reasoning_models/`, `examples/comparisons/`)
-| # | Pattern | Concept |
-| :---: | :--- | :--- |
-| **1** | **[`1_deepseek_r1.py`](examples/reasoning_models/1_deepseek_r1.py)** | Native `<think>` tag parsing |
-| **2** | **[`2_openai_o1.py`](examples/reasoning_models/2_openai_o1.py)** | High-IQ O1 Planner Nodes |
-| **3** | **[`3_liquid_thinking.py`](examples/reasoning_models/3_liquid_thinking.py)** | Fast Local Edge Inferencing |
-| **4** | **[`langchain_swarm_fail.py`](examples/comparisons/langchain_swarm_fail.py)** | Proof of Context Crashes |
-| **5** | **[`langchain_firewall_cost.py`](examples/comparisons/langchain_firewall_cost.py)** | API Cost Explosion (Firewall) |
-| **6** | **[`langchain_tree_fail.py`](examples/comparisons/langchain_tree_fail.py)** | Agent Cycle Traps |
 
-#### 4. Compliance & Safety (`examples/compliance/`)
-| # | Pattern | Concept |
-| :---: | :--- | :--- |
-| **1** | **[`1_human_in_the_loop.py`](examples/compliance/1_human_in_the_loop.py)** | User Approval & Interrupts |
-| **2** | **[`2_security_firewall.py`](examples/compliance/2_security_firewall.py)** | Blocking Jailbreaks with Code |
-| **3** | **[`3_juried_layer.py`](examples/compliance/3_juried_layer.py)** | Proposer -> Jury -> Kernel |
-| **4** | **[`4_access_control_agent.py`](examples/compliance/4_access_control_agent.py)** | **Flagship Access Control** |
-| **5** | **[`5_context_contamination_test.py`](examples/compliance/5_context_contamination_test.py)** | Red Teaming: Social Engineering |
-| **6** | **[`6_zombie_action_test.py`](examples/compliance/6_zombie_action_test.py)** | Red Teaming: Stale Authority |
-| **7** | **[`7_hitl_agent.py`](examples/compliance/7_hitl_agent.py)** | Article 14 Compliance Node |
-| **8** | **[`8_hmac_audit_log.py`](examples/compliance/8_hmac_audit_log.py)** | Immutable cryptographic logs |
-| **9** | **[`9_high_risk_trading_hmac.py`](examples/compliance/9_high_risk_trading_hmac.py)** | Algorithmic Trading (SEC) |
-| **10** | **[`10_pharma_clinical_trials_hmac.py`](examples/compliance/10_pharma_clinical_trials_hmac.py)** | FDA 21 CFR Part 11 Trial Logic |
-| **11** | **[`11_verify_audit_log.py`](examples/compliance/11_verify_audit_log.py)** | Standalone Auditor Script |
-| **12** | **[`12_post_market_monitoring.py`](examples/compliance/12_post_market_monitoring.py)** | Post-Market Monitoring (Art. 72) |
-| **13** | **[`12_transparency_disclosure.py`](examples/compliance/12_transparency_disclosure.py)** | Transparency Engine (Art. 13) |
-| **14** | **[`13_risk_scored_routing.py`](examples/compliance/13_risk_scored_routing.py)** | Risk-Scored Routing (Art. 14) |
-| **15** | **[`14_runtime_drift_detection.py`](examples/compliance/14_runtime_drift_detection.py)** | Drift Detection (Art. 3(23)) |
-| **16** | **[`15_jit_credential_vault.py`](examples/compliance/15_jit_credential_vault.py)** | JIT Credential Vault (Art. 15(4)) |
-| **17** | **[`16_pii_redaction.py`](examples/compliance/16_pii_redaction.py)** | PII Redaction (GDPR Art. 17) |
-| **18** | **[`17_causal_trace_logging.py`](examples/compliance/17_causal_trace_logging.py)** | Causal Trace Logging (Art. 12) |
-| **19** | **[`18_synthetic_content_marking.py`](examples/compliance/18_synthetic_content_marking.py)** | Synthetic Content Marking (Art. 50) |
-| **20** | **[`19_runtime_bias_detection.py`](examples/compliance/19_runtime_bias_detection.py)** | Bias Detection (prEN 18283) |
-| **21** | **[`20_compliance_manifest.py`](examples/compliance/20_compliance_manifest.py)** | Compliance Manifest (Step 9) |
-| **22** | **[`21_authority_and_trifecta.py`](examples/compliance/21_authority_and_trifecta.py)** | Rule of 2 Trifecta Guard |
+    classDef default stroke:#8FA3B0, color:#FFFFFF, fill:#1E293B;
+    classDef decision stroke:#8FA3B0, color:#FFFFFF, fill:#1E293B;
+    classDef startend stroke:#8FA3B0, color:#FFFFFF, fill:#1E293B;
 
-#### 5. High Scale & Advanced (`examples/scale/`, `examples/advanced/`)
-| # | Pattern | Concept |
-| :---: | :--- | :--- |
-| **1** | **[`1_corporate_swarm.py`](examples/scale/1_corporate_swarm.py)** | **Stress Test**: 60+ Node Graph |
-| **2** | **[`2_mini_swarm_pruner.py`](examples/scale/2_mini_swarm_pruner.py)** | Dynamic Graph Pruning |
-| **3** | **[`3_parallel_newsroom.py`](examples/scale/3_parallel_newsroom.py)** | True Parallelism (`BatchNode`) |
-| **4** | **[`4_parallel_corporate_swarm.py`](examples/scale/4_parallel_corporate_swarm.py)** | Concurrent Branch Execution |
-| **5** | **[`11_map_reduce_budget.py`](examples/advanced/11_map_reduce_budget.py)** | **Memory Compression & Token Budgets** |
-| **6** | **[`fractal_polymath.py`](examples/advanced/fractal_polymath.py)** | **Fractal Agency** (Recursion + Parallelism) |
-| **7** | **[`13_world_model_jepa.py`](examples/advanced/13_world_model_jepa.py)** | **Predictive World Models** |
-
-#### 6. Metacognition (`examples/metacognition/`)
-See the **[Metacognition Docs](https://docs.snath.ai/core-concepts/9-metacognition)** for a deep dive.
-
-| # | Pattern | Concept |
-| :---: | :--- | :--- |
-| **1** | **[`1_dynamic_depth.py`](examples/metacognition/1_dynamic_depth.py)** | **Adaptive Complexity** (1 Node vs N Nodes) |
-| **2** | **[`2_tool_inventor.py`](examples/metacognition/2_tool_inventor.py)** | **Self-Coding** (Writing Tools at Runtime) |
-| **3** | **[`3_self_healing.py`](examples/metacognition/3_self_healing.py)** | **Error Recovery** (Injecting Fix Subgraphs) |
-| **4** | **[`4_adaptive_deep_dive.py`](examples/metacognition/4_adaptive_deep_dive.py)** | **Recursive Research** (Spawning Sub-Agents) |
-| **5** | **[`5_expert_summoner.py`](examples/metacognition/5_expert_summoner.py)** | **Dynamic Persona Instantiation** |
-
+    class A,H startend;
+    class B,C1,E,F,G default;
+    class D decision;
+```
 
 ---
 
-
-## The Validation Suite (Kitchen Sink)
-
-> **[View The Validation Suite Docs](https://docs.snath.ai/case-studies/validation-suite/)** for detailed routing diagrams and explanations.
-
-The [`/examples/validation_suite`](https://github.com/snath-ai/lar/tree/main/examples/validation_suite) directory contains comprehensive, end-to-end examples that exercise **every single primitive** in the Lár framework simultaneously. 
-
-* `kitchen_sink_agent.py`: Demonstrates dynamic fallback capabilities.
-* `kitchen_sink_agent2.py`: Demonstrates complex fractal agency (dynamic subgraphs with specific constraints).
-* `kitchen_sink_agent3.py`: Proves adversarial safety by attempting to inject unapproved `ToolNodes` into the `DynamicNode` and verifying `TopologyValidator` interception and safe fallthrough.
-
-These scripts act as the benchmark proving that `GraphExecutor`, audit logging, and `TopologyValidators` all work securely together within their deterministic pathways.
 
 ## Example: Multi-Agent Orchestration (A Customer Support Agent)
 
@@ -828,45 +688,7 @@ graph TD
 
 ### The core of this application is a Multi-Agent Orchestration Graph. `Lár` forces you to define the assembly line, which guarantees predictable, auditable results.
 
-## Compliance & Safety (EU AI Act Ready - Aug 2026)
-
-Lár provides the **infrastructure** for building **High-Risk AI Systems** under the **EU AI Act (2026)** and **FDA 21 CFR Part 11**.
-
-> [!IMPORTANT]
-> **Who is the "Provider"?**
-> Under the EU AI Act (Art. 3), Lár is a software component, not an AI system. The organisation that uses Lár to build and deploy a high-risk agent (e.g., a bank deploying a credit-scorer) is the legal **Provider** (or Deployer). Lár provides the 12 architectural primitives you need to generate the *evidence* (audit logs, manifests, human-oversight records) to prove your compliance to regulators.
-
-> [!WARNING]
-> **Legal Disclaimer:** Lár is open-source software infrastructure, not legal or compliance advice. Using Lár does not automatically guarantee compliance with the EU AI Act, GDPR, HIPAA, or any other regulation. Organizations are solely responsible for ensuring their AI systems undergo proper legal review and conformity assessments.
-
-### The Infrastructure vs. Liability Boundary
-
-Lár handles the **mechanical infrastructure** of compliance. It provides the architectural primitives (immutable audit trails, runtime policy enforcement, and algorithmic transparency) required by law. However, compliance is a sociotechnical process, meaning it relies on both code and organizational governance.
-
-**What Lár Solves:**
-* **Mechanical Record-Keeping:** Lár flawlessly records the exact causal chain of every decision (Art. 12) to cryptographically signed ledgers. 
-* **Oversight Routing:** The framework provides hardware-level routing to guarantee high-risk actions halt and await human approval before proceeding (Art. 14).
-* **Documentation Baselines:** Automated generators export your graph's specific technical boundaries directly into Annex IV documentation templates.
-
-**What Lár CANNOT Solve:**
-* **Model Suitability:** If you plug a highly biased or unsafe open-source model into Lár, the outputs will be biased. Lár will accurately record that biased decision, but the legal liability remains with the organization.
-* **Human Negligence:** If the `HumanJuryNode` routes a critical medical decision to a stakeholder who blindly approves cases without reading them ("rubber-stamping"), the organization will fail its audit for negligent oversight.
-* **Data Provenance:** Lár cannot guarantee that the training data or RAG context used by your models was legally acquired or accurately representative.
-
-In short: Lár provides the "flight recorder" and "emergency brakes." The organization must bring the safe model, the responsible human operators, and the governance policies.
-
-
-| Regulation | Requirement | Lár Implementation |
-| :--- | :--- | :--- |
-| **EU AI Act Art. 12** | **Record-Keeping** | **State-Diff Ledger**: Automatically creates an immutable, forensic JSON log of every step, variable change, and model decision. |
-| **EU AI Act Art. 13** | **Transparency** | **"Glass Box" Architecture**: No hidden prompts or "magic" loops. Every node is explicit code that can be audited by non-technical reviewers. |
-| **EU AI Act Art. 14** | **Human Oversight** | **Interrupt Pattern**: Native support for "Human-in-the-Loop". Pause execution, modify state, and resume—ensuring human control over high-stakes decisions. |
-| **FDA 21 CFR Part 11** | **Audit Trails** | **Cryptographic Determinism**: The engine is deterministic by design, ensuring reproducible runs for clinical validation. |
-
----
-
-## Quick Start
-### 1. Graph Flow (Execution Sequence)
+### 2. Graph Flow (Execution Sequence)
 
 The agent executes in a fixed, 6-step sequence. The graph is `defined backwards` in the code, but the execution runs forwards:
 
@@ -1009,6 +831,180 @@ print("Agent serialized successfully. Ready for deployment.")
 ```
 -----
 
+### 2. Learn by Example
+
+We have provided **21 robust patterns** in the **[`examples/`](examples/)** directory, organized by category:
+
+> **[View the Visual Library](https://snath.ai/examples)**: Browse all patterns with diagrams and use-cases on our website.
+
+#### 1. Basic Primitives (`examples/basic/`)
+| # | Pattern | Concept |
+| :---: | :--- | :--- |
+| **1** | **[`1_simple_triage.py`](examples/basic/1_simple_triage.py)** | Classification & Linear Routing |
+| **2** | **[`2_reward_code_agent.py`](examples/basic/2_reward_code_agent.py)** | Code-First Agent Logic |
+| **3** | **[`3_support_helper_agent.py`](examples/basic/3_support_helper_agent.py)** | Lightweight Tool Assistant |
+| **4** | **[`4_fastapi_server.py`](examples/basic/4_fastapi_server.py)** | FastAPI Wrapper (Deploy Anywhere) |
+
+#### 2. Core Patterns (`examples/patterns/`)
+| # | Pattern | Concept |
+| :---: | :--- | :--- |
+| **1** | **[`1_rag_researcher.py`](examples/patterns/1_rag_researcher.py)** | RAG (ToolNode) & State Merging |
+| **2** | **[`2_self_correction.py`](examples/patterns/2_self_correction.py)** | "Judge" Pattern & Error Loops |
+| **3** | **[`3_parallel_execution.py`](examples/patterns/3_parallel_execution.py)** | Fan-Out / Fan-In Aggregation |
+| **4** | **[`4_structured_output.py`](examples/patterns/4_structured_output.py)** | Strict JSON Enforcement |
+| **5** | **[`5_multi_agent_handoff.py`](examples/patterns/5_multi_agent_handoff.py)** | Multi-Agent Collaboration |
+| **6** | **[`6_meta_prompt_optimizer.py`](examples/patterns/6_meta_prompt_optimizer.py)** | Self-Modifying Agents (Meta-Reasoning) |
+| **7** | **[`7_integration_test.py`](examples/patterns/7_integration_test.py)** | Integration Builder (CoinCap) |
+| **8** | **[`8_ab_tester.py`](examples/patterns/8_ab_tester.py)** | A/B Tester (Parallel Prompts) |
+| **9** | **[`9_resumable_graph.py`](examples/patterns/9_resumable_graph.py)** | Time Traveller (Crash & Resume) |
+| **10** | **[`10_resumable_cost_demo.py`](examples/patterns/10_resumable_cost_demo.py)** | ⭐ Resumable Graphs: Token Cost Savings Demo |
+| **11** | **[`16_custom_logger_tracker.py`](examples/patterns/16_custom_logger_tracker.py)** | Advanced Observability |
+
+#### 3. Reasoners & Comparisons (`examples/reasoning_models/`, `examples/comparisons/`)
+| # | Pattern | Concept |
+| :---: | :--- | :--- |
+| **1** | **[`1_deepseek_r1.py`](examples/reasoning_models/1_deepseek_r1.py)** | Native `<think>` tag parsing |
+| **2** | **[`2_openai_o1.py`](examples/reasoning_models/2_openai_o1.py)** | High-IQ O1 Planner Nodes |
+| **3** | **[`3_liquid_thinking.py`](examples/reasoning_models/3_liquid_thinking.py)** | Fast Local Edge Inferencing |
+| **4** | **[`langchain_swarm_fail.py`](examples/comparisons/langchain_swarm_fail.py)** | Proof of Context Crashes |
+| **5** | **[`langchain_firewall_cost.py`](examples/comparisons/langchain_firewall_cost.py)** | API Cost Explosion (Firewall) |
+| **6** | **[`langchain_tree_fail.py`](examples/comparisons/langchain_tree_fail.py)** | Agent Cycle Traps |
+
+#### 4. Compliance & Safety (`examples/compliance/`)
+| # | Pattern | Concept |
+| :---: | :--- | :--- |
+| **1** | **[`1_human_in_the_loop.py`](examples/compliance/1_human_in_the_loop.py)** | User Approval & Interrupts |
+| **2** | **[`2_security_firewall.py`](examples/compliance/2_security_firewall.py)** | Blocking Jailbreaks with Code |
+| **3** | **[`3_juried_layer.py`](examples/compliance/3_juried_layer.py)** | Proposer -> Jury -> Kernel |
+| **4** | **[`4_access_control_agent.py`](examples/compliance/4_access_control_agent.py)** | **Flagship Access Control** |
+| **5** | **[`5_context_contamination_test.py`](examples/compliance/5_context_contamination_test.py)** | Red Teaming: Social Engineering |
+| **6** | **[`6_zombie_action_test.py`](examples/compliance/6_zombie_action_test.py)** | Red Teaming: Stale Authority |
+| **7** | **[`7_hitl_agent.py`](examples/compliance/7_hitl_agent.py)** | Article 14 Compliance Node |
+| **8** | **[`8_hmac_audit_log.py`](examples/compliance/8_hmac_audit_log.py)** | Immutable cryptographic logs |
+| **9** | **[`9_high_risk_trading_hmac.py`](examples/compliance/9_high_risk_trading_hmac.py)** | Algorithmic Trading (SEC) |
+| **10** | **[`10_pharma_clinical_trials_hmac.py`](examples/compliance/10_pharma_clinical_trials_hmac.py)** | FDA 21 CFR Part 11 Trial Logic |
+| **11** | **[`11_verify_audit_log.py`](examples/compliance/11_verify_audit_log.py)** | Standalone Auditor Script |
+| **12** | **[`12_post_market_monitoring.py`](examples/compliance/12_post_market_monitoring.py)** | Post-Market Monitoring (Art. 72) |
+| **13** | **[`12_transparency_disclosure.py`](examples/compliance/12_transparency_disclosure.py)** | Transparency Engine (Art. 13) |
+| **14** | **[`13_risk_scored_routing.py`](examples/compliance/13_risk_scored_routing.py)** | Risk-Scored Routing (Art. 14) |
+| **15** | **[`14_runtime_drift_detection.py`](examples/compliance/14_runtime_drift_detection.py)** | Drift Detection (Art. 3(23)) |
+| **16** | **[`15_jit_credential_vault.py`](examples/compliance/15_jit_credential_vault.py)** | JIT Credential Vault (Art. 15(4)) |
+| **17** | **[`16_pii_redaction.py`](examples/compliance/16_pii_redaction.py)** | PII Redaction (GDPR Art. 17) |
+| **18** | **[`17_causal_trace_logging.py`](examples/compliance/17_causal_trace_logging.py)** | Causal Trace Logging (Art. 12) |
+| **19** | **[`18_synthetic_content_marking.py`](examples/compliance/18_synthetic_content_marking.py)** | Synthetic Content Marking (Art. 50) |
+| **20** | **[`19_runtime_bias_detection.py`](examples/compliance/19_runtime_bias_detection.py)** | Bias Detection (prEN 18283) |
+| **21** | **[`20_compliance_manifest.py`](examples/compliance/20_compliance_manifest.py)** | Compliance Manifest (Step 9) |
+| **22** | **[`21_authority_and_trifecta.py`](examples/compliance/21_authority_and_trifecta.py)** | Rule of 2 Trifecta Guard |
+
+#### 5. High Scale & Advanced (`examples/scale/`, `examples/advanced/`)
+| # | Pattern | Concept |
+| :---: | :--- | :--- |
+| **1** | **[`1_corporate_swarm.py`](examples/scale/1_corporate_swarm.py)** | **Stress Test**: 60+ Node Graph |
+| **2** | **[`2_mini_swarm_pruner.py`](examples/scale/2_mini_swarm_pruner.py)** | Dynamic Graph Pruning |
+| **3** | **[`3_parallel_newsroom.py`](examples/scale/3_parallel_newsroom.py)** | True Parallelism (`BatchNode`) |
+| **4** | **[`4_parallel_corporate_swarm.py`](examples/scale/4_parallel_corporate_swarm.py)** | Concurrent Branch Execution |
+| **5** | **[`11_map_reduce_budget.py`](examples/advanced/11_map_reduce_budget.py)** | **Memory Compression & Token Budgets** |
+| **6** | **[`fractal_polymath.py`](examples/advanced/fractal_polymath.py)** | **Fractal Agency** (Recursion + Parallelism) |
+| **7** | **[`13_world_model_jepa.py`](examples/advanced/13_world_model_jepa.py)** | **Predictive World Models** |
+
+#### 6. Metacognition (`examples/metacognition/`)
+See the **[Metacognition Docs](https://docs.snath.ai/core-concepts/9-metacognition)** for a deep dive.
+
+| # | Pattern | Concept |
+| :---: | :--- | :--- |
+| **1** | **[`1_dynamic_depth.py`](examples/metacognition/1_dynamic_depth.py)** | **Adaptive Complexity** (1 Node vs N Nodes) |
+| **2** | **[`2_tool_inventor.py`](examples/metacognition/2_tool_inventor.py)** | **Self-Coding** (Writing Tools at Runtime) |
+| **3** | **[`3_self_healing.py`](examples/metacognition/3_self_healing.py)** | **Error Recovery** (Injecting Fix Subgraphs) |
+| **4** | **[`4_adaptive_deep_dive.py`](examples/metacognition/4_adaptive_deep_dive.py)** | **Recursive Research** (Spawning Sub-Agents) |
+| **5** | **[`5_expert_summoner.py`](examples/metacognition/5_expert_summoner.py)** | **Dynamic Persona Instantiation** |
+
+
+---
+
+
+## The Validation Suite (Kitchen Sink)
+
+> **[View The Validation Suite Docs](https://docs.snath.ai/case-studies/validation-suite/)** for detailed routing diagrams and explanations.
+
+The [`/examples/validation_suite`](https://github.com/snath-ai/lar/tree/main/examples/validation_suite) directory contains comprehensive, end-to-end examples that exercise **every single primitive** in the Lár framework simultaneously. 
+
+* `kitchen_sink_agent.py`: Demonstrates dynamic fallback capabilities.
+* `kitchen_sink_agent2.py`: Demonstrates complex fractal agency (dynamic subgraphs with specific constraints).
+* `kitchen_sink_agent3.py`: Proves adversarial safety by attempting to inject unapproved `ToolNodes` into the `DynamicNode` and verifying `TopologyValidator` interception and safe fallthrough.
+
+These scripts act as the benchmark proving that `GraphExecutor`, audit logging, and `TopologyValidators` all work securely together within their deterministic pathways.
+
+## The DMN Showcase: A Cognitive Architecture
+
+**[snath-ai/DMN](https://github.com/snath-ai/DMN)** - The flagship demonstration of Lár's capabilities.
+
+DMN (Default Mode Network) is a **complete cognitive architecture** built entirely on Lár, showcasing what's possible when you combine:
+- **Bicameral Mind**: Fast/Slow thinking systems running in parallel
+- **Sleep Cycles**: Automatic memory consolidation during "rest" periods  
+- **Episodic Memory**: Long-term storage with vectorized recall
+- **Self-Awareness**: Metacognitive introspection and adaptive behavior
+
+> [!NOTE]
+> **DMN proves that Lár isn't just for chatbots.** It's a platform for building genuinely intelligent systems with memory, learning, and self-improvement capabilities.
+
+### What Makes DMN Special?
+
+| Feature | Traditional Agents | DMN (Built on Lár) |
+|---------|-------------------|---------------------|
+| **Memory** | Context window only | Persistent episodic memory with sleep consolidation |
+| **Learning** | Static prompts | Learns from interactions and self-corrects |
+| **Architecture** | Single-path logic | Dual-process (Fast + Slow) cognitive system |
+
+### Solving Catastrophic Forgetting
+
+Standard LLM agents suffer from **agent-level catastrophic forgetting**: once the context window fills up, old messages are silently truncated and the agent permanently loses all knowledge of past interactions. Talk to any chatbot for two hours, and it forgets the first hour.
+
+The DMN solves this **architecturally**, without retraining or modifying model weights:
+
+1.  **Consolidation, not Accumulation.** The Dreamer synthesizes raw interaction logs into dense semantic narratives during idle periods. Meaning is preserved; raw tokens are discarded.
+2.  **Tiered Retrieval.** Hot Memory provides immediate conversational flow. Warm and Cold Memory provide deep, long-term recall — routed through the Prefrontal Cortex so only compressed, relevant context enters the prompt.
+3.  **Infinite Horizon.** Because memories are permanently stored in ChromaDB and retrieved on demand, the agent can run indefinitely without ever hitting a context window limit.
+
+#### The Human Analogy
+
+This is not a novel strategy — it is how biological brains actually work.
+
+Human brains do not rewrite their neural weights every night. Instead, the **Hippocampus** consolidates the day's experiences into long-term cortical storage during sleep. You don't remember every pixel of your morning commute; you remember that it rained and traffic was bad. The raw sensory data is gone, but the *meaning* persists.
+
+The DMN implements this exact biological strategy as software architecture:
+
+| Human Brain | Lár DMN |
+|---|---|
+| Sensory Input | User Messages (Raw Logs) |
+| Hippocampal Consolidation (Sleep) | Dreamer Daemon (Idle Trigger) |
+| Long-Term Cortical Storage | ChromaDB (Warm + Cold Tiers) |
+| Prefrontal Filtering (Attention) | PrefrontalNode (Compression Gateway) |
+| Working Memory | Hot Memory (Last 5 Turns) |
+
+> [!IMPORTANT]
+> **Key Insight:** Researchers have spent billions trying to solve catastrophic forgetting at the model weight level through continual learning. The DMN takes a different approach: *don't fix the brain — build an external Hippocampus.* The base LLM remains frozen. Memory is an architectural concern, not a training concern.
+
+**[Read the Full DMN Concept Guide](https://docs.snath.ai/core-concepts/12-catastrophic-forgetting)** | **[Explore the DMN Repository →](https://github.com/snath-ai/DMN)**
+
+---
+
+## Universal Model Routing: Lár-JEPA
+
+**[snath-ai/Lar-JEPA](https://github.com/snath-ai/Lar-JEPA)** — The cognitive routing nervous system for heterogeneous model architectures.
+
+Lár's deterministic execution spine is model-agnostic by construction. The `GraphExecutor` routes between nodes without inspecting their internals — which means **LLMs, JEPA world models, diffusion models, SSMs, GNNs, and any future architecture are all first-class, equally routable nodes** within the same graph. A `BatchNode` can spin up N JEPAs concurrently, N LLMs concurrently, or a heterogeneous mixture of both. An `AbstractContextBridge` wires cross-modal signals — LLMs attending to JEPA latent predictions, JEPAs conditioning on LLM semantic embeddings — without either node being aware of the other's internals.
+
+The Lár-JEPA repository provides:
+- **`AbstractCognitiveNode`** — the universal base that any model type implements to become routable.
+- **`AbstractManifold`** — the JEPA-specific subclass for continuous latent-space world models.
+- **`AbstractContextBridge`** — stateless signal adapters for cross-modal composition.
+- **`JEPA_DMN_Consolidation_Node`** — the live bridge writing committed JEPA trajectories into the DMN episodic store (ChromaDB), completing the first pass of the Consolidation Loop.
+
+**[Explore the Lár-JEPA Repository →](https://github.com/snath-ai/Lar-JEPA)**
+
+---
+
+
 ## Ready to Build a Real Agent?
 We have built two "killer demos" that prove this "glass box" model. You can clone, build, and run them today.
 
@@ -1038,7 +1034,6 @@ We have built two "killer demos" that prove this "glass box" model. You can clon
 ```markdown
 [![Glass Box Ready](https://img.shields.io/badge/Auditable-Glass%20Box%20Ready-54B848?style=flat&logo=checkmarx&logoColor=white)](https://docs.snath.ai)
 ```
-
 
 
 ## Ready for Production?
