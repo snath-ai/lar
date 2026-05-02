@@ -9,6 +9,13 @@ Do NOT simply write a script. Follow this trusted protocol to ensure robustness.
 
 ---
 
+## The Compliance Mandate (EU AI Act)
+**CRITICAL**: Integrations are "external actions" under the EU AI Act. You MUST build them so they can be audited. 
+1. **Never bypass the Lár State**: The integration MUST return its result as a dictionary so it merges into the `GraphState`. The `AuditLogger` relies on this to capture the `state_diff`. If you bypass state (e.g., printing to stdout instead of returning), the audit trail is legally broken.
+2. **Third-Party Transparency**: Ensure the output clearly identifies if it came from a third-party API.
+
+---
+
 ## Phase 1: Research & Validation (CRITICAL)
 Before generating code, verify you have the knowledge.
 *   **If you know the library (e.g., Stripe, Requests)**: Proceed to Phase 2.

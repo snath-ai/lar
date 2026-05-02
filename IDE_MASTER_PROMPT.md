@@ -15,6 +15,17 @@
 
 ---
 
+## EU AI Act & Enterprise Compliance (CRITICAL)
+
+Lár is designed to be fully compliant with the **EU AI Act (enforceable Aug 2026)**. When building enterprise systems or integrations, you MUST prioritize the following:
+
+1. **Causal Audit Trails**: All state changes MUST be routed through standard Lár nodes to ensure the `AuditLogger` captures the state diff. If you build a custom integration or third-party API call, wrap it in a `ToolNode` or `@node` so the deterministic state change is recorded and cryptographically signed. Integrations MUST be audited.
+2. **Third-Party Integrations**: Integrations (e.g., Slack bots, web scrapers, database writers) are **external actions** that must be audited. Do not bypass the Lár state object. Return integration results as a dict so they merge into the state and appear in the `state_diff`.
+3. **High-Risk Actions**: For any action that modifies production data or makes critical decisions (finance, healthcare, HR), inject a `HumanJuryNode` before the action executes to fulfill the **Art. 14 Human Oversight** requirement.
+4. **No Hidden Logic**: Do not hide LLM calls inside regular Python functions. Use `LLMNode` so the prompt and generation are exposed to the `AuditLogger`.
+
+---
+
 ## Model Name Conventions (LiteLLM Prefixes)
 
 Lár uses **LiteLLM** for all LLM calls. Always use the correct provider prefix:

@@ -14,6 +14,7 @@
 - [ ] Use `gemini-1.5-pro` for reasoning.
 - [ ] Must be air-gap compatible (no external APIs besides the LLM).
 - [ ] Output must be valid JSON matching the `FinancialReport` schema.
+- [ ] **EU AI Act Compliance**: If this graph performs high-risk actions or external integrations, it MUST route through `HumanJuryNode` and correctly return dicts to the state for the `AuditLogger`.
 
 ---
 **Instruction to IDE**:
