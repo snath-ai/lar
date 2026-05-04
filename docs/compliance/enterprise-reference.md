@@ -12,6 +12,28 @@
 
 ---
 
+## The Blueprint: EU AI Act Finance Showcase
+
+If you need to prove compliance to an auditor or understand how the 12 primitives fit together, run our definitive showcase script. This single script acts as the blueprint for high-risk EU AI Act deployments, executing a simulated SME loan application through the full compliance pipeline.
+
+```bash
+python examples/compliance/22_eu_ai_act_finance_showcase.py
+```
+
+It explicitly validates:
+1. **Article 15(4)**: JIT Privilege (CredentialVault)
+2. **GDPR Article 17**: PII Redaction
+3. **Article 12**: Causal Audit Logging
+4. **Article 9 & 14**: Policy Registry & Risk Scoring
+5. **Article 14**: Human-in-the-Loop Oversight
+6. **AEPD Rule of 2**: Lethal Trifecta Guard
+7. **Article 13 & 50**: Transparency Disclosure
+8. **Article 3(23)**: Runtime Drift Detection
+9. **Step 9**: Action Inventory Manifest
+10. **prEN 18283**: Bias Management Detection
+
+---
+
 ## Quick Start
 
 ```bash

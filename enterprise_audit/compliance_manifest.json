@@ -1,7 +1,7 @@
 {
   "manifest_version": "1.0",
   "system_name": "AI Credit / Trading Decision Agent",
-  "generated_at": "2026-05-02T22:41:59.886494Z",
+  "generated_at": "2026-05-04T13:18:41.933773Z",
   "eu_ai_act_reference": "Step 9 \u2014 External Action Inventory (Section 8.1, Nannini et al., 2026)",
   "summary": {
     "total_nodes_inventoried": 8,

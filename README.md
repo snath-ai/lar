@@ -544,6 +544,28 @@ Verify with: `python examples/compliance/11_verify_audit_log.py <log_path> <hmac
 
 ---
 
+## The Blueprint: EU AI Act Finance Showcase
+
+If you need to prove compliance to an auditor or understand how the 12 primitives fit together, run our definitive showcase script. This single script acts as the blueprint for high-risk EU AI Act deployments, executing a simulated SME loan application through the full compliance pipeline.
+
+```bash
+python examples/compliance/22_eu_ai_act_finance_showcase.py
+```
+
+It explicitly validates:
+1. **Article 15(4)**: JIT Privilege (CredentialVault)
+2. **GDPR Article 17**: PII Redaction
+3. **Article 12**: Causal Audit Logging
+4. **Article 9 & 14**: Policy Registry & Risk Scoring
+5. **Article 14**: Human-in-the-Loop Oversight
+6. **AEPD Rule of 2**: Lethal Trifecta Guard
+7. **Article 13 & 50**: Transparency Disclosure
+8. **Article 3(23)**: Runtime Drift Detection
+9. **Step 9**: Action Inventory Manifest
+10. **prEN 18283**: Bias Management Detection
+
+---
+
 ## Cryptographic Audit Logs (v1.5.1+)
 
 For enterprise environments (EU AI Act, SOC2, HIPAA), having a log isn't enough—you must prove the log wasn't tampered with.
@@ -895,6 +917,7 @@ We have provided **21 robust patterns** in the **[`examples/`](examples/)** dire
 | **20** | **[`19_runtime_bias_detection.py`](examples/compliance/19_runtime_bias_detection.py)** | Bias Detection (prEN 18283) |
 | **21** | **[`20_compliance_manifest.py`](examples/compliance/20_compliance_manifest.py)** | Compliance Manifest (Step 9) |
 | **22** | **[`21_authority_and_trifecta.py`](examples/compliance/21_authority_and_trifecta.py)** | Rule of 2 Trifecta Guard |
+| **23** | **[`22_eu_ai_act_finance_showcase.py`](examples/compliance/22_eu_ai_act_finance_showcase.py)** | Full EU AI Act Pipeline Proof |
 
 #### 5. High Scale & Advanced (`examples/scale/`, `examples/advanced/`)
 | # | Pattern | Concept |
