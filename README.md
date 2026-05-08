@@ -53,13 +53,11 @@ Lár ships a complete **Enterprise Compliance Backbone** — all 12 primitives r
 
 ## See It Running: The Finance Showcase
 
-One command runs a live SME credit decision through all 12 primitives:
+One command runs a live SME credit decision through all 12 primitives and produces three HMAC-signed audit artefacts:
 
 ```bash
 python examples/compliance/22_eu_ai_act_finance_showcase.py
 ```
-
-What it produces:
 
 | Step | Node | Outcome | State Changes |
 | :--- | :--- | :--- | :--- |
@@ -71,46 +69,11 @@ What it produces:
 | 5 | `FunctionalNode` (LethalTrifecta + Transparency) | ✅ success | `+ _trifecta_check`, `~ drift_report` |
 | 6 | `SyntheticMarkerNode` | ✅ success | `+ final_output` (AI-disclaimed) |
 
-The **Article 12 Causal Trace** for Step 1 — the exact JSON an auditor receives:
-
-```json
-{
-  "step": 1,
-  "node": "LLMNode",
-  "prompt": "You are a credit risk analyst. Assess the following loan/credit application...",
-  "state_diff": {
-    "added": {
-      "ai_output": "{\"risk_level\": \"CRITICAL\", \"recommendation\": \"Do not approve...\", \"confidence\": 0.95}"
-    }
-  },
-  "run_metadata": {
-    "prompt_tokens": 100,
-    "output_tokens": 70,
-    "total_tokens": 170,
-    "model": "ollama/phi4:latest"
-  },
-  "outcome": "success"
-}
-```
-
-The **AuthorityLedger record** — Article 14 Fourth Tier oversight:
-
-```json
-{
-  "stakeholder_id": "reviewer@enterprise.org",
-  "stakeholder_role": "Risk Officer",
-  "decision": "approve",
-  "rationale": "Reviewed FINANCE case. AI recommendation verified against policy.",
-  "timestamp": "2026-05-08T16:29:00Z"
-}
-```
-
-The full log is **HMAC-SHA256 signed** — mathematically tamper-evident:
-```
-Signature: 55931245a2c8117f1c1dc4f6b4499b866f272d99bd9273cd01d313e435a658a5
-```
+Every step produces a real Article 12 causal trace, a real Article 14 AuthorityLedger record, and a real Step 9 action inventory — all HMAC-SHA256 signed. PII is stripped before signing.
 
 > **This is the difference.** Every step, every key written, every node that touched state — recorded. No guesswork, no external tooling required.
+
+**[Full showcase breakdown — execution trace, real JSON artefacts, 12-step coverage map →](https://docs.snath.ai/compliance/finance-showcase/)**
 
 ---
 
