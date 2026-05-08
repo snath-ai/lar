@@ -76,6 +76,7 @@ nav:
     - 'Overview': compliance.md
     - 'Enterprise Reference Implementation': compliance/enterprise-reference.md
     - 'EU AI Act Deep Dive': compliance/eu-ai-act-deep-dive.md
+    - 'Nannini et al. (2026) Mapping': compliance/paper-compliance-mapping.md
     - 'Annex IV Template': compliance/annex-iv-template.md
     - 'QMS Integration Guide': compliance/qms-integration-guide.md
     - 'For Auditors': compliance/auditor_guide.md

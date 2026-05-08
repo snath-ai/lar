@@ -62,6 +62,14 @@ class ComplianceManifestGenerator:
 
         # --- LLMNode ---
         if node_type == "LLMNode" or node_type == "ReduceNode":
+            meta = getattr(node, "compliance_metadata", {})
+            affected = meta.get("affected_parties", "USER_ONLY")
+            is_external = meta.get("external_action", False)
+            article = "Art. 12 (Logging), Art. 13 (Transparency)"
+            note = "LLM inference. Prompt and output are logged to the Causal Audit Trail."
+            if is_external and affected in ("THIRD_PARTY", "BOTH"):
+                article += ", Art. 50 (Transparency to third parties)"
+                note = meta.get("description", note) + " EXTERNAL ACTION — activates Art. 50 transparency obligations."
             entry = {
                 "node_type": node_type,
                 "model_name": getattr(node, "model_name", "unknown"),
@@ -69,9 +77,12 @@ class ComplianceManifestGenerator:
                 "prompt_template_preview": (getattr(node, "prompt_template", "") or "")[:120] + "...",
                 "system_instruction": getattr(node, "system_instruction", None),
                 "fallbacks": getattr(node, "fallbacks", None),
+                "action_type": meta.get("action_type", "inference"),
+                "affected_parties": affected,
+                "external_action": is_external,
                 "eu_act_relevance": {
-                    "article": "Art. 12 (Logging), Art. 13 (Transparency)",
-                    "note": "LLM inference. Prompt and output are logged to the Causal Audit Trail."
+                    "article": article,
+                    "note": note,
                 }
             }
             if node_type == "ReduceNode":
@@ -221,13 +232,27 @@ class ComplianceManifestGenerator:
             entries.append(entry)
             entries.extend(self._visit(getattr(node, "next_node", None)))
 
-        # --- Generic / Unknown Node ---
+        # --- Generic / Unknown Node (FunctionalNode, etc.) ---
         else:
+            meta = getattr(node, "compliance_metadata", {})
+            affected = meta.get("affected_parties", "USER_ONLY")
+            is_external = meta.get("external_action", False)
+            if is_external:
+                article = "Art. 15(4) (Cybersecurity/Privilege), Art. 14 (Oversight)"
+                if affected in ("THIRD_PARTY", "BOTH"):
+                    article += ", Art. 50 (Transparency to third parties)"
+                note = meta.get("description", f"External action node '{node_type}'.")
+            else:
+                article = "Review required"
+                note = f"Custom node type '{node_type}'. Manual review needed to determine regulatory triggers."
             entry = {
                 "node_type": node_type,
+                "action_type": meta.get("action_type", "internal"),
+                "affected_parties": affected,
+                "external_action": is_external,
                 "eu_act_relevance": {
-                    "article": "Review required",
-                    "note": f"Custom node type '{node_type}'. Manual review needed to determine regulatory triggers."
+                    "article": article,
+                    "note": note,
                 }
             }
             entries.append(entry)
@@ -248,9 +273,10 @@ class ComplianceManifestGenerator:
             nt = entry.get("node_type", "unknown")
             node_type_counts[nt] = node_type_counts.get(nt, 0) + 1
 
-        tool_nodes = [e for e in inventory if e.get("node_type") == "ToolNode"]
+        # All external actions — ToolNode OR any node tagged with external_action=True
+        tool_nodes = [e for e in inventory if e.get("node_type") == "ToolNode" or e.get("external_action") is True]
         third_party_tools = [e for e in tool_nodes if e.get("affected_parties") in ("THIRD_PARTY", "BOTH")]
-        unvaulted_tools = [e for e in tool_nodes if not e.get("jit_credential_vault_attached")]
+        unvaulted_tools = [e for e in inventory if e.get("node_type") == "ToolNode" and not e.get("jit_credential_vault_attached")]
         dynamic_nodes = [e for e in inventory if e.get("node_type") in ("AdaptiveNode", "DynamicNode")]
         llm_nodes = [e for e in inventory if e.get("node_type") in ("LLMNode", "ReduceNode")]
 

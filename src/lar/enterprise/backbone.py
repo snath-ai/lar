@@ -329,6 +329,12 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
         output_key="ai_output",
         next_node=None,
     )
+    node_llm.compliance_metadata = {
+        "action_type": "llm_inference",
+        "affected_parties": "THIRD_PARTY",
+        "external_action": True,
+        "description": "LLM inference on applicant PII data — directly affects the case subject's credit outcome.",
+    }
 
     # Node C: Parse JSON from LLM
     def parse_output(state: GraphState):
@@ -402,6 +408,12 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
         state.set("drift_report", snap.get("drift_report", {"drift_detected": False}))
 
     node_checks = FunctionalNode(func=compliance_checks, next_node=None)
+    node_checks.compliance_metadata = {
+        "action_type": "external_write",
+        "affected_parties": "THIRD_PARTY",
+        "external_action": True,
+        "description": "Post-approval external write to case management — affects third-party case subject.",
+    }
 
     # Node H: Synthetic marker (Art. 50(2))
     node_marker = SyntheticMarkerNode(
