@@ -30,14 +30,16 @@ class BatchNode(BaseNode):
 ### 2. **State Isolation**
 Each node runs with its own **deep copy** of the state, preventing race conditions. Threads cannot interfere with each other's execution.
 
-###. **State Merging Strategy**
-After all threads complete, `BatchNode` merges results:
-- **New keys**: Automatically added to the main state
-- **Updated keys**: Last write wins (race condition - avoid overlapping `output_key` values)
-- **Unchanged keys**: Ignored
+### 3. **State Merging Strategy**
+After all threads complete, `BatchNode` merges results deterministically — completion order does not affect the outcome:
 
-> [!WARNING]
-> **Overlapping Keys**: If multiple nodes write to the same state key, the result is non-deterministic due to thread scheduling. Design your graph to ensure each parallel node writes to unique keys.
+1. Results are sorted by node insertion index (not thread completion order)
+2. A conflict scan runs across all local states: any key written by more than one branch with differing values is flagged
+3. Conflicting keys are recorded in `state["_batch_conflicts"]` for inspection; the **first** branch (by insertion order) wins
+4. Non-conflicting new and updated keys are merged into the main state
+
+> [!NOTE]
+> Design parallel branches to write to unique `output_key` values. Conflicts are surfaced rather than silently overwritten, but first-writer-wins is a convention, not a guarantee of semantic correctness.
 
 ### 4. **Error Handling**
 - If any thread raises an exception, it's logged and `last_error` is set in the main state

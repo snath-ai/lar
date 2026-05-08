@@ -123,7 +123,7 @@ validator.validate(broken_graph)  # SecurityError: Invalid reference
 ## Example: Basic Validation
 
 ```python
-from lar.dynamic import TopologyValidator, SecurityError
+from lar.adaptive import TopologyValidator, SecurityError
 
 def approved_search(query: str) -> str:
     return f"Results for {query}"
@@ -249,7 +249,7 @@ except SecurityError as e:
 
 ## See Also
 
-- [AdaptiveNode API](dynamicnode.md) — runtime graph composition primitive
+- [AdaptiveNode API](adaptivenode.md) — runtime graph composition primitive
 - [Adaptive Graphs](../core-concepts/9-adaptive-graphs.md) — when and why to use runtime graph composition
 - [Red Teaming](../case-studies/red-teaming.md) — security testing
 - [Security Firewall Example](https://github.com/snath-ai/lar/blob/main/examples/compliance/2_security_firewall.py)

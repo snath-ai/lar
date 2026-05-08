@@ -6,9 +6,7 @@ Safety rails propagate through every level of nesting — the `TopologyValidator
 
 ## When to Use Nested Composition
 
-Use nested `AdaptiveNode` when:
-- A problem requires parallel specialised sub-pipelines, each with their own structure
-- The number of specialised sub-pipelines is itself determined at runtime
+Use nested `AdaptiveNode` when both the number and structure of sub-pipelines are unknown at development time — the manager must decide both *how many* specialists to compose and *what each one does* based on the input it sees at runtime.
 
 A concrete example: a manager agent that receives a complex multi-disciplinary question, decides how many specialist sub-agents to spawn (and what kind), and then dispatches them in parallel via `BatchNode`.
 
@@ -46,12 +44,33 @@ budget_remaining = initial_budget - sum(spend_per_thread)
 
 This prevents unbounded execution costs regardless of nesting depth.
 
-## Example
+## Examples
+
+### Fractal Polymath
 
 See `examples/advanced/fractal_polymath.py` for a working example where a manager `AdaptiveNode` composes a `BatchNode` containing two specialist `AdaptiveNode` instances running in parallel threads.
 
+### Multi-Site Clinical Trial (Pharma)
+
+This architecture maps directly to a multi-site clinical trial. Each site has a different distribution of patient complexity, adverse event rates, and protocol deviations. A static graph cannot anticipate how many review pipelines any given site's data batch will need.
+
+```
+AdaptiveNode (Site Manager)
+│   Receives: site_data_batch (patient records, AE reports, protocol logs)
+│   Decides: which specialist sub-pipelines this batch requires and how many
+│
+└── Generates spec:
+    ├── BatchNode (parallel site review)
+    │   ├── Thread 1: LLMNode — Standard patient record review
+    │   ├── Thread 2: LLMNode — Adverse event review  (only if AE rate > threshold)
+    │   └── Thread 3: LLMNode — Protocol deviation review  (only if deviations present)
+    └── LLMNode — Site-level summary for regulatory submission
+```
+
+The `TopologyValidator` passed to the manager is inherited by every child node — no site-level subgraph can call tools outside the approved clinical data toolset, regardless of what the LLM proposes. The HMAC-signed Causal Trace across all threads is the complete Article 12 audit record for that site's batch, reconstructible by a regulator from the log alone.
+
 ```python
-from lar.dynamic import AdaptiveNode, TopologyValidator
+from lar.adaptive import AdaptiveNode, TopologyValidator
 from lar import GraphExecutor
 
 def run_python_code(code: str) -> str:
@@ -77,6 +96,6 @@ Every level of nesting produces its own Causal Trace entry (Art. 12). An auditor
 
 ## See Also
 
-- [AdaptiveNode API](../api-reference/dynamicnode.md)
+- [AdaptiveNode API](../api-reference/adaptivenode.md)
 - [BatchNode API](../api-reference/batchnode.md)
 - [Defensive Constraints](10-defensive-constraints.md) — token budgets and node fatigue limits

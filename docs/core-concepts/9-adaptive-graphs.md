@@ -140,6 +140,6 @@ results = list(executor.run_step_by_step(node, {"task": "summarise this document
 
 ## See Also
 
-- [AdaptiveNode API](../api-reference/dynamicnode.md)
+- [AdaptiveNode API](../api-reference/adaptivenode.md)
 - [TopologyValidator API](../api-reference/topologyvalidator.md)
 - [EU AI Act Deep Dive](../compliance/eu-ai-act-deep-dive.md)

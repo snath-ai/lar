@@ -166,7 +166,7 @@ An auditor can see exactly which branch wrote which key and that the token budge
 3. **Structural integrity** — Every `next` pointer must reference an existing node in the spec. Dangling references are blocked.
 
 ```python
-from lar.dynamic import AdaptiveNode, TopologyValidator
+from lar.adaptive import AdaptiveNode, TopologyValidator
 
 # Only these tools can appear in LLM-generated subgraphs
 validator = TopologyValidator(allowed_tools=[fetch_drug_db, write_prescription])

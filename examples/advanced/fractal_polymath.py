@@ -28,7 +28,7 @@ sys.path.append(str(Path(__file__).parent.parent.parent / "src"))
 
 import lar
 from lar import GraphState, GraphExecutor, LLMNode, RouterNode, ToolNode, BatchNode
-from lar.dynamic import AdaptiveNode, TopologyValidator
+from lar.adaptive import AdaptiveNode, TopologyValidator
 from dotenv import load_dotenv
 
 load_dotenv()
