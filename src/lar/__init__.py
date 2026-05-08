@@ -21,7 +21,7 @@ from .node import (
     ReduceNode,
     node
 )
-from .dynamic import DynamicNode, TopologyValidator
+from .dynamic import AdaptiveNode, DynamicNode, TopologyValidator
 from .executor import GraphExecutor
 from .logger import AuditLogger
 from .tracker import TokenTracker
@@ -51,7 +51,8 @@ __all__ = [
     "FunctionalNode",
     "ReduceNode",
     "node",
-    "DynamicNode",
+    "AdaptiveNode",
+    "DynamicNode",  # Deprecated alias for AdaptiveNode
     "TopologyValidator",
     "ClearErrorNode",
     "__version__",

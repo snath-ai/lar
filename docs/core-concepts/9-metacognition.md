@@ -1,131 +1,145 @@
-# 9. Metacognition (Dynamic Graphs)
+# Adaptive Graphs
 
-!!! note
-    **Exclusive Feature:** This capability requires Lár v1.1+. It unlocks "Level 4 Agency" (Pro-active/Self-modifying).
+Most agent pipelines have a fixed structure defined at development time. Adaptive graphs allow part of that structure to be determined at execution time — specifically, when the number, type, or sequence of processing nodes depends on runtime inputs.
 
-Metacognition is the ability of an agent to **introspect** about its own thinking process and **modify** its execution structure at runtime.
+This is implemented via `AdaptiveNode` and `TopologyValidator`.
 
-Traditional agents follow a static graph (`A -> B -> C`).
-Lár Metacognition allows an agent to say: *"This task is too hard for my current graph. I need to spawn a research team, then come back to C."*
+## When to Use Adaptive Graphs
 
-This is achieved via two new primitives: `DynamicNode` and `TopologyValidator`.
+Use `AdaptiveNode` when:
+- Problem complexity varies and requires a different number of processing steps (e.g., 1 researcher vs. 3)
+- You need to dispatch to a domain-specific subgraph based on query classification
+- Error recovery requires a pipeline whose structure depends on the error type
 
----
+Do not use `AdaptiveNode` when:
+- Problem structure is known at development time — use a static graph
+- A fully pre-defined execution path is required for security or compliance reasons
+- Debugging simplicity is the priority — static graphs are easier to trace
 
-## The Dynamic Node Primitive
+## How It Works
 
-The `DynamicNode` is a unique node that **does not return text**. Instead, it returns a **Graph Spec** (a JSON blueprint for a new subgraph).
-
-The Lár Kernel detects this spec, pauses execution, and performs a "Hot Swap":
-1.  **Validate**: Checks the new subgraph against safety rules.
-2.  **Instantiate**: Creates the new nodes in memory.
-3.  **Link**: Wires the new subgraph's exit to the original `next_node`.
-4.  **Resume**: Executes the new subgraph immediately.
-
-### Anatomy of a Hot Swap
-
-```mermaid
-graph TD
-    A[Start] --> B{Router}
-    B -- Simple --> C[LLM: Answer]
-    B -- Complex --> D[DynamicNode: Planner]
-    
-    subgraph "Runtime Generated Subgraph"
-        D -.-> E[Research Tool]
-        E --> F[Analysis Tool]
-        F --> G[Synthesizer LLM]
-    end
-    
-    G --> H[End]
+```
+AdaptiveNode.execute(state)
+│
+├── 1. Call LLM with prompt_template + context_keys
+│       → LLM outputs JSON GraphSpec
+│
+├── 2. TopologyValidator.validate(spec)
+│       → Cycle detection (Art. 3(23))
+│       → Tool allowlist check (Art. 9)
+│       → Structural integrity check
+│       → SecurityError if invalid → fall through to next_node
+│
+├── 3. Instantiate nodes from spec
+│
+└── 4. Return entry node → GraphExecutor continues
+        Spec logged to Causal Trace (Art. 12)
 ```
 
----
+The audit trail never breaks. The generated spec is logged before any subgraph node executes. If validation fails, the rejection reason is also logged.
 
-## Safety: The Topology Validator
+## Compliance
 
-Allowing an AI to rewrite its own code is dangerous. That's why Lár wraps every `DynamicNode` with a **Topology Validator**.
+`AdaptiveNode` satisfies Art. 3(23) (Substantial Modification) requirements through `TopologyValidator`:
 
-This is a deterministic, code-based security layer that enforces:
-- **Cycle Detection**: Prevents infinite loops (`A -> B -> A`).
-- **Tool Allowlist**: Ensures the generated graph ONLY functions from a pre-approved list.
-- **Depth Limit**: Prevents "recursion bombs".
+| TopologyValidator invariant | EU AI Act requirement |
+|---|---|
+| Cycle detection | Prevents unbounded execution (Art. 9 risk management) |
+| Tool allowlist | Privilege minimisation — only approved actions (Art. 9) |
+| Structural integrity | Ensures graph is well-formed before injection (Art. 3(23)) |
+| Spec logged to Causal Trace | Full audit trail of every topological change (Art. 12) |
 
-If the validator rejects a graph, the agent is forced to fall back to a safe path.
+## Patterns
 
----
+### 1. Adaptive Worker Count
 
-## 5 Metacognitive Patterns
-
-Dynamic Graphs unlock powerful new capabilities.
-
-### 1. Dynamic Depth (Adaptive Compute)
-*Using `examples/metacognition/1_dynamic_depth.py`*
-
-The agent decides how much "brain power" to spend.
-- **User**: "Hi." -> **Agent**: Spawns 1 node (Cheap).
-- **User**: "Analyze Q4 report." -> **Agent**: Spawns 5 parallel research nodes (Deep).
-
-### 2. The Tool Inventor (Self-Programming)
-*Using `examples/metacognition/2_tool_inventor.py`*
-
-The agent encounters a problem it has no tool for (e.g., "Calculate the 100th Fibonacci number").
-- **Introspection**: "I have no calculator tool."
-- **Action**: It writes a Python script, verifies it, and *executes it* in a sandbox.
-- **Result**: It creates its own tools on the fly.
-
-### 3. Self-Healing Pipeline
-*Using `examples/metacognition/3_self_healing.py`*
-
-The agent encounters a runtime error (e.g., `DB Connection Failed`).
-- **Standard Agent**: Crashes.
-- **Metacognitive Agent**: Intercepts the error, spawns a "Doctor" subgraph (`Check Creds -> Rotate Password -> Retry`), fixes the environment, and resumes.
-
-### 4. Adaptive Deep Dive
-*Using `examples/metacognition/4_adaptive_deep_dive.py`*
-
-The agent changes its *entire workflow* based on the query. It doesn't just route; it *architects*.
-- **Fact**: Builds a `Search -> Answer` chain.
-- **Opinion**: Builds a `Debate -> Synthesize` chain.
-
-### 5. The Expert Summoner (Modular Agency)
-*Using `examples/metacognition/5_expert_summoner.py`*
-
-The agent loads pre-trained "Skills" or "Sub-Agents" from disk.
-- **Context**: "I need legal advice."
-- **Action**: Loads `legal_expert.json` (a serialized graph) and injects it into the current flow.
-
----
-
-## How to use it
+Allocate processing resources proportional to query complexity:
 
 ```python
-from lar import DynamicNode, TopologyValidator
+PROMPT = """
+Query: "{query}"
+If simple: compose 1 LLMNode.
+If complex: compose 3 sequential LLMNodes.
+Output JSON with nodes and entry_point.
+"""
 
-# 1. Define Safety Rules
-validator = TopologyValidator(allowed_tools=[my_safe_tool])
-
-# 2. Define the Metacognitive Node
-planner = DynamicNode(
-    llm_model="ollama/phi4",
-    prompt_template="You are an architect. Output a JSON graph spec...",
-    validator=validator,
-    next_node=final_node
+planner = AdaptiveNode(
+    llm_model="gpt-4o",
+    prompt_template=PROMPT,
+    validator=TopologyValidator(),
+    context_keys=["query"]
 )
 ```
 
----
+See: `examples/metacognition/1_dynamic_depth.py`
 
-## Compliance & Auditing
+### 2. Domain Subgraph Dispatch
 
-!!! note
-    **The question arises: "Does self-modifying code violate strict compliance?"**
+Select a pre-defined expert subgraph based on query classification:
 
-    In a black box system, **YES**.
-    In Lár, **NO**.
+```python
+PROMPT = """
+Query domain: "{query}"
+If legal: output the legal_expert spec.
+If medical: output a single node saying "refer to specialist".
+"""
+# validator has pre-approved tools for each domain
+```
 
-### Why it is compliant:
-1.  **Audited Change**: The modification itself is an event. The *exact JSON spec* generated by the DynamicNode is logged in the Flight Recorder. You can replay the "decision to change".
-2.  **Deterministic Validation**: The `TopologyValidator` is not AI. It is Python code. It enforces invariants (Cycle, Allowlist) deterministically. If the AI proposes a non-compliant graph, it is **rejected with an error trace**.
-3.  **No Hidden State**: The new subgraph lives in the same `GraphState` as the old one. No variables are "laundered" through hidden layers.
+See: `examples/metacognition/5_expert_summoner.py`
 
-This transforms "Jailbreak Risk" into "Managed Adaptation".
+### 3. Error Recovery
+
+Compose a recovery subgraph when a known failure type is detected:
+
+```python
+PROMPT = """
+Error: "{last_error}"
+Compose a recovery subgraph using: rotate_credentials, retry_connection.
+"""
+```
+
+See: `examples/metacognition/3_self_healing.py`
+
+### 4. Runtime Code Generation (Sandboxed)
+
+Generate and execute code for novel computations. **Requires a sandboxed executor** (Docker, e2b, WebAssembly). Never execute LLM-generated code with full system access.
+
+See: `examples/metacognition/2_tool_inventor.py`
+
+## Security Checklist
+
+| Risk | Mitigation |
+|---|---|
+| Infinite loops | TopologyValidator cycle detection |
+| Unauthorised tool calls | TopologyValidator allowlist |
+| Dangling node references | TopologyValidator structural check |
+| Prompt injection via allowed tools | Sandbox code execution tools |
+| Resource exhaustion | Limit max_nodes in validator (extend TopologyValidator) |
+
+## Quick Start
+
+```python
+from lar import AdaptiveNode, TopologyValidator, GraphExecutor
+
+def my_approved_tool(input: str) -> str:
+    return f"processed: {input}"
+
+validator = TopologyValidator(allowed_tools=[my_approved_tool])
+
+node = AdaptiveNode(
+    llm_model="gpt-4o",
+    prompt_template="Design a subgraph for: {task}. Output JSON.",
+    validator=validator,
+    context_keys=["task"]
+)
+
+executor = GraphExecutor()
+results = list(executor.run_step_by_step(node, {"task": "summarise this document"}))
+```
+
+## See Also
+
+- [AdaptiveNode API](../api-reference/dynamicnode.md)
+- [TopologyValidator API](../api-reference/topologyvalidator.md)
+- [EU AI Act Deep Dive](../compliance/eu-ai-act-deep-dive.md)

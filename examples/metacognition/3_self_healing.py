@@ -1,28 +1,32 @@
 
 """
-Example 27: Self-Healing Pipeline (Runtime Recovery)
+Example 27: Error Recovery Pipeline
 
-This example demonstrates how a Dynamic Graph can implement "Self-Healing".
+Demonstrates how AdaptiveNode can compose a validated recovery subgraph
+when a known failure condition is detected.
+
 Scenario:
 1. Agent tries to connect to a 'database'.
 2. It fails (Simulated Error).
-3. Router detects error -> Routes to "Doctor" (DynamicNode).
-4. Doctor analyzes error -> Generates a recovery subgraph:
-   [ Diagnose -> Rotate Creds -> Retry Connect ]
-5. Graph hot-swaps and the connection succeeds.
+3. Router detects error -> Routes to "Doctor" (AdaptiveNode).
+4. Doctor analyses error -> Composes a validated recovery subgraph:
+   [ Rotate Creds -> Retry Connect ]
+5. Recovery subgraph executes and the connection succeeds.
 
 Expected Output:
 - First connection attempt fails with AuthFailed error
-- DynamicNode generates recovery subgraph
+- AdaptiveNode composes and injects recovery subgraph
 - Credentials are rotated
 - Connection succeeds on retry
 - Final: "Connected to DB!"
+
+Compliance tags: Art. 3(23) (via TopologyValidator), Art. 12 (Causal Trace logging)
 """
 
 import json
 from lar import (
     GraphExecutor, GraphState, 
-    DynamicNode, TopologyValidator, 
+    AdaptiveNode, TopologyValidator,
     AddValueNode, ToolNode, RouterNode, BaseNode
 )
 from dotenv import load_dotenv
@@ -130,15 +134,15 @@ Output ONLY valid JSON matching this schema:
 Output ONLY the JSON, no explanations.
 """
 
-doctor = DynamicNode(
+doctor = AdaptiveNode(
     llm_model="ollama/phi4",
     prompt_template=DOCTOR_PROMPT,
     validator=validator,
-    next_node=success_node, # If recovery succeeds, go to success
+    next_node=success_node,
     context_keys=["last_error"]
 )
 
-# Wire the error_node to doctor for self-healing
+# Wire the error_node to doctor for error recovery
 connect_node.error_node = doctor
 
 # --- 6. Run with Error Handling ---

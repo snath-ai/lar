@@ -16,7 +16,7 @@ from lar.executor import GraphExecutor
 Example 8: Meta-Prompt Optimizer (Advanced)
 ------------------------------------------
 Concepts:
-- Self-Modification (Optimizing Prompts)
+- Iterative Prompt Refinement
 - Evaluating performance
 - Dynamic State Updates
 """

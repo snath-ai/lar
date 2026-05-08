@@ -251,18 +251,18 @@ fn_node = FunctionalNode(
 
 ---
 
-### `DynamicNode` + `TopologyValidator` — Runtime Metacognition (Fractal Agency)
+### `AdaptiveNode` + `TopologyValidator` — Runtime Graph Composition (Art. 3(23) Compliant)
 ```python
-from lar import DynamicNode, TopologyValidator
+from lar import AdaptiveNode, TopologyValidator
 
-# 1. Allowlist: Only these functions can be used as ToolNodes in the dynamic subgraph
+# 1. Allowlist: Only these functions can be used as ToolNodes in the generated subgraph
 def safe_search(query: str) -> str: ...
 def safe_summarise(text: str) -> str: ...
 
 validator = TopologyValidator(allowed_tools=[safe_search, safe_summarise])
 
-# 2. DynamicNode: LLM designs a subgraph at runtime; validator rejects unsafe graphs
-dynamic = DynamicNode(
+# 2. AdaptiveNode: LLM designs a subgraph at runtime; TopologyValidator rejects unsafe graphs
+adaptive = AdaptiveNode(
     llm_model       = "ollama/qwen2.5:14b",
     prompt_template = "Design a Lár subgraph to solve: {task}",
     validator       = validator,
@@ -272,7 +272,8 @@ dynamic = DynamicNode(
 )
 ```
 
-**Supported subgraph node types**: `LLMNode`, `ToolNode`, `BatchNode`, `DynamicNode` (recursive / Fractal Agency).
+**Supported subgraph node types**: `LLMNode`, `ToolNode`, `BatchNode`, `AdaptiveNode` (recursive composition).
+**Note**: `DynamicNode` is a deprecated alias for `AdaptiveNode` — existing code continues to work but will emit a `DeprecationWarning`.
 
 ---
 

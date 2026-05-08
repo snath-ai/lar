@@ -7,7 +7,7 @@ Exercises EVERY node, utility, and executor feature in the Lár framework:
     Nodes            : AddValueNode, LLMNode, RouterNode, ToolNode,
                        ClearErrorNode, BatchNode, ReduceNode,
                        HumanJuryNode, FunctionalNode (@node decorator),
-                       DynamicNode + TopologyValidator
+                       AdaptiveNode + TopologyValidator
     Executor         : GraphExecutor (HMAC audit log, user_id, max_node_fatigue)
     Infrastructure   : AuditLogger, TokenTracker
     Utilities        : compute_state_diff, apply_diff
@@ -23,8 +23,8 @@ Scenario — Research Synthesis Pipeline
 6.  ClearErrorNode       → Housekeeping after ToolNode's error path
 7.  RouterNode           → Route on report length (short / long / unknown)
 8.  LLMNode (long path)  → Expand short reports into full essays
-9.  DynamicNode          → Metacognitive step: LLM self-designs an extra
-                           sub-analysis, validated by TopologyValidator
+9.  AdaptiveNode         → Composes a validated sub-analysis subgraph at runtime,
+                           enforced by TopologyValidator
 10. HumanJuryNode        → Human APPROVE / REJECT gate (Article 14 hook)
 11. LLMNode (final)      → Format and wrap final deliverable
 
@@ -55,8 +55,8 @@ from lar import (
     AddValueNode, LLMNode, RouterNode, ToolNode,
     ClearErrorNode, BatchNode, ReduceNode,
     HumanJuryNode, FunctionalNode, node,
-    # Dynamic / Metacognition
-    DynamicNode, TopologyValidator,
+    # Adaptive Execution
+    AdaptiveNode, TopologyValidator,
     # Executor & Infrastructure
     GraphExecutor, AuditLogger, TokenTracker,
     # Utilities
@@ -185,11 +185,11 @@ else:
         next_node    = jury_router,
     )
 
-# ─── DYNAMIC NODE (Metacognition) ─────────────────────────────────────────────
+# ─── ADAPTIVE NODE (Runtime Graph Composition) ────────────────────────────────
 # Allowed tools for the dynamic subgraph
 validator = TopologyValidator(allowed_tools=[calculate_word_stats])
 
-dynamic_analysis_node = DynamicNode(
+dynamic_analysis_node = AdaptiveNode(
     llm_model       = MODEL,
     prompt_template = (
         "You are a research architect. The topic is: {topic_normalised}\n"

@@ -1,6 +1,6 @@
-# The 7 Lár Primitives (The "Lego Bricks")
+# The Lár Primitives (The "Lego Bricks")
 
-`Lár` is not a heavy, complex framework. It is a tiny, powerful engine with 7 core "primitives." You can combine these "Lego bricks" to build any agent, from a simple chatbot to a complex, multi-agent orchestrator.
+`Lár` is not a heavy, complex framework. It is a tiny, powerful engine built from composable primitives. You can combine these building blocks to construct any agent workflow — from simple pipelines to regulated, enterprise-grade orchestration systems.
 
 - The `GraphExecutor`
 
@@ -38,6 +38,18 @@
 **What it is**: The "Accelerator" or "Parallelizer."
 
 **Job**: Runs multiple nodes *concurrently* in separate threads. It creates a copy of the state for each thread (Fan-Out) and merges the results back into the main state (Fan-In). Essential for multi-agent swarms.
+
+- The `AdaptiveNode` (v1.5+)
+
+**What it is**: The "Runtime Graph Composer."
+
+**Job**: When the required subgraph structure cannot be known at author-time, `AdaptiveNode` asks an LLM to generate a `GraphSpec` (JSON), passes it through `TopologyValidator` for structural integrity and tool allowlist enforcement, then instantiates and injects the validated subgraph into the live execution path. Every generated spec is logged to the Causal Trace before execution. Satisfies EU AI Act Art. 3(23) (Substantial Modification) constraints.
+
+- The `HumanJuryNode` (v1.5+)
+
+**What it is**: The "Mandatory Oversight Interrupt."
+
+**Job**: Blocks execution at a defined checkpoint and routes control to a human reviewer. Produces a signed `AuthorityRecord` capturing the human decision and rationale. Required for EU AI Act Art. 14 (Human Oversight) compliance in high-risk AI systems.
 
 - The `"Utility" Nodes`
 

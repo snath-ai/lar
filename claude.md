@@ -84,9 +84,9 @@ node = AddValueNode(
 ### 6. Advanced Primitives (v1.5+)
 - **BatchNode**: Parallelize nodes on separate threads (true parallelism).
 - **ReduceNode**: Summarize multi-agent outputs, delete raw memory to compress state context.
-- **DynamicNode**: Recursively generate/execute new sub-agents at runtime (Fractal Agency).
-- **HumanJuryNode**: Pause graph execution for human approval/intervention (Article 14 Compliance).
-- **ClearErrorNode**: Clear error states for robust self-healing retry loops.
+- **AdaptiveNode**: Runtime graph composition — asks an LLM to design a validated subgraph, passes it through TopologyValidator, and injects it into the execution path. Use `DynamicNode` as a deprecated alias.
+- **HumanJuryNode**: Mandatory human oversight interrupt satisfying EU AI Act Art. 14 (human oversight requirement).
+- **ClearErrorNode**: Clear error states for deterministic retry loops.
 
 ## Observability, Compliance, and Budgets
 - **AuditLogger & TokenTracker**: Separate instances for file persistence and token cost aggregation across workflows.
@@ -99,4 +99,4 @@ Always include a `if __name__ == "__main__":` block that uses `GraphExecutor` to
 ## Knowledge Base
 - **Entry Point**: `lar/src/lar/executor.py`
 - **Node Types**: `lar/src/lar/node.py`
-- **Examples**: Look at `lar/examples/` for canonical patterns (Triage, RAG, Corporate Swarm, Compliance, Metacognition).
+- **Examples**: Look at `lar/examples/` for canonical patterns (Triage, RAG, Corporate Swarm, Compliance, Adaptive Execution).

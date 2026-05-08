@@ -1,16 +1,19 @@
-# DynamicNode API Reference
+# AdaptiveNode API Reference
+
+> **Note:** `DynamicNode` is a deprecated alias for `AdaptiveNode`. Use `AdaptiveNode` in new code.
 
 ## Overview
 
-`DynamicNode` enables **metacognitive agents** that can modify their own behavior at runtime. It asks an LLM to generate a JSON graph specification, validates it for safety, and then executes the generated subgraph.
+`AdaptiveNode` is a runtime graph composition primitive for regulated pipelines. When the structure of a processing step cannot be fully determined at development time, `AdaptiveNode` asks an LLM to produce a subgraph specification at execution time, validates it through `TopologyValidator`, instantiates the nodes, and injects the validated subgraph into the live execution path.
 
-> [!CAUTION]
-> **Self-Modifying Code is Risky**: `DynamicNode` introduces inherent security risks. Always use with `TopologyValidator` to enforce safety policies.
+Compliance tags: **Art. 3(23)** (Substantial Modification control), **Art. 12** (Causal Trace logging), **Art. 9** (Risk Management)
+
+> **Important:** `TopologyValidator` is required. Every generated spec is validated before any node executes. Skipping validation is not supported.
 
 ## Class Signature
 
 ```python
-class DynamicNode(BaseNode):
+class AdaptiveNode(BaseNode):
     def __init__(
         self,
         llm_model: str,
@@ -26,160 +29,126 @@ class DynamicNode(BaseNode):
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `llm_model` | `str` | Yes | Model to generate the graph JSON (e.g., "gpt-4", "gemini-pro") |
-| `prompt_template` | `str` | Yes | Prompt asking the LLM to design a graph. Must include schema instructions. |
-| `validator` | `TopologyValidator` | Yes | Safety validator to enforce security policies (cycle detection, tool allowlisting) |
-| `next_node` | `BaseNode` | No | Node to execute after the dynamic subgraph completes |
-| `context_keys` | `List[str]` | No | State keys to include in the LLM's context when designing the graph |
-| `system_instruction` | `str` | No | System prompt for the LLM |
+| `llm_model` | `str` | Yes | Model to generate the graph JSON spec |
+| `prompt_template` | `str` | Yes | Prompt requesting the JSON spec. Must include schema instructions. |
+| `validator` | `TopologyValidator` | Yes | Required for Art. 3(23) compliance — enforces cycle detection, tool allowlist, structural integrity |
+| `next_node` | `BaseNode` | No | Node to resume after the injected subgraph completes |
+| `context_keys` | `List[str]` | No | State keys to include in the LLM's context when designing the subgraph |
+| `system_instruction` | `str` | No | System prompt for the graph-design LLM call |
 
-## Behavior
+## Execution Flow
 
-### Execution Flow
+1. **Compose spec**: Call LLM with `prompt_template` and `context_keys`
+2. **Parse**: Extract graph specification from LLM response
+3. **Validate**: `TopologyValidator` checks cycles, tool allowlist, structural integrity — raises `SecurityError` if invalid
+4. **Instantiate**: Build nodes from the JSON spec
+5. **Inject**: Return the subgraph entry node — `GraphExecutor` continues from there
+6. **Resume**: Subgraph's terminal nodes flow to `next_node`
 
-1. **Generate Graph JSON**: Call LLM with `prompt_template` and `context_keys`
-2. **Parse JSON**: Extract graph specification from LLM response
-3. **Validate**: Run `TopologyValidator` to check for cycles, unauthorized tools, etc.
-4. **Build**: Instantiate nodes from the JSON spec
-5. **Execute**: Run the generated subgraph
-6. **Continue**: Proceed to `next_node`
+Every spec is logged to the Causal Trace (Art. 12) before execution.
 
-### JSON Graph Schema
-
-The LLM must generate JSON matching this format:
+## JSON GraphSpec Schema
 
 ```json
 {
-  "nodes": {
-    "node_1": {
+  "nodes": [
+    {
+      "id": "step_1",
       "type": "LLMNode",
-      "config": {
-        "model_name": "gpt-4",
-        "prompt_template": "Analyze: {input}",
-        "output_key": "analysis"
-      },
-      "next_node": "node_2"
+      "prompt": "Analyse: {input}",
+      "output_key": "analysis",
+      "next": "step_2"
     },
-    "node_2": {
+    {
+      "id": "step_2",
       "type": "ToolNode",
-      "config": {
-        "tool_name": "approved_tool",  // Must be in validator allowlist
-        "input_keys": ["analysis"],
-        "output_key": "result"
-      },
-      "next_node": null
+      "tool_name": "approved_tool",
+      "input_keys": ["analysis"],
+      "output_key": "result",
+      "next": null
     }
-  },
-  "start_node": "node_1"
+  ],
+  "entry_point": "step_1"
 }
 ```
 
-## Safety & Validation
+Supported node types: `LLMNode`, `ToolNode`, `BatchNode`, `AdaptiveNode`
 
-### Why Validation is Critical
+## Compliance
 
-Self-modifying code can:
-- Create infinite loops
-- Call blacklisted APIs
-- Exfiltrate data
-- Execute arbitrary code
+### Art. 3(23) — Substantial Modification
 
-### TopologyValidator Protections
+`AdaptiveNode` must always be paired with `TopologyValidator`. The validator is the deterministic (non-AI) guardrail that prevents the generated spec from introducing cycles, unauthorised tools, or dangling references. Its rejection decisions are logged to the audit trail.
 
-1. **Cycle Detection**: Ensures graph is a DAG (no infinite loops)
-2. **Tool Allowlisting**: Only permits pre-approved ToolNode functions
-3. **Structural Integrity**: Validates all `next_node` references exist
+### Art. 12 — Causal Trace
 
-See [`TopologyValidator` API](topologyvalidator.md) for details.
+The generated JSON spec is stored in `__graph_spec_json__` and captured in the audit log step for the `AdaptiveNode` execution. Auditors can inspect exactly what subgraph was composed and why.
 
-## Example Usage
+### Art. 9 — Risk Management
 
-### 1. Adaptive Depth (Variable Complexity)
+The tool allowlist enforces privilege minimisation: only pre-approved functions can appear in `ToolNode` entries of generated specs.
+
+## Example: Adaptive Worker Count
 
 ```python
-from lar import DynamicNode, TopologyValidator, GraphExecutor
+from lar import AdaptiveNode, TopologyValidator, GraphExecutor, AddValueNode
 
-# Define allowed tools
-def simple_search(query): 
-    return f"Quick result for {query}"
+def search_documents(query: str) -> str:
+    return f"Results for {query}"
 
-def deep_research(query):
-    return f"Detailed analysis of {query}"
+validator = TopologyValidator(allowed_tools=[search_documents])
 
-# Create validator
-validator = TopologyValidator(allowed_tools=[simple_search, deep_research])
+PROMPT = """
+Analyse query complexity: "{query}"
 
-# Create metacognitive node
-adapter = DynamicNode(
-    llm_model="gpt-4",
-    prompt_template="""
-    Based on the query complexity, design a graph:
-    - Simple query: Use simple_search
-    - Complex query: Use deep_research
+If simple (single fact lookup): compose 1 LLMNode to answer directly.
+If complex (multi-step research): compose ToolNode(search_documents) -> LLMNode(synthesise).
 
-    Query: {user_query}
+Output JSON with nodes and entry_point.
+"""
 
-    Output JSON graph spec with 'nodes' and 'start_node'.
-    """,
+end_node = AddValueNode("status", "complete")
+
+planner = AdaptiveNode(
+    llm_model="gpt-4o",
+    prompt_template=PROMPT,
     validator=validator,
-    context_keys=["user_query"]
+    next_node=end_node,
+    context_keys=["query"]
 )
 
 executor = GraphExecutor()
-result = list(executor.run_step_by_step(adapter, {"user_query": "What is 2+2?"}))
+results = list(executor.run_step_by_step(planner, {"query": "What is 2+2?"}))
 ```
 
-**What Happens**:
-- For "What is 2+2?" → LLM generates 1-node graph with `simple_search`
-- For "Explain quantum entanglement" → LLM generates 3-node graph with `deep_research` + synthesis
-
-### 2. Tool Inventor (Runtime Code Generation)
+## Example: Error Recovery
 
 ```python
-def execute_generated_function(code: str):
-    """Executes LLM-generated Python code (DANGEROUS - use with caution)"""
-    exec(code)  # Extreme trust required
+from lar import AdaptiveNode, TopologyValidator
 
-validator = TopologyValidator(allowed_tools=[execute_generated_function])
+def rotate_credentials() -> str:
+    # Rotate DB credentials
+    return "rotated"
 
-inventor = DynamicNode(
-    llm_model="gpt-4",
-    prompt_template="""
-    The user needs a tool to: {task_description}
+def retry_connection() -> str:
+    # Retry DB connection
+    return "connected"
 
-    Generate Python code for a function that does this, then create a ToolNode graph to execute it.
+validator = TopologyValidator(allowed_tools=[rotate_credentials, retry_connection])
 
-    Return JSON with:
-    - 'code': The Python function
-    - 'nodes': Graph spec using execute_generated_function
-    """,
-    validator=validator,
-    context_keys=["task_description"]
-)
-```
+RECOVERY_PROMPT = """
+Error detected: "{last_error}"
 
-> [!WARNING]
-> **Code Execution Risk**: This pattern executes arbitrary code. Only use in sandboxed environments or with strict human-in-the-loop oversight.
+Compose a recovery subgraph using allowed tools:
+- rotate_credentials (no inputs)
+- retry_connection (no inputs)
 
-### 3. Self-Healing (Error Recovery)
+Output JSON with nodes and entry_point.
+"""
 
-```python
-from lar import DynamicNode, TopologyValidator
-
-# Allow error correction tools
-validator = TopologyValidator(allowed_tools=[retry_with_backoff, use_fallback_api])
-
-healer = DynamicNode(
-    llm_model="gpt-4",
-    prompt_template="""
-    An error occurred: {last_error}
-
-    Design a recovery subgraph using allowed tools:
-    - retry_with_backoff
-    - use_fallback_api
-
-    Return JSON graph to fix the error.
-    """,
+recovery_node = AdaptiveNode(
+    llm_model="gpt-4o",
+    prompt_template=RECOVERY_PROMPT,
     validator=validator,
     context_keys=["last_error"]
 )
@@ -187,70 +156,33 @@ healer = DynamicNode(
 
 ## Audit Trail
 
-`DynamicNode` logs **the exact generated JSON** in the audit trail:
+Every `AdaptiveNode` execution produces a Causal Trace entry:
 
 ```json
 {
   "step": 5,
-  "node": "DynamicNode",
+  "node": "AdaptiveNode",
   "state_diff": {
     "added": {
-      "_generated_graph_spec": {...},  // Full JSON logged
-      "_dynamic_result": "Success"
+      "__graph_spec_json__": "{ \"nodes\": [...], \"entry_point\": \"...\" }"
     }
-  }
+  },
+  "outcome": "success"
 }
 ```
 
-This ensures **full compliance auditability** - you can always see what the agent decided to do.
+If `TopologyValidator` rejects the spec, `outcome` is `"error"` and the rejection reason is logged.
 
-## Best Practices
+## Checklist
 
-### ✅ Do
-
-1. **Always use TopologyValidator** - No exceptions
-2. **Limit tool allowlist** - Principle of least privilege
-3. **Log generated graphs** - For debugging and compliance
-4. **Use system instructions** - Guide the LLM's design choices
-5. **Add human oversight** - For high-risk decisions
-
-### ❌ Don't
-
-1. **Allow unrestricted `exec()`** - Extreme security risk
-2. **Skip validation** - Enables injection attacks
-3. **Use in production without testing** - Test generated graphs first
-4. **Allow network tools in validator** - Data exfiltration risk
-
-## Real-World Examples
-
-See the [`examples/metacognition/`](https://github.com/snath-ai/lar/blob/main/examples/metacognition/) directory:
-
-| Example | Capability |
-|---------|------------|
-| [`1_dynamic_depth.py`](https://github.com/snath-ai/lar/blob/main/examples/metacognition/1_dynamic_depth.py) | Adaptive complexity (1 node vs N nodes) |
-| [`2_tool_inventor.py`](https://github.com/snath-ai/lar/blob/main/examples/metacognition/2_tool_inventor.py) | Self-coding (writes tools at runtime) |
-| [`3_self_healing.py`](https://github.com/snath-ai/lar/blob/main/examples/metacognition/3_self_healing.py) | Error recovery (Injects fix subgraphs) |
-| [`4_adaptive_deep_dive.py`](https://github.com/snath-ai/lar/blob/main/examples/metacognition/4_adaptive_deep_dive.py) | Recursive research (spawns sub-agents) |
-| [`5_expert_summoner.py`](https://github.com/snath-ai/lar/blob/main/examples/metacognition/5_expert_summoner.py) | Dynamic persona instantiation |
-
-## Compliance
-
-### EU AI Act Article 13 (Transparency)
-
-`DynamicNode` satisfies transparency requirements by:
-- Logging the exact generated graph JSON
-- Recording which tools were invoked
-- Providing deterministic validation results
-
-### Security Auditing
-
-Every `DynamicNode` execution creates an audit entry with:
-- `input`: Context keys and prompt
-- `output`: Generated JSON graph
-- `validation_result`: Pass/fail and reason
+- Always provide `TopologyValidator` — no exceptions
+- Minimise `allowed_tools` — principle of least privilege
+- Review generated specs in audit logs during testing
+- For code execution tools: sandbox with Docker, e2b, or WebAssembly
+- Test with adversarial prompts to verify allowlist enforcement
 
 ## See Also
 
-- [TopologyValidator API](topologyvalidator.md) - Safety enforcement
-- [Metacognition Guide](../core-concepts/9-metacognition.md) - Deep dive into self-modifying agents
-- [Red Teaming](../case-studies/red-teaming.md) - Security testing dynamic graphs
+- [TopologyValidator API](topologyvalidator.md) — validation enforcement
+- [Adaptive Graphs](../core-concepts/9-metacognition.md) — when and why to use AdaptiveNode
+- [Red Teaming](../case-studies/red-teaming.md) — security testing

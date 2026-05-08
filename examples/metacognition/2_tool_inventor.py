@@ -1,29 +1,31 @@
 
 """
-Example 26: The Tool Inventor (Self-Programming)
+Example 26: Runtime Code Generation
 
-This example demonstrates how a Dynamic Graph can implement "Code Generation + Execution".
-The user asks for a calculation that requires code (e.g., "7th Fibonacci number").
-The DynamicNode builds a subgraph:
-1. LLMNode: Writes the Python function to a state key 'code'.
-2. ToolNode: Executes the 'code' using a safe wrapper tool.
+Demonstrates a validated subgraph that implements a two-step code generation
+and execution pipeline. The AdaptiveNode composes:
+1. LLMNode — writes a Python function into state key 'generated_code'.
+2. ToolNode — executes the code via a safety-validated wrapper.
 
 SECURITY WARNING:
-In production, the 'execute_python' tool MUST be heavily sandboxed:
-- Use Docker containers (e.g., Docker SDK)
-- Use cloud sandboxes (e.g., e2b.dev)
-- Use WebAssembly runtimes
-- Never execute untrusted code with full system access
+The 'safe_python_exec' tool uses AST analysis as a first-pass safety check,
+but in production all code execution MUST run in a hardened sandbox:
+- Docker containers (Docker SDK)
+- Cloud sandboxes (e.g., e2b.dev)
+- WebAssembly runtimes
+Never execute LLM-generated code with full system access.
 
 Expected Output:
 LLM generates a fibonacci function -> Executes it -> Returns 144 (12th Fibonacci number)
+
+Compliance tags: Art. 3(23) (via TopologyValidator), Art. 12 (Causal Trace logging)
 """
 
 import ast
 import sys
 from lar import (
-    GraphExecutor, GraphState, 
-    DynamicNode, TopologyValidator, 
+    GraphExecutor, GraphState,
+    AdaptiveNode, TopologyValidator,
     AddValueNode
 )
 from dotenv import load_dotenv
@@ -172,7 +174,7 @@ Output JSON matching this EXACT schema:
 
 end_node = AddValueNode("status", "Done")
 
-dynamic_architect = DynamicNode(
+dynamic_architect = AdaptiveNode(
     llm_model="ollama/phi4",
     prompt_template=DYNAMIC_PROMPT,
     validator=validator,

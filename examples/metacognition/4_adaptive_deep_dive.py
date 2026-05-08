@@ -2,24 +2,26 @@
 """
 Example 28: Adaptive Deep Dive (Structural Adaptation)
 
-This example demonstrates how a Dynamic Graph adapts its *structure* to task complexity.
+Demonstrates how AdaptiveNode composes a structurally different subgraph
+depending on query complexity — not just a different count of the same node,
+but a different node topology entirely.
 
 Scenario:
 The agent receives a query.
-- If Simple: It dynamically builds a single LLMNode to answer directly.
-- If Complex: It dynamically builds a multi-step research chain:
+- If Simple: composes a single LLMNode to answer directly.
+- If Complex: composes a multi-step research chain:
   [ SearchTool -> SummaryTool -> LLMNode ]
-
-This differs from Example 25 because the *types* of nodes change, not just the count.
 
 Expected Output:
 - Simple query ("What is 2+2?"): Direct LLM answer
-- Complex query ("Tesla stock price"): web_search -> read_content -> synthesize answer
+- Complex query ("Tesla stock price"): web_search -> read_content -> synthesise answer
+
+Compliance tags: Art. 3(23) (via TopologyValidator), Art. 12 (Causal Trace logging)
 """
 
 from lar import (
     GraphExecutor, GraphState, 
-    DynamicNode, TopologyValidator, 
+    AdaptiveNode, TopologyValidator,
     AddValueNode, ToolNode
 )
 from dotenv import load_dotenv
@@ -96,8 +98,8 @@ IF COMPLEX:
 
 end_node = AddValueNode("status", "Done")
 
-planner = DynamicNode(
-    llm_model="ollama/phi4", 
+planner = AdaptiveNode(
+    llm_model="ollama/phi4",
     prompt_template=DYNAMIC_PROMPT,
     validator=validator,
     next_node=end_node,

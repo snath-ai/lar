@@ -1,28 +1,31 @@
 
 """
-Example 25: Dynamic Fan-Out (Metacognitive Primitive)
+Example 25: Adaptive Fan-Out
 
-This example demonstrates the new `DynamicNode` primitive.
-The agent analyzes a query's complexity at runtime and decides how many parallel
-workers (`BatchNode`) are needed to solve it.
+Demonstrates runtime graph composition using `AdaptiveNode`.
+The agent analyses query complexity and composes a processing subgraph with
+an appropriate number of worker nodes — determined at execution time, not
+hardcoded at development time.
 
-"Simple" query -> 1 worker.
-"Complex" query -> 5 workers in parallel.
+"Simple" query -> 1 worker node.
+"Complex" query -> 3 sequential worker nodes.
 
 Expected Output:
 - Simple query: "What is the capital of France?" -> Single researcher chain
 - Complex query: Deep geopolitical analysis -> Multiple researcher chain
-- Final summary synthesized from all research steps
+- Final summary synthesised from all research steps
 
-Note: Current implementation uses sequential chains due to BatchNode factory limitation.
-See README.md for details.
+Note: Current implementation uses sequential chains. BatchNode factory support
+is tracked separately. See README.md for details.
+
+Compliance tags: Art. 3(23) (via TopologyValidator), Art. 12 (Causal Trace logging)
 """
 
 import os
 import json
 from lar import (
-    GraphExecutor, GraphState, 
-    DynamicNode, TopologyValidator, 
+    GraphExecutor, GraphState,
+    AdaptiveNode, TopologyValidator,
     LLMNode, AddValueNode, ToolNode
 )
 from dotenv import load_dotenv
@@ -101,8 +104,8 @@ Output a JSON GraphSpec with this schema:
 # The exit node of the main graph (where we land after dynamic subgraph)
 end_node = AddValueNode("status", "Done")
 
-dynamic_architect = DynamicNode(
-    llm_model="ollama/phi4", 
+dynamic_architect = AdaptiveNode(
+    llm_model="ollama/phi4",
     prompt_template=DYNAMIC_PROMPT,
     validator=validator,
     next_node=end_node,

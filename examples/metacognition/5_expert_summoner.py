@@ -1,16 +1,16 @@
 
 """
-Example 29: The Expert Summoner (Modular Agency)
+Example 29: Domain Subgraph Dispatch
 
-This example demonstrates "Sub-Agent Loading".
-Instead of the LLM generating the graph structure from scratch, it selects
-a pre-defined "Expert Agent" specification to load and inject.
+Demonstrates pre-defined expert subgraph injection. Instead of the LLM generating
+graph structure from scratch, the AdaptiveNode selects and injects a pre-approved
+domain-specific subgraph based on query classification.
 
 Scenario:
 User asks a legal question.
-1. DynamicNode analyzes the query domain
-2. Selects the appropriate expert specification (legal_expert)
-3. The Legal Expert subgraph executes
+1. AdaptiveNode classifies the query domain
+2. Selects the appropriate pre-defined expert specification (legal_expert)
+3. The validated Legal Expert subgraph executes
 
 Expected Output:
 Query detected as "Legal" -> Legal expert loaded -> Legal research performed -> Advice provided
@@ -24,7 +24,7 @@ import os
 from contextlib import contextmanager
 from lar import (
     GraphExecutor, GraphState, 
-    DynamicNode, TopologyValidator, 
+    AdaptiveNode, TopologyValidator,
     AddValueNode, ToolNode, LLMNode
 )
 from dotenv import load_dotenv
@@ -108,7 +108,7 @@ IMPORTANT: Output ONLY valid JSON, no explanations.
 
 end_node = AddValueNode("status", "Done")
 
-summoner = DynamicNode(
+summoner = AdaptiveNode(
     llm_model="ollama/phi4",
     prompt_template=SUMMONER_PROMPT,
     validator=validator,

@@ -1,35 +1,45 @@
 
-# **Ready to build Auditable AI Agents**
- 
+# Lár — The PyTorch for Agents
 
+**Lár** (Irish for "core" or "center") is the first agent execution engine built for regulated environments. Teams building AI agents in finance, healthcare, legal, and enterprise need a framework that can pass regulatory scrutiny — not just work in a demo. Lár makes auditability a structural property of the engine, not an add-on.
 
-**Lár** (Irish for "core" or "center") is the open source standard for **Deterministic, Auditable, and Air-Gap Capable** AI agents, powered by **LiteLLM**.
-
-It is a **"define-by-run"** framework that acts as a **Flight Recorder** for your agent, creating a complete audit trail for every single step.
+Every design decision — deterministic graphs, step-level state diffs, cryptographic audit trails, topology validation, human oversight primitives — exists to satisfy EU AI Act requirements out of the box.
 
 !!! info "Not a Wrapper"
     **Lár is NOT a wrapper.**
-    It is a standalone, ground-up engine designed for reliability. It does not wrap LangChain, OpenAI Swarm, or any other library. It is pure, dependency-lite Python code optimized for "Code-as-Graph" execution.
+    It is a standalone, ground-up engine. It does not wrap LangChain, OpenAI Swarm, or any other library. It is pure, dependency-lite Python code optimized for "Code-as-Graph" execution.
 
-## The "Black Box" Problem
+## Compliance by Design
 
-You are a developer launching a **mission-critical AI agent**. It works on your machine, but in production, it fails.
-You don't know **why**, **where**, or **how much** it cost. You just get a 100-line stack trace from a "magic" framework.
+Lár is the first agentic framework to ship with a complete, production-ready **Enterprise Compliance Backbone** — all 12 primitives required for EU AI Act conformity assessment:
 
-## The "Glass Box" Solution
+| Primitive | EU AI Act Article |
+|---|---|
+| Cryptographically signed Causal Trace | Art. 12 — Record-Keeping |
+| `HumanJuryNode` — deterministic oversight interrupt | Art. 14 — Human Oversight |
+| `TopologyValidator` — cycle detection, tool allowlist | Art. 3(23) — Substantial Modification |
+| `RiskScorerNode` + routing | Art. 9 — Risk Management |
+| `LethalTrifectaGuard` | GDPR Art. 5 — Rule of 2 |
+| `ComplianceManifest` (Annex IV auto-generation) | Art. 11 — Technical Documentation |
+| `SyntheticMarkerNode` | Art. 50(2) — Synthetic Content Marking |
+| `BiasFilter` | prEN 18283 — Bias Management |
+| `CredentialVault` (JIT provisioning) | Art. 15(4) — Privilege Minimisation |
+| `RuntimeStateVersioner` (drift detection) | Art. 3(23) — Substantial Modification |
 
-**Lár removes the magic.**
+**[Read the EU AI Act Deep Dive →](compliance/eu-ai-act-deep-dive.md)** | **[Enterprise Reference Implementation →](compliance/enterprise-reference.md)**
 
-It is a simple engine that runs **one node at a time**, logging every single step to a forensic **Flight Recorder**.
+!!! warning "Legal Disclaimer"
+    Lár is open-source software infrastructure, not legal or compliance advice. Using Lár does not automatically guarantee compliance with the EU AI Act, GDPR, HIPAA, or any other regulation. Organizations are solely responsible for ensuring their AI systems undergo proper legal review and conformity assessments.
 
-This means you get:
-1.  **Instant Debugging**: See the exact node and error that caused the crash.
-2.  **Free Auditing**: A complete history of every decision and token cost, built-in by default.
-3.  **Total Control**: Build deterministic "assembly lines," not chaotic chat rooms.
+## How It Works: The "Glass Box"
+
+Lár runs **one node at a time**, logging every single step to a forensic **Flight Recorder**. The `GraphExecutor` is a Python generator — every node yields a structured audit entry: state before, state diff, token usage, rendered prompt, outcome.
+
+1.  **Instant Debugging**: The exact node that failed, the exact data it received, the exact error — all in the log.
+2.  **Built-in Auditing**: A complete, immutable history of every decision and token cost, by default, on every run.
+3.  **Deterministic Control**: Explicit graphs, not probabilistic chat rooms.
 
 > *"This demonstrates that for a graph without randomness or external model variability, Lár executes deterministically and produces identical state traces."*
-
-*Stop guessing. Start building agents you can trust.*
 
 ## What's New in v1.4.1 (Feb 2026)?
 
@@ -61,7 +71,7 @@ Lár is the first agentic framework to ship with a complete, production-ready **
 
 Learn by building with our ready-made demos:
 
-*   **[The Validation Suite](case-studies/validation-suite.md)**: Three "Kitchen Sink" executable scripts proving Deterministic routing and Fractal Agency safety.
+*   **[The Validation Suite](case-studies/validation-suite.md)**: Three "Kitchen Sink" executable scripts proving deterministic routing and `TopologyValidator` safety guarantees under adversarial conditions.
 *   **[DMN: The Showcase](https://github.com/snath-ai/DMN)**: A Cognitive Architecture that sleeps, dreams, and remembers.
 *   **[Lar-JEPA: World Model Orchestrator](https://github.com/snath-ai/Lar-JEPA)**: A post-LLM conceptual testbed proving Lár can safely route abstract latent states from Predictive World Models.
 *   **[RAG Agent Demo](https://github.com/snath-ai/rag-demo)**: A self-correcting RAG agent with local vector search.

@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 """
-Lár Kitchen Sink Agent 2 — DynamicNode Live Execution Demo
-===========================================================
+Lár Kitchen Sink Agent 2 — AdaptiveNode Execution Demo
+=======================================================
 This is a companion to kitchen_sink_agent.py.
 
 kitchen_sink_agent.py demonstrated the SAFETY path:
-  → DynamicNode generated an unsafe subgraph (unknown tool name)
+  → AdaptiveNode generated a spec referencing an unauthorised tool
   → TopologyValidator correctly REJECTED it
-  → Agent fell through gracefully
+  → Agent fell through to next_node gracefully
 
 THIS file demonstrates the SUCCESS path:
-  → DynamicNode generates a valid 2-step LLMNode subgraph
+  → AdaptiveNode generates a valid 2-step LLMNode subgraph
   → TopologyValidator APPROVES it
-  → The subgraph actually EXECUTES in the live graph
+  → The validated subgraph executes in the live graph
 
 Scenario — Code Review Pipeline
 ---------------------------------
 1.  AddValueNode          → Seed code snippet + token budget
 2.  @node (FunctionalNode) → Extract language + add reviewer prefix
 3.  LLMNode               → High-level summary of what the code does
-4.  DynamicNode           → AI designs a 2-step review subgraph at runtime:
+4.  AdaptiveNode          → Composes a 2-step review subgraph at runtime:
                             - Subgraph Step A: security vulnerability check
                             - Subgraph Step B: performance optimisation check
                             (Both steps run, results saved to state)
@@ -27,16 +27,15 @@ Scenario — Code Review Pipeline
 6.  ClearErrorNode        → Janitor for ToolNode error path
 7.  RouterNode            → Route: 'needs_work' vs 'looks_good'
 8.  ReduceNode            → Compress all review text into a verdict
-9.  HumanJuryNode         → Human APPROVE / REJECT (or auto in SKIP_JURY mode)
+9.  HumanJuryNode         → Human APPROVE / REJECT (Art. 14 oversight gate)
 10. BatchNode             → Two parallel final LLMs (pros + cons summary)
 11. LLMNode (final)       → Final formatted report
 
 Key differences from kitchen_sink_agent.py:
-  - qwen2.5:14b is used for DynamicNode (better at following JSON instructions)
-  - Prompt tells LLM to use ONLY LLMNode nodes with explicit node IDs
-  - Validator has no allowed tools → any ToolNode attempt fails safely,
-    but the good prompt makes the LLM output LLMNode-only JSON
-  - DynamicNode subgraph EXECUTES successfully
+  - qwen2.5:14b is used for AdaptiveNode (better at following JSON schema instructions)
+  - Prompt constrains the LLM to output LLMNode-only specs (no ToolNode)
+  - Validator has no allowed tools → any ToolNode attempt is rejected safely
+  - AdaptiveNode subgraph EXECUTES successfully
 
 Run:
     cd /Users/aadithya/Desktop/Lar_Main/lar
@@ -57,7 +56,7 @@ from lar import (
     AddValueNode, LLMNode, RouterNode, ToolNode,
     ClearErrorNode, BatchNode, ReduceNode,
     HumanJuryNode, FunctionalNode, node,
-    DynamicNode, TopologyValidator,
+    AdaptiveNode, TopologyValidator,
     GraphExecutor, AuditLogger, TokenTracker,
     compute_state_diff, apply_diff,
     build_log_table, summarize_diff,
@@ -66,7 +65,7 @@ from rich.console import Console
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 MODEL_FAST    = "ollama/llama3.2"        # fast cheap model for most steps
-MODEL_DYNAMIC = "ollama/qwen2.5:14b"    # larger smarter model for DynamicNode
+MODEL_DYNAMIC = "ollama/qwen2.5:14b"    # larger model for AdaptiveNode (JSON schema compliance)
 
 HMAC_SECRET   = "snath-kitchen-sink-2-secret"
 LOG_DIR       = os.path.join(os.path.dirname(__file__), "lar_logs", "kitchen_sink2")
@@ -265,7 +264,7 @@ score_reviews_node = ToolNode(
 
 validator = TopologyValidator(allowed_tools=[])
 
-dynamic_review_node = DynamicNode(
+dynamic_review_node = AdaptiveNode(
     llm_model = MODEL_DYNAMIC,
     prompt_template = (
         "Design a Lár agent subgraph to perform a two-part code review.\n\n"
@@ -351,7 +350,7 @@ executor = GraphExecutor(
 print("\n" + "═" * 70)
 print("  Lár Kitchen Sink Agent 2 — Code Review Pipeline")
 print(f"  Fast Model  : {MODEL_FAST}")
-print(f"  Smart Model : {MODEL_DYNAMIC}  (used for DynamicNode only)")
+print(f"  Smart Model : {MODEL_DYNAMIC}  (used for AdaptiveNode only)")
 print(f"  HMAC        : enabled")
 print(f"  Jury        : {'auto-approve (SKIP_JURY=1)' if SKIP_JURY else 'interactive'}")
 print("═" * 70 + "\n")
@@ -415,12 +414,12 @@ if len(history) >= 2:
     after  = apply_diff(before, diff)
     print(f"\n  🔬 compute_state_diff / apply_diff: {'✅ PASS' if after is not None else '❌ FAIL'}")
 
-# DynamicNode subgraph check
-dynamic_steps = [h for h in history if h.get("node") == "DynamicNode"]
+# AdaptiveNode subgraph check
+dynamic_steps = [h for h in history if h.get("node") == "AdaptiveNode"]
 if dynamic_steps:
     ds = dynamic_steps[0]
     spec = (ds.get("state_after") or {}).get("__graph_spec_json__", "")
-    print(f"\n  🧠 DynamicNode subgraph spec generated: {'yes' if spec else 'no'}")
+    print(f"\n  AdaptiveNode subgraph spec generated: {'yes' if spec else 'no'}")
     if spec:
         try:
             parsed = json.loads(spec) if isinstance(spec, str) else spec

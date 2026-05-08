@@ -1,47 +1,82 @@
-# Fractal Agency (v1.5+)
+# Recursive Graph Composition (v1.5+)
 
-While most agent frameworks operate in simple loops or static "chat rooms", Lár enables **Fractal Agency**: the ability for a graph execution to recursively spawn identical sub-graphs or entirely new graph topologies dynamically at runtime.
+`AdaptiveNode` can be nested: a generated subgraph can itself contain `AdaptiveNode` instances, which compose further subgraphs at runtime. This allows problems that require multiple layers of specialisation to be handled without pre-defining every layer's structure at development time.
 
-This allows you to scale complexity without scaling context windows.
+Safety rails propagate through every level of nesting — the `TopologyValidator` passed to the parent `AdaptiveNode` is inherited by all child `AdaptiveNode` instances in the generated spec.
 
-## The Core Concept
+## When to Use Nested Composition
 
-Using a combination of the `DynamicNode` and `BatchNode` introduced in v1.5+, an agent can:
+Use nested `AdaptiveNode` when:
+- A problem requires parallel specialised sub-pipelines, each with their own structure
+- The number of specialised sub-pipelines is itself determined at runtime
 
-1. Analyze a highly complex problem.
-2. Realize it is too complex for a single prompt or single linear reasoning path.
-3. Automatically define a new, specialized graph (e.g., branching out to 5 parallel researchers).
-4. Spawn that graph as an isolated sub-process.
-5. Wait for the sub-graph to finish, collect its unified response, and resume the original top-level graph.
+A concrete example: a manager agent that receives a complex multi-disciplinary question, decides how many specialist sub-agents to spawn (and what kind), and then dispatches them in parallel via `BatchNode`.
 
-### Why this matters:
+## Architecture
 
-*   **Perfect Isolation**: The "Sub-Agent Graph" has its own `GraphState`. Its messy scratchpad reasoning, iterative tool calls, and bloated retrieval texts **never** pollute the Master Agent's state. It only returns the precise, distilled answer.
-*   **Infinite Depth**: Because contexts are isolated, sub-agents can spawn sub-agents, creating recursive "deep research" trees that never trigger a Token Limit Crash.
-*   **Deterministic Architecture**: Even though the graph is expanding infinitely over runtime, the architecture is still strictly node-to-node. Lár forces the LLM to output these topologies inside strict typed definitions.
+```
+AdaptiveNode (Manager)
+│
+├── Generates JSON spec containing BatchNode + child AdaptiveNodes
+├── TopologyValidator validates the full spec
+│
+└── Injects subgraph:
+    ├── BatchNode
+    │   ├── Thread 1: AdaptiveNode (Specialist A)
+    │   │   └── Generates + validates + injects its own subgraph
+    │   └── Thread 2: AdaptiveNode (Specialist B)
+    │       └── Generates + validates + injects its own subgraph
+    └── LLMNode (Synthesiser)
+```
 
-## The `fractal_polymath.py` Architecture
+## Validator Inheritance
 
-The flagship example of this capability is the Fractal Polymath.
-You can view the full source code in `examples/advanced/fractal_polymath.py`.
+The parent's `TopologyValidator` is passed to every child `AdaptiveNode` instantiated from the generated spec. This means:
+- The same tool allowlist applies at every level
+- Cycle detection runs on every nested spec independently
+- A rejected spec at any level causes that branch to fall through to `next_node` without halting the rest of the graph
 
-In this pattern, we want an AI to research a highly complex, multi-disciplinary question (e.g., "What are the socio-economic impacts of asteroid mining?").
+## Token Budget Propagation
 
-1.  **The Master Orchestrator** defines the problem.
-2.  It uses a `DynamicNode` to recursively spawn $N$ specialized `BatchNode` sub-graphs (e.g., an Economist, an Astrophysicist, a Lawyer).
-3.  These agents run totally parallel in their own sandboxes.
-4.  Once all sub-graphs execute and terminate, the Master Orchestrator merges their isolated outputs into one definitive summary.
+When a `token_budget` is set in state, the budget is shared across all parallel branches. After `BatchNode` merges results, the total spend across all threads is reconciled mathematically:
 
-## Enforcing Budgets on Fractals
+```
+budget_remaining = initial_budget - sum(spend_per_thread)
+```
 
-Fractal Agency introduces the dangerous possibility of an infinite loop (an agent spawning an agent that spawns an agent forever). 
+This prevents unbounded execution costs regardless of nesting depth.
 
-Lár completely mitigates this risk by forcing **Token Budget inheritance**.
+## Example
 
-*   If the Master Graph is initialized with a `token_budget=10_000`.
-*   And it uses 2,000 tokens reasoning about how to split up the work.
-*   It only has 8,000 tokens left. 
-*   When it dynamically spawns 4 parallel sub-agents, Lár will distribute the remaining 8,000 tokens across them, granting them each a strict 2,000 token limit.
-*   If *any* node across the fractal tree breaches the budget, the entire tree gracefully halts and raises a `TokenBudgetExceededEvent`.
+See `examples/advanced/fractal_polymath.py` for a working example where a manager `AdaptiveNode` composes a `BatchNode` containing two specialist `AdaptiveNode` instances running in parallel threads.
 
-This guarantees mathematical safety inside recursive AI architectures.
+```python
+from lar.dynamic import AdaptiveNode, TopologyValidator
+from lar import GraphExecutor
+
+def run_python_code(code: str) -> str:
+    # Sandboxed executor — Docker/e2b required in production
+    ...
+
+validator = TopologyValidator(allowed_tools=[run_python_code])
+
+manager = AdaptiveNode(
+    llm_model="gpt-4o",
+    prompt_template=manager_prompt,  # Asks LLM to design BatchNode + child AdaptiveNodes
+    validator=validator,
+    next_node=None
+)
+
+executor = GraphExecutor(log_dir="audit_logs")
+list(executor.run_step_by_step(manager, {}))
+```
+
+## Compliance
+
+Every level of nesting produces its own Causal Trace entry (Art. 12). An auditor can reconstruct the full decision tree — which specs were proposed, which were validated, which were rejected — from the audit log alone.
+
+## See Also
+
+- [AdaptiveNode API](../api-reference/dynamicnode.md)
+- [BatchNode API](../api-reference/batchnode.md)
+- [Defensive Constraints](10-defensive-constraints.md) — token budgets and node fatigue limits

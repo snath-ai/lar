@@ -20,10 +20,10 @@ Lár is **Deterministic** out of the box.
 - **21 CFR Part 11**: We don't just "log" text; we log the *entire causal chain* of the agent's reasoning.
 
 ### 2. Audit-Ready Hooks
-Real research happens in SCIFs and secure labs.
+Regulated environments — finance, healthcare, legal, defence — require full operational isolation.
 - **Other Frameworks**: Require cloud tracing (LangSmith) or constant API calls.
-- **Lár**: The engine is fully decoupled from the internet. It provides **hooks** for air-gapped environments.
-- **Air-Gap**: Lár can run entirely offline for maximum security.
+- **Lár**: The engine is fully decoupled from the internet. It provides **hooks** for air-gapped and offline environments.
+- **Air-Gap**: Lár can run entirely offline, satisfying data residency and operational security requirements.
 
 ## **The "Glass Box" (The `Lár` Way)**
 
@@ -47,4 +47,4 @@ This "glass box" approach is not an "add-on"; it is the **core, default, open-so
 
 - **Deterministic Control**: You are not in a "chaotic chat room." You are building a deterministic "assembly line," where you have 100% control over the agent's path.
 
-`Lár` is the framework for developers who are tired of "magic" and are ready to build production-grade agents they can actually trust.
+`Lár` is the framework for developers who need production-grade agents they can audit, certify, and trust — not just demo.

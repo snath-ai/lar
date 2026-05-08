@@ -1,8 +1,14 @@
 # HumanJuryNode
 
-The `HumanJuryNode` provides the authoritative "Human-in-the-Loop" (HITL) capability required for high-risk deployments. It pauses the agent's execution entirely, displays critical context directly to the console (or connected interface), and yields control to a human overseer to make a routing decision.
+`HumanJuryNode` is the mandatory human oversight primitive in Lár. It creates a deterministic intervention point in the execution graph where a human operator must make an explicit routing decision before execution continues. No downstream node runs until a valid choice is received.
 
-This satisfies requirements like the **EU AI Act's Article 14** (Human Oversight) by guaranteeing deterministic intersection points before an AI can execute terminal or high-stakes actions.
+## EU AI Act Article 14 Compliance
+
+Article 14 of the EU AI Act requires that high-risk AI systems enable human oversight — specifically that humans can intervene, override, or halt operation. `HumanJuryNode` satisfies this requirement by inserting a deterministic intervention point into the execution graph.
+
+Every `HumanJuryNode` produces an `AuthorityRecord` when `authority_ledger` is provided — a timestamped, immutable record of who made what decision with what rationale. This is the "Fourth Tier" of oversight documented in the Lár compliance paper.
+
+Compliance tags: **Art. 14** (Human Oversight), **Art. 12** (Authority Record logging)
 
 ## Usage
 
@@ -33,8 +39,7 @@ When `GraphExecutor` encounters a `HumanJuryNode`, it:
 6. Writes the chosen keyword to the `GraphState` under `output_key`.
 7. Proceeds immediately to `next_node`.
 
-> [!TIP]
-> **Headless / CI Mode**: You can easily bypass juries in automated testing environments without altering graph structure by explicitly injecting a pre-defined verdict into state before the run starts, or overriding `SKIP_JURY` checks to dynamically map to an `AddValueNode` (see the Validation Suite examples).
+> **Headless / CI Mode**: You can bypass jury nodes in automated testing environments without altering graph structure by explicitly injecting a pre-defined verdict into state before the run starts, or overriding `SKIP_JURY` checks to dynamically map to an `AddValueNode` (see the Validation Suite examples).
 
 ## Parameters
 

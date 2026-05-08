@@ -622,7 +622,7 @@ class BatchNode(BaseNode):
             # Execute the node logic
             # [FIX] Recursive Execution Loop
             # Previously, we just ran node.execute() and ignored the return.
-            # But DynamicNodes return a 'next_node' (the subgraph entry) that MUST be run.
+            # But AdaptiveNodes return a 'next_node' (the subgraph entry) that MUST be run.
             # So we loop here, effectively becoming a mini-GraphExecutor for this thread.
             current_node = node
             MAX_STEPS = 50 # Safety brake for infinite loops

@@ -18,7 +18,7 @@
 | **3** | **[`3_parallel_execution.py`](../../examples/patterns/3_parallel_execution.py)** | Fan-Out / Fan-In Aggregation |
 | **4** | **[`4_structured_output.py`](../../examples/patterns/4_structured_output.py)** | Strict JSON Enforcement |
 | **5** | **[`5_multi_agent_handoff.py`](../../examples/patterns/5_multi_agent_handoff.py)** | Multi-Agent Collaboration |
-| **6** | **[`6_meta_prompt_optimizer.py`](../../examples/patterns/6_meta_prompt_optimizer.py)** | Self-Modifying Agents (Meta-Reasoning) |
+| **6** | **[`6_meta_prompt_optimizer.py`](../../examples/patterns/6_meta_prompt_optimizer.py)** | Prompt Optimisation (Iterative Refinement) |
 | **7** | **[`7_integration_test.py`](../../examples/patterns/7_integration_test.py)** | Integration Builder (CoinCap) |
 | **8** | **[`8_ab_tester.py`](../../examples/patterns/8_ab_tester.py)** | A/B Tester (Parallel Prompts) |
 | **9** | **[`9_resumable_graph.py`](../../examples/patterns/9_resumable_graph.py)** | Time Traveller (Crash & Resume) |
@@ -68,16 +68,16 @@
 | **3** | **[`3_parallel_newsroom.py`](../../examples/scale/3_parallel_newsroom.py)** | True Parallelism (`BatchNode`) |
 | **4** | **[`4_parallel_corporate_swarm.py`](../../examples/scale/4_parallel_corporate_swarm.py)** | Concurrent Branch Execution |
 | **5** | **[`11_map_reduce_budget.py`](../../examples/advanced/11_map_reduce_budget.py)** | **Memory Compression & Token Budgets** |
-| **6** | **[`fractal_polymath.py`](../../examples/advanced/fractal_polymath.py)** | **Fractal Agency** (Recursion + Parallelism) |
+| **6** | **[`fractal_polymath.py`](../../examples/advanced/fractal_polymath.py)** | **Recursive Graph Composition** (Recursion + Parallelism) |
 | **7** | **[`13_world_model_jepa.py`](../../examples/advanced/13_world_model_jepa.py)** | **Predictive World Models** |
 
-#### 6. Metacognition (`examples/metacognition/`)
-See the **[Metacognition Docs](9-metacognition.md)** for a deep dive.
+#### 6. Adaptive Execution (`examples/metacognition/`)
+See the **[Adaptive Graphs Docs](9-metacognition.md)** for a deep dive.
 
 | # | Pattern | Concept |
 | :---: | :--- | :--- |
 | **1** | **[`1_dynamic_depth.py`](../../examples/metacognition/1_dynamic_depth.py)** | **Adaptive Complexity** (1 Node vs N Nodes) |
-| **2** | **[`2_tool_inventor.py`](../../examples/metacognition/2_tool_inventor.py)** | **Self-Coding** (Writing Tools at Runtime) |
+| **2** | **[`2_tool_inventor.py`](../../examples/metacognition/2_tool_inventor.py)** | **Runtime Subgraph Generation** (validated executor) |
 | **3** | **[`3_self_healing.py`](../../examples/metacognition/3_self_healing.py)** | **Error Recovery** (Injecting Fix Subgraphs) |
-| **4** | **[`4_adaptive_deep_dive.py`](../../examples/metacognition/4_adaptive_deep_dive.py)** | **Recursive Research** (Spawning Sub-Agents) |
-| **5** | **[`5_expert_summoner.py`](../../examples/metacognition/5_expert_summoner.py)** | **Dynamic Persona Instantiation** |
+| **4** | **[`4_adaptive_deep_dive.py`](../../examples/metacognition/4_adaptive_deep_dive.py)** | **Structural Adaptation** (topology determined at runtime) |
+| **5** | **[`5_expert_summoner.py`](../../examples/metacognition/5_expert_summoner.py)** | **Domain Subgraph Dispatch** (pre-defined expert spec injection) |

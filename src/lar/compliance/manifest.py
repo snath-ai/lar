@@ -153,16 +153,17 @@ class ComplianceManifestGenerator:
                 entries.extend(self._visit(sub_node))
             entries.extend(self._visit(getattr(node, "next_node", None)))
 
-        # --- DynamicNode ---
-        elif node_type == "DynamicNode":
+        # --- AdaptiveNode (formerly DynamicNode) ---
+        elif node_type in ("AdaptiveNode", "DynamicNode"):
             entry = {
-                "node_type": "DynamicNode",
+                "node_type": "AdaptiveNode",
                 "eu_act_relevance": {
-                    "article": "Art. 3(23) (Substantial Modification), Art. 12 (Logging)",
+                    "article": "Art. 3(23) (Substantial Modification), Art. 12 (Logging), Art. 9 (Risk Management)",
                     "note": (
-                        "RUNTIME TOPOLOGY MODIFICATION — this node may alter the graph at runtime. "
-                        "Ensure TopologyValidator is configured. Every topological change is "
-                        "logged as a Causal Trace event for Art. 3(23) drift detection."
+                        "RUNTIME GRAPH COMPOSITION — this node injects a validated subgraph at execution time. "
+                        "TopologyValidator must be configured to enforce cycle detection, tool allowlist, and "
+                        "structural integrity. Every injected spec is captured in the Causal Trace log for "
+                        "Art. 3(23) substantial modification audit."
                     ),
                     "risk_level": "HIGH — Requires TopologyValidator guardrail."
                 }
@@ -250,7 +251,7 @@ class ComplianceManifestGenerator:
         tool_nodes = [e for e in inventory if e.get("node_type") == "ToolNode"]
         third_party_tools = [e for e in tool_nodes if e.get("affected_parties") in ("THIRD_PARTY", "BOTH")]
         unvaulted_tools = [e for e in tool_nodes if not e.get("jit_credential_vault_attached")]
-        dynamic_nodes = [e for e in inventory if e.get("node_type") == "DynamicNode"]
+        dynamic_nodes = [e for e in inventory if e.get("node_type") in ("AdaptiveNode", "DynamicNode")]
         llm_nodes = [e for e in inventory if e.get("node_type") in ("LLMNode", "ReduceNode")]
 
         self._manifest = {
@@ -296,9 +297,9 @@ class ComplianceManifestGenerator:
                 "severity": "HIGH",
                 "article": "Art. 3(23)",
                 "message": (
-                    f"{len(dynamic_nodes)} DynamicNode(s) found. Runtime topology modification "
-                    "constitutes a potential 'Substantial Modification'. Ensure TopologyValidator is active "
-                    "and all changes are captured in the Causal Trace log."
+                    f"{len(dynamic_nodes)} AdaptiveNode(s) found. Runtime graph composition "
+                    "constitutes a potential 'Substantial Modification' under Art. 3(23). Ensure TopologyValidator is active "
+                    "and all generated specs are captured in the Causal Trace log."
                 )
             })
         if third_party_tools:

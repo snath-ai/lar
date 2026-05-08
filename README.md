@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/snath-ai/.github/main/assets/lar-logo.png" width="80" alt="Lár Logo" />
 </p>
-<p align="center"><em>Lár: The Pytorch for Agents</em></p>
+<p align="center"><em>Lár: The PyTorch for Agents — The First EU AI Act-Ready Agent Execution Engine</em></p>
 <p align="center">
   <a href="https://pypi.org/project/lar-engine/">
     <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/lar-engine?style=for-the-badge&color=blue">
@@ -9,25 +9,29 @@
   <a href="https://pypi.org/project/lar-engine/">
     <img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/lar-engine?style=for-the-badge&color=blueviolet">
   </a>
+  <a href="https://docs.snath.ai/compliance/eu-ai-act-deep-dive/">
+    <img alt="EU AI Act Ready" src="https://img.shields.io/badge/EU%20AI%20Act-Ready%20Aug%202026-green?style=for-the-badge">
+  </a>
   <a href="https://github.com/sponsors/axdithyaxo">
     <img alt="Sponsor" src="https://img.shields.io/badge/Support-GitHub%20Sponsors-pink?style=for-the-badge&logo=github">
   </a>
 </p>
 
-# Lár: The PyTorch for Agents
+# Lár: Deterministic, Auditable AI Agent Execution
 
+**Lár** (Irish for "core" or "center") is the first agent execution engine built for regulated environments. Teams building AI agents in finance, healthcare, legal, and enterprise face a common problem: existing frameworks produce opaque, non-reproducible execution traces that cannot pass regulatory scrutiny. Lár solves this by making auditability a structural property of the engine, not an add-on.
 
-**Lár** (Irish for "core" or "center") is the open source standard for **Deterministic, Auditable, and Air-Gap Capable** AI agents.
+Every design decision in Lár — deterministic graphs, step-level state diffs, cryptographic audit trails, topology validation, human oversight primitives — exists to satisfy EU AI Act requirements out of the box. The compliance backbone is not a layer on top; it is the core.
 
-It is a **"define-by-run"** framework that acts as a **Flight Recorder** for your agent, creating a complete audit trail for every single step.
+Lár is built for teams that need to prove to regulators, auditors, and risk officers exactly what their agent did, why, and what it cost — on every run, without instrumentation overhead.
 
 ---
 
 ### The First EU AI Act-Ready Framework (August 2026 Enforcement)
-Lár is the first agentic framework to ship with a complete, production-ready **Enterprise Compliance Backbone**. It provides all 12 primitives required to pass an EU AI Act conformity assessment out of the box.
-*   **Immutable Audit Trails (Art. 12)**: Cryptographically signed causal traces.
-*   **Action-Level Authority Ledger (Art. 14)**: The "Fourth Tier" of human oversight.
-*   **Rule of 2 Enforcement (GDPR Art. 5)**: Hardware-level block on untrusted input + sensitive data.
+Lár ships with a complete, production-ready **Enterprise Compliance Backbone** — all 12 primitives required to pass an EU AI Act conformity assessment:
+*   **Immutable Audit Trails (Art. 12)**: Cryptographically signed causal traces, step-by-step.
+*   **Action-Level Authority Ledger (Art. 14)**: The "Fourth Tier" of human oversight — every human decision is recorded with stakeholder identity, role, rationale, and timestamp.
+*   **Rule of 2 Enforcement (GDPR Art. 5)**: Runtime block on untrusted input + sensitive data combinations.
 
 **[Read the EU AI Act Deep Dive →](https://docs.snath.ai/compliance/eu-ai-act-deep-dive/)** | **[Explore the Enterprise Reference Implementation →](https://docs.snath.ai/compliance/enterprise-reference/)**
 
@@ -37,25 +41,16 @@ Lár is the first agentic framework to ship with a complete, production-ready **
 > **Lár is NOT a wrapper.**
 > It is a standalone, ground-up engine designed for reliability. It does not wrap LangChain, OpenAI Swarm, or any other library. It is pure, dependency-lite Python code optimized for "Code-as-Graph" execution.
 
-## The "Black Box" Problem
+## How It Works: The "Glass Box"
 
-You are a developer launching a **mission-critical AI agent**. It works on your machine, but in production, it fails.
-You don't know **why**, **where**, or **how much** it cost. You just get a 100-line stack trace from a "magic" framework.
+Lár runs **one node at a time**, logging every single step to a forensic **Flight Recorder**. The execution model is a Python generator — every node yields a structured audit entry containing the state before, the state diff, token usage, the rendered prompt, and the outcome.
 
-## The "Glass Box" Solution
-
-**Lár removes the magic.**
-
-It is a simple engine that runs **one node at a time**, logging every single step to a forensic **Flight Recorder**.
-
-This means you get:
-1.  **Instant Debugging**: See the exact node and error that caused the crash.
-2.  **Free Auditing**: A complete history of every decision and token cost, built-in by default.
-3.  **Total Control**: Build deterministic "assembly lines," not chaotic chat rooms.
+This means:
+1.  **Instant Debugging**: The exact node that failed, the exact data it received, the exact error — all in the log.
+2.  **Built-in Auditing**: A complete, immutable history of every decision and token cost, by default, on every run.
+3.  **Deterministic Control**: Explicit graphs, not probabilistic chat rooms. The same input produces the same execution trace.
 
 > *"This demonstrates that for a graph without randomness or external model variability, Lár executes deterministically and produces identical state traces."*
-
-*Stop guessing. Start building agents you can trust.*
 
 
 ## Why Lár is Better: The "Glass Box" Advantage
@@ -122,7 +117,7 @@ LangGraph Engine stopped execution due to Recursion Limit.
 ## Why Lár?
 - **Economic Constraints:** Guarantee that agents cannot exceed mathematically set Token Budgets before execution. (v1.6+)
 - **Memory Compression:** explicitly delete context from state via `ReduceNode` map-reduce patterns to prevent "black hole" token bloat. (v1.6+)
-- **Fractal Agency:** Agents can spawn sub-agents recursively (`DynamicNode`). (v1.5+)
+- **Adaptive Graphs:** Runtime graph composition via `AdaptiveNode` — validated subgraph injection with `TopologyValidator` (Art. 3(23)). (v1.5+)
 - **True Parallelism:** Run multiple agents in parallel threads (`BatchNode`). (v1.5+)
 - **Lightweight:** No vector DB required. Just Python.
 - **Model Agnostic:** Works with OpenAI, Gemini, Claude, DeepSeek, Ollama, etc.
@@ -131,7 +126,7 @@ LangGraph Engine stopped execution due to Recursion Limit.
 - **Clean Output**: Your downstream nodes only see the final answer.
 - **Robustness**: Works with both API-based reasoning (o1) and local raw reasoning (DeepSeek R1 via Ollama).
 - **BatchNode Isolation:** Each parallel branch gets a `copy.deepcopy()` of state — a hallucinating branch cannot poison another. (Systemic risk)
-- **DynamicNode Safety:** Runtime self-modification is gated by `TopologyValidator` (cycle detection + tool allowlist) — the agent's legal CE envelope cannot expand at runtime. (Art. 3(23))
+- **AdaptiveNode Safety:** Runtime graph composition is gated by `TopologyValidator` (cycle detection + tool allowlist) — every generated subgraph is validated before execution. (Art. 3(23))
 
 ```python
 # examples/reasoning_models/1_deepseek_r1.py
@@ -271,9 +266,9 @@ To send an email, query a database, or execute an API, you use the `ToolNode`.
 The `ReduceNode` prevents context bloat using explicit memory compression.
 * **How it works:** It is exactly like an `LLMNode`, but after it generates a summary, it acts like a garbage collector and **deletes** the raw, bloated data keys from the state entirely.
 
-#### 6. The Architect: `DynamicNode` (v1.5+)
-The `DynamicNode` allows recursive generation of graphs during runtime.
-* **How it works:** This node spawns sub-agents recursively, enabling "Fractal Agency" strategies where the graph builds new routing layers dynamically based on its own progress.
+#### 6. The Architect: `AdaptiveNode` (v1.5+)
+`AdaptiveNode` composes and injects a validated subgraph at execution time.
+* **How it works:** Asks an LLM to produce a JSON graph spec, passes it through `TopologyValidator` (cycle detection, tool allowlist, structural integrity), instantiates the nodes, and injects the subgraph into the live execution path. Every spec is logged to the Causal Trace (Art. 12). `DynamicNode` is a deprecated alias.
 
 #### 7. Regulatory Compliance: `HumanJuryNode`
 For high-risk environments, Article 14 of the EU AI Act requires "Human-in-the-Loop" oversight.
@@ -396,36 +391,29 @@ python examples/patterns/10_resumable_cost_demo.py
 
 ---
 
-## Metacognition (Level 4 Agency)
+## Adaptive Graphs (v1.3+)
 
-**New in v1.3**: Lár introduces the **Dynamic Graph**, allowing agents to rewrite their own topology at runtime.
+When the structure of a processing step cannot be determined at development time, `AdaptiveNode` composes a validated subgraph at execution time.
 
-This unlocks capabilities previously impossible in static DAGs:
-- **Self-Healing**: Detects errors and injects recovery subgraphs.
-- **Tool Invention**: Writes and executes its own Python tools on the fly.
-- **Adaptive Depth**: Decides between "Quick Answer" (1 node) vs "Deep Research" (N nodes).
-- **Custom Observability**: Inject custom logger/tracker instances for advanced cost tracking and audit trail management (`examples/patterns/16_custom_logger_tracker.py`).
+- **Error recovery**: detect a failure type and compose a recovery subgraph tailored to that error.
+- **Adaptive depth**: allocate 1 worker node for simple queries, 3 for complex ones — determined at runtime.
+- **Domain dispatch**: classify a query and inject the appropriate domain-specific subgraph.
 
-> [!IMPORTANT]
-> **Risk Mitigation**: Self-Modifying Code is inherently risky. Lár ensures **Compliance** by:
-> 1. Logging the exact JSON of the generated graph (Audit Trail).
-> 2. Using a deterministic `TopologyValidator` (Non-AI) to prevent unauthorized tools, infinite loops, or **malformed graph structures** (Structural Integrity).
+Every generated spec is validated by `TopologyValidator` before any node executes (cycle detection, tool allowlist, structural integrity). The spec is logged to the Causal Trace (Art. 12). Rejection decisions are also logged.
 
-See `examples/metacognition/` for 5 working Proof-of-Concepts.
+See `examples/metacognition/` for working examples.
 
 ---
 
-## Fractal Agency (v1.5+)
+## Recursive Graph Composition (v1.5+)
 
-**Scale without limits.**
+`AdaptiveNode` can be nested: a generated subgraph can itself contain `AdaptiveNode` instances. The parent's `TopologyValidator` is inherited at every level — safety rails propagate through the full recursion depth.
 
-Using the `DynamicNode` and `BatchNode`, Lár graphs can explicitly spawn recursive copies of themselves or launch entirely new nested graph topologies dynamically.
+- **Nested specialisation:** a manager node composes a `BatchNode` containing specialist sub-agents, each of which composes its own subgraph.
+- **Perfect isolation:** each `BatchNode` thread runs in a `copy.deepcopy` of state — no context bleed between branches.
+- **Budget propagation:** total token spend across all threads is reconciled mathematically after `BatchNode` merges.
 
-- **Recursive Sub-Agents:** An agent can stop reasoning, define a new specialized graph, and execute it as a sub-process before resuming its original thread.
-- **Deep Research Trees:** Allow agents to dynamically branch out and perform parallelized deep-dives based on data complexity.
-- **Perfect Isolation:** Each spawned graph runs in its own memory space, ensuring no context bleed back to the parent—only the final synthesized answer is returned.
-
-**[Read the Full Concept Guide](https://docs.snath.ai/core-concepts/11-fractal-agency)** | **[See the Advanced Showcase](examples/advanced/fractal_polymath.py)**
+**[Read the Concept Guide](https://docs.snath.ai/core-concepts/11-fractal-agency)** | **[See the Example](examples/advanced/fractal_polymath.py)**
 
 ---
 
@@ -875,7 +863,7 @@ We have provided **21 robust patterns** in the **[`examples/`](examples/)** dire
 | **3** | **[`3_parallel_execution.py`](examples/patterns/3_parallel_execution.py)** | Fan-Out / Fan-In Aggregation |
 | **4** | **[`4_structured_output.py`](examples/patterns/4_structured_output.py)** | Strict JSON Enforcement |
 | **5** | **[`5_multi_agent_handoff.py`](examples/patterns/5_multi_agent_handoff.py)** | Multi-Agent Collaboration |
-| **6** | **[`6_meta_prompt_optimizer.py`](examples/patterns/6_meta_prompt_optimizer.py)** | Self-Modifying Agents (Meta-Reasoning) |
+| **6** | **[`6_meta_prompt_optimizer.py`](examples/patterns/6_meta_prompt_optimizer.py)** | Prompt Optimisation (Iterative Refinement) |
 | **7** | **[`7_integration_test.py`](examples/patterns/7_integration_test.py)** | Integration Builder (CoinCap) |
 | **8** | **[`8_ab_tester.py`](examples/patterns/8_ab_tester.py)** | A/B Tester (Parallel Prompts) |
 | **9** | **[`9_resumable_graph.py`](examples/patterns/9_resumable_graph.py)** | Time Traveller (Crash & Resume) |
@@ -927,19 +915,19 @@ We have provided **21 robust patterns** in the **[`examples/`](examples/)** dire
 | **3** | **[`3_parallel_newsroom.py`](examples/scale/3_parallel_newsroom.py)** | True Parallelism (`BatchNode`) |
 | **4** | **[`4_parallel_corporate_swarm.py`](examples/scale/4_parallel_corporate_swarm.py)** | Concurrent Branch Execution |
 | **5** | **[`11_map_reduce_budget.py`](examples/advanced/11_map_reduce_budget.py)** | **Memory Compression & Token Budgets** |
-| **6** | **[`fractal_polymath.py`](examples/advanced/fractal_polymath.py)** | **Fractal Agency** (Recursion + Parallelism) |
+| **6** | **[`fractal_polymath.py`](examples/advanced/fractal_polymath.py)** | **Recursive Graph Composition** (Nested AdaptiveNodes + Parallelism) |
 | **7** | **[`13_world_model_jepa.py`](examples/advanced/13_world_model_jepa.py)** | **Predictive World Models** |
 
-#### 6. Metacognition (`examples/metacognition/`)
-See the **[Metacognition Docs](https://docs.snath.ai/core-concepts/9-metacognition)** for a deep dive.
+#### 6. Adaptive Execution (`examples/metacognition/`)
+See the **[Adaptive Graphs Docs](https://docs.snath.ai/core-concepts/9-metacognition)** for a deep dive.
 
 | # | Pattern | Concept |
 | :---: | :--- | :--- |
-| **1** | **[`1_dynamic_depth.py`](examples/metacognition/1_dynamic_depth.py)** | **Adaptive Complexity** (1 Node vs N Nodes) |
-| **2** | **[`2_tool_inventor.py`](examples/metacognition/2_tool_inventor.py)** | **Self-Coding** (Writing Tools at Runtime) |
-| **3** | **[`3_self_healing.py`](examples/metacognition/3_self_healing.py)** | **Error Recovery** (Injecting Fix Subgraphs) |
-| **4** | **[`4_adaptive_deep_dive.py`](examples/metacognition/4_adaptive_deep_dive.py)** | **Recursive Research** (Spawning Sub-Agents) |
-| **5** | **[`5_expert_summoner.py`](examples/metacognition/5_expert_summoner.py)** | **Dynamic Persona Instantiation** |
+| **1** | **[`1_dynamic_depth.py`](examples/metacognition/1_dynamic_depth.py)** | **Adaptive Worker Count** (1 Node vs N Nodes) |
+| **2** | **[`2_tool_inventor.py`](examples/metacognition/2_tool_inventor.py)** | **Runtime Code Generation** (sandboxed executor required) |
+| **3** | **[`3_self_healing.py`](examples/metacognition/3_self_healing.py)** | **Error Recovery Pipeline** (validated recovery subgraph) |
+| **4** | **[`4_adaptive_deep_dive.py`](examples/metacognition/4_adaptive_deep_dive.py)** | **Structural Adaptation** (node topology determined at runtime) |
+| **5** | **[`5_expert_summoner.py`](examples/metacognition/5_expert_summoner.py)** | **Domain Subgraph Dispatch** (pre-defined expert spec injection) |
 
 
 ---
@@ -953,7 +941,7 @@ The [`/examples/validation_suite`](https://github.com/snath-ai/lar/tree/main/exa
 
 * `kitchen_sink_agent.py`: Demonstrates dynamic fallback capabilities.
 * `kitchen_sink_agent2.py`: Demonstrates complex fractal agency (dynamic subgraphs with specific constraints).
-* `kitchen_sink_agent3.py`: Proves adversarial safety by attempting to inject unapproved `ToolNodes` into the `DynamicNode` and verifying `TopologyValidator` interception and safe fallthrough.
+* `kitchen_sink_agent3.py`: Proves adversarial safety by attempting to inject unapproved `ToolNodes` into `AdaptiveNode` and verifying `TopologyValidator` interception and safe fallthrough.
 
 These scripts act as the benchmark proving that `GraphExecutor`, audit logging, and `TopologyValidators` all work securely together within their deterministic pathways.
 

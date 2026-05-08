@@ -102,7 +102,7 @@ Lár's `PIIRedactionEngine` acts as a middleware layer *inside* the `AuditLogger
 The paper identifies two specific failure modes in complex agentic topologies that no current framework handles:
 
 1. **State Poisoning in Parallel Execution** — When multiple sub-agents run concurrently, a hallucinating agent can overwrite shared state, corrupting downstream decisions before any audit trail captures the contamination.
-2. **Runtime Self-Modification (Art. 3(23))** — When an agent rewrites its own tool catalogue or spawns new sub-graphs at runtime, it constitutes a "Substantial Modification" that legally voids the system's CE marking and requires a full new conformity assessment.
+2. **Uncontrolled Runtime Topology Changes (Art. 3(23))** — When an agent spawns new sub-graphs at runtime without validation, it constitutes a "Substantial Modification" that legally voids the system's CE marking and requires a full new conformity assessment.
 
 ---
 
@@ -155,23 +155,23 @@ An auditor can see exactly which branch wrote which key and that the token budge
 
 ---
 
-### `DynamicNode` — Runtime Self-Modification with Art. 3(23) Safety Rails
+### `AdaptiveNode` — Runtime Graph Composition with Art. 3(23) Safety Rails
 
 **The Lár Solution:**
 
-`DynamicNode` is a metacognitive primitive that asks an LLM to **design a subgraph** at runtime using a JSON spec. Before executing a single node from that spec, it runs the **`TopologyValidator`** — a static analysis layer that enforces three hard constraints:
+`AdaptiveNode` is a runtime graph composition primitive that asks an LLM to **design a subgraph** at runtime using a JSON spec. Before executing a single node from that spec, it runs the **`TopologyValidator`** — a static analysis layer that enforces three hard constraints:
 
 1. **Cycle detection** — DFS traversal of the generated graph to block infinite loops.
 2. **Tool allowlist enforcement** — Any `ToolNode` in the spec must be in a pre-approved allowlist. The LLM cannot inject an unapproved tool.
 3. **Structural integrity** — Every `next` pointer must reference an existing node in the spec. Dangling references are blocked.
 
 ```python
-from lar.dynamic import DynamicNode, TopologyValidator
+from lar.dynamic import AdaptiveNode, TopologyValidator
 
 # Only these tools can appear in LLM-generated subgraphs
 validator = TopologyValidator(allowed_tools=[fetch_drug_db, write_prescription])
 
-dynamic_step = DynamicNode(
+adaptive_step = AdaptiveNode(
     llm_model="ollama/phi4:latest",
     prompt_template="Design a subgraph to assess {case_summary}",
     validator=validator,          # Enforces the allowlist + cycle check
@@ -181,18 +181,18 @@ dynamic_step = DynamicNode(
 
 **What this provides for compliance:**
 
-| Compliance Concern | DynamicNode Behaviour |
+| Compliance Concern | AdaptiveNode Behaviour |
 |:---|:---|
 | **Art. 3(23) CE-marking** | `TopologyValidator` blocks any tool not in the pre-declared allowlist. The legal boundary of the system cannot expand at runtime without a code change (which triggers a new conformity assessment). |
-| **Audit of self-modification** | The `__graph_spec_json__` key is written to state (and captured by `state_diff`) before the subgraph executes. An auditor can read the exact JSON the LLM proposed and which nodes were actually wired. |
-| **Fallback on rejection** | If `TopologyValidator` rejects the spec, `DynamicNode` falls through to `next_node` and writes a `REJECTED` reason to state — never silently skipping. |
-| **Fractal safety inheritance** | Recursive `DynamicNode` children inherit the **same `TopologyValidator` instance** as the parent. Safety rails cannot be escaped through nested metacognition. |
+| **Audit of runtime composition** | The `__graph_spec_json__` key is written to state (and captured by `state_diff`) before the subgraph executes. An auditor can read the exact JSON the LLM proposed and which nodes were actually wired. |
+| **Fallback on rejection** | If `TopologyValidator` rejects the spec, `AdaptiveNode` falls through to `next_node` and writes a `REJECTED` reason to state — never silently skipping. |
+| **Recursive safety inheritance** | Recursive `AdaptiveNode` children inherit the **same `TopologyValidator` instance** as the parent. Safety rails cannot be escaped through nested subgraph composition. |
 
-**What the Causal Trace shows for a `DynamicNode` step:**
+**What the Causal Trace shows for an `AdaptiveNode` step:**
 ```json
 {
   "step": 1,
-  "node": "DynamicNode",
+  "node": "AdaptiveNode",
   "state_diff": {
     "added": {
       "__graph_spec_json__": "{\"nodes\": [{\"id\": \"n1\", \"type\": \"LLMNode\", ...}], \"entry_point\": \"n1\"}"

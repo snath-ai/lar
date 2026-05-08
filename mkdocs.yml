@@ -1,6 +1,6 @@
-site_name: 'Lár - The PyTorch for Agents'
+site_name: 'Lár - Deterministic, Auditable AI Agent Execution'
 site_author: Lár Project
-site_description: "The official documentation for Lár: The first Deterministic, Auditable AI Agent Framework. Built on Graph Theory and LiteLLM."
+site_description: "The official documentation for Lár: The first EU AI Act-ready agent execution engine. Deterministic graphs, cryptographic audit trails, and built-in compliance primitives."
 site_url: https://docs.snath.ai/
 repo_name: snath-ai/lar
 repo_url: https://github.com/snath-ai/lar
@@ -57,9 +57,9 @@ nav:
     - 'The Audit Log': core-concepts/3-audit-log.md
     - 'Pattern Library': core-concepts/4-core-patterns.md
     - 'Reasoning Models (System 2)': core-concepts/5-reasoning-models.md
-    - 'Dynamic Graphs (Metacognition)': core-concepts/9-metacognition.md
+    - 'Adaptive Graphs': core-concepts/9-metacognition.md
     - 'Defensive Constraints (Budgets)': core-concepts/10-defensive-constraints.md
-    - 'Fractal Agency (Recursion)': core-concepts/11-fractal-agency.md
+    - 'Recursive Graph Composition': core-concepts/11-fractal-agency.md
     - 'Resumable Graphs': core-concepts/12-resumable-graphs.md
   - 'Case Studies':
     - 'The Validation Suite': case-studies/validation-suite.md
@@ -89,7 +89,7 @@ nav:
     - 'ReduceNode': api-reference/reducenode.md
     - 'FunctionalNode': api-reference/functionalnode.md
     - 'HumanJuryNode': api-reference/humanjurynode.md
-    - 'DynamicNode': api-reference/dynamicnode.md
+    - 'AdaptiveNode': api-reference/dynamicnode.md
     - 'AddValueNode': api-reference/addvaluenode.md
     - 'ClearErrorNode': api-reference/clearerrornode.md
     - 'TopologyValidator': api-reference/topologyvalidator.md

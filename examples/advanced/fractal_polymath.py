@@ -1,17 +1,21 @@
 """
-FRACTAL AGENCY & PARALLELISM DEMO (Lár v1.5.0)
+RECURSIVE GRAPH COMPOSITION & PARALLELISM DEMO (Lár v1.5.0)
 
-This example demonstrates two advanced Lár features:
-1.  **Fractal Agency (Recursion):** 
-    Using `DynamicNode` to instantiate *another* `DynamicNode` at runtime. 
-    The "Manager" designs a graph that contains "Sub-Agents" (Cipher & Poet), 
-    who in turn design their own sub-graphs to write and execute code.
+Demonstrates two advanced Lár features:
+
+1.  **Recursive Subgraph Injection:**
+    Using `AdaptiveNode` to compose a subgraph that itself contains `AdaptiveNode`
+    instances. The "Manager" designs a graph containing two specialised sub-agents
+    (Cipher & Poet), each of which composes its own validated subgraph at runtime.
+    The validator is inherited at every level — safety rails propagate through the
+    full recursion depth.
 
 2.  **True Parallelism (BatchNode):**
-    Using `BatchNode` to run the "Cipher Agent" and "Poet Agent" in parallel threads.
-    Each thread maintains its own state and merges results back to the main branch.
+    Using `BatchNode` to run the Cipher Agent and Poet Agent in parallel threads.
+    Each thread maintains its own isolated GraphState; results are merged back to
+    the main branch on completion.
 
-Model: ollama/liquid-thinking (Recommended for reasoning) or any smart model.
+Model: ollama/liquid-thinking (Recommended for reasoning) or any capable model.
 """
 
 import sys
@@ -24,7 +28,7 @@ sys.path.append(str(Path(__file__).parent.parent.parent / "src"))
 
 import lar
 from lar import GraphState, GraphExecutor, LLMNode, RouterNode, ToolNode, BatchNode
-from lar.dynamic import DynamicNode, TopologyValidator
+from lar.dynamic import AdaptiveNode, TopologyValidator
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -76,18 +80,18 @@ Track A: "Invent a new python encryption cipher (Cipher X)."
 Track B: "Write a short poem about the concept of secrecy."
 
 Your job is NOT to do the work yourself.
-Your job is to DELEGATE to two `DynamicNode` agents using a `BatchNode` for parallel execution.
+Your job is to DELEGATE to two `AdaptiveNode` agents using a `BatchNode` for parallel execution.
 
 Design a graph with the following structure:
 1. `parallel_workers` (BatchNode):
    - `concurrent_nodes`: ["cipher_agent", "poet_agent"]
    - `next`: "verifier"
 
-2. `cipher_agent` (DynamicNode):
+2. `cipher_agent` (AdaptiveNode):
    - `prompt`: "You are a Cipher Specialist. Your goal is to invent a python cipher for 'Lár Secret'.\\n\\nDesign a graph that has:\\n1. An LLMNode to write the code.\\n2. A ToolNode using `run_python_code` to execute it.\\n\\nOutput only the JSON GraphSpec."
    - `output_key`: "cipher_result"
 
-3. `poet_agent` (DynamicNode):
+3. `poet_agent` (AdaptiveNode):
    - `prompt`: "You are a Poet who codes. Write a Python script that prints a short poem about secrecy.\\n\\nDesign a graph that has:\\n1. An LLMNode to write the script.\\n2. A ToolNode using `run_python_code` to execute it.\\n\\nOutput only the JSON GraphSpec."
    - `output_key`: "poem_result"
 
@@ -104,13 +108,13 @@ Strictly follow this structure:
     },
     {
        "id": "cipher_agent",
-       "type": "DynamicNode",
+       "type": "AdaptiveNode",
        "prompt": "...",
        "output_key": "cipher_result"
     },
     {
        "id": "poet_agent",
-       "type": "DynamicNode",
+       "type": "AdaptiveNode",
        "prompt": "...",
        "output_key": "poem_result"
     },
@@ -126,15 +130,15 @@ Strictly follow this structure:
 }
 """
 
-recursive_polymath = DynamicNode(
-    llm_model="ollama/liquid-thinking", 
+recursive_polymath = AdaptiveNode(
+    llm_model="ollama/liquid-thinking",
     prompt_template=manager_prompt,
     validator=validator,
-    next_node=None 
+    next_node=None
 )
 
 if __name__ == "__main__":
-    print("Starting Fractal Polymath Agency (Recursive & Parallel)...")
+    print("Starting Recursive Polymath Agent (Nested Subgraphs & Parallel Execution)...")
     print("   Manager Model: ollama/liquid-thinking")
     
     # Enable verbose logging for demo
@@ -153,7 +157,7 @@ if __name__ == "__main__":
         print("="*50)
         
         print(f"\nFinal Generated Output:")
-        # The parent DynamicNode stores its final answer in its default output_key
+        # The parent AdaptiveNode stores its final answer in its default output_key
         result = final_state.get("dynamic_out", str(final_state))
         
         # Clean up markdown if the LLM wrapped it

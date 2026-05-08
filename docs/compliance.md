@@ -250,9 +250,9 @@ Every branch of a `BatchNode` runs with a **deep-copied, isolated `GraphState`**
 | Token budget overrun | Thread budgets reconciled atomically after join |
 | Infinite loops in branches | `MAX_STEPS=50` internal brake per thread |
 
-#### `DynamicNode` — Art. 3(23) Safe Self-Modification
+#### `AdaptiveNode` — Art. 3(23) Compliant Runtime Graph Composition
 
-`DynamicNode` lets an LLM design a subgraph at runtime. Before executing a single node the **`TopologyValidator`** enforces:
+`AdaptiveNode` lets an LLM design a subgraph at runtime. Before executing a single node the **`TopologyValidator`** enforces:
 
 1. **Cycle detection** — DFS blocks mathematically infinite loops.
 2. **Tool allowlist** — The LLM can only wire tools you pre-approved. No unapproved functions can be injected.
@@ -260,9 +260,9 @@ Every branch of a `BatchNode` runs with a **deep-copied, isolated `GraphState`**
 
 The proposed JSON spec is written to state as `__graph_spec_json__` **before** execution — meaning auditors can see exactly what topology the LLM designed and what actually ran.
 
-`ComplianceManifestGenerator` flags every `DynamicNode` with a `HIGH` severity warning so providers must explicitly document it before CE-marking submission.
+`ComplianceManifestGenerator` flags every `AdaptiveNode` with a `HIGH` severity warning so providers must explicitly document it before CE-marking submission.
 
-📖 **[Full compliance breakdown with causal trace examples →](compliance/eu-ai-act-deep-dive.md#7-systemic-risks-in-complex-topologies-batchnode--dynamicnode)**
+📖 **[Full compliance breakdown with causal trace examples →](compliance/eu-ai-act-deep-dive.md)**
 
 ---
 
@@ -312,17 +312,17 @@ Lár includes four reference implementations to demonstrate this across differen
 
 ---
 
-## Risk Mitigation: Dynamic Graphs (Self-Modifying Code)
+## Risk Mitigation: Adaptive Graphs (`AdaptiveNode`)
 
-Lár v1.1 introduces `DynamicNode`, which allows agents to rewrite their execution topology at runtime. While powerful, "Self-Modifying Code" is traditionally a compliance red flag.
+Lár's `AdaptiveNode` allows agents to compose a validated execution subgraph at runtime. Every topology change is a fully auditable, deterministic event — not a hidden internal mutation.
 
-**How Lár mitigates this risk:**
+**How Lár enforces this:**
 
-### 1. The "Code-as-Event" Principle
-In Lár, a topological change is not a hidden internal state. It is an explicit **Event**.
-- The `DynamicNode` outputs a JSON `GraphSpec`.
+### 1. The "Composition-as-Event" Principle
+In Lár, a runtime topology change is not a hidden internal state. It is an explicit **Event**.
+- The `AdaptiveNode` outputs a JSON `GraphSpec`.
 - This JSON spec is **logged physically** in the audit trail before execution.
-- **Auditor Verification**: An auditor can replay the exact moment the agent decided to "add a research step" and verify *why* (based on the context).
+- **Auditor Verification**: An auditor can replay the exact moment the agent composed a subgraph and verify the exact topology that was approved and run.
 
 ### 2. Deterministic Topology Validation
 The `TopologyValidator` is a **non-AI, deterministic guardrail**.
@@ -330,7 +330,7 @@ The `TopologyValidator` is a **non-AI, deterministic guardrail**.
 - **Cycle Prevention**: It mathematically proves that the new subgraph is a DAG (Directed Acyclic Graph) or a bounded loop, preventing "Runaway Agent" scenarios.
 
 ### 3. Structural Constraints
-The modifications are local. A `DynamicNode` can only swap *itself* or its immediate downstream path. It cannot rewrite history or modify upstream nodes, ensuring "Forward-Only" integrity.
+Subgraph composition is local and forward-only. An `AdaptiveNode` can only inject a subgraph into its own execution slot. It cannot alter upstream nodes, rewrite history, or mutate the outer graph, ensuring "Forward-Only" integrity.
 
 ---
 
