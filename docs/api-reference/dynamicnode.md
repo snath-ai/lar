@@ -184,5 +184,5 @@ If `TopologyValidator` rejects the spec, `outcome` is `"error"` and the rejectio
 ## See Also
 
 - [TopologyValidator API](topologyvalidator.md) — validation enforcement
-- [Adaptive Graphs](../core-concepts/9-metacognition.md) — when and why to use AdaptiveNode
+- [Adaptive Graphs](../core-concepts/9-adaptive-graphs.md) — when and why to use AdaptiveNode
 - [Red Teaming](../case-studies/red-teaming.md) — security testing

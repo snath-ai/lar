@@ -71,7 +71,7 @@ planner = AdaptiveNode(
 )
 ```
 
-See: `examples/metacognition/1_dynamic_depth.py`
+See: `examples/adaptive/1_dynamic_depth.py`
 
 ### 2. Domain Subgraph Dispatch
 
@@ -86,7 +86,7 @@ If medical: output a single node saying "refer to specialist".
 # validator has pre-approved tools for each domain
 ```
 
-See: `examples/metacognition/5_expert_summoner.py`
+See: `examples/adaptive/5_expert_summoner.py`
 
 ### 3. Error Recovery
 
@@ -99,13 +99,13 @@ Compose a recovery subgraph using: rotate_credentials, retry_connection.
 """
 ```
 
-See: `examples/metacognition/3_self_healing.py`
+See: `examples/adaptive/3_self_healing.py`
 
 ### 4. Runtime Code Generation (Sandboxed)
 
 Generate and execute code for novel computations. **Requires a sandboxed executor** (Docker, e2b, WebAssembly). Never execute LLM-generated code with full system access.
 
-See: `examples/metacognition/2_tool_inventor.py`
+See: `examples/adaptive/2_tool_inventor.py`
 
 ## Security Checklist
 

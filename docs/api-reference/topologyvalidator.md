@@ -250,6 +250,6 @@ except SecurityError as e:
 ## See Also
 
 - [AdaptiveNode API](dynamicnode.md) — runtime graph composition primitive
-- [Adaptive Graphs](../core-concepts/9-metacognition.md) — when and why to use runtime graph composition
+- [Adaptive Graphs](../core-concepts/9-adaptive-graphs.md) — when and why to use runtime graph composition
 - [Red Teaming](../case-studies/red-teaming.md) — security testing
 - [Security Firewall Example](https://github.com/snath-ai/lar/blob/main/examples/compliance/2_security_firewall.py)

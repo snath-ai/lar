@@ -57,7 +57,7 @@ nav:
     - 'The Audit Log': core-concepts/3-audit-log.md
     - 'Pattern Library': core-concepts/4-core-patterns.md
     - 'Reasoning Models (System 2)': core-concepts/5-reasoning-models.md
-    - 'Adaptive Graphs': core-concepts/9-metacognition.md
+    - 'Adaptive Graphs': core-concepts/9-adaptive-graphs.md
     - 'Defensive Constraints (Budgets)': core-concepts/10-defensive-constraints.md
     - 'Recursive Graph Composition': core-concepts/11-fractal-agency.md
     - 'Resumable Graphs': core-concepts/12-resumable-graphs.md

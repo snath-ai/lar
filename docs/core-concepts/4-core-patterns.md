@@ -71,13 +71,13 @@
 | **6** | **[`fractal_polymath.py`](../../examples/advanced/fractal_polymath.py)** | **Recursive Graph Composition** (Recursion + Parallelism) |
 | **7** | **[`13_world_model_jepa.py`](../../examples/advanced/13_world_model_jepa.py)** | **Predictive World Models** |
 
-#### 6. Adaptive Execution (`examples/metacognition/`)
-See the **[Adaptive Graphs Docs](9-metacognition.md)** for a deep dive.
+#### 6. Adaptive Execution (`examples/adaptive/`)
+See the **[Adaptive Graphs Docs](9-adaptive-graphs.md)** for a deep dive.
 
 | # | Pattern | Concept |
 | :---: | :--- | :--- |
-| **1** | **[`1_dynamic_depth.py`](../../examples/metacognition/1_dynamic_depth.py)** | **Adaptive Complexity** (1 Node vs N Nodes) |
-| **2** | **[`2_tool_inventor.py`](../../examples/metacognition/2_tool_inventor.py)** | **Runtime Subgraph Generation** (validated executor) |
-| **3** | **[`3_self_healing.py`](../../examples/metacognition/3_self_healing.py)** | **Error Recovery** (Injecting Fix Subgraphs) |
-| **4** | **[`4_adaptive_deep_dive.py`](../../examples/metacognition/4_adaptive_deep_dive.py)** | **Structural Adaptation** (topology determined at runtime) |
-| **5** | **[`5_expert_summoner.py`](../../examples/metacognition/5_expert_summoner.py)** | **Domain Subgraph Dispatch** (pre-defined expert spec injection) |
+| **1** | **[`1_dynamic_depth.py`](../../examples/adaptive/1_dynamic_depth.py)** | **Adaptive Complexity** (1 Node vs N Nodes) |
+| **2** | **[`2_tool_inventor.py`](../../examples/adaptive/2_tool_inventor.py)** | **Runtime Subgraph Generation** (validated executor) |
+| **3** | **[`3_self_healing.py`](../../examples/adaptive/3_self_healing.py)** | **Error Recovery** (Injecting Fix Subgraphs) |
+| **4** | **[`4_adaptive_deep_dive.py`](../../examples/adaptive/4_adaptive_deep_dive.py)** | **Structural Adaptation** (topology determined at runtime) |
+| **5** | **[`5_expert_summoner.py`](../../examples/adaptive/5_expert_summoner.py)** | **Domain Subgraph Dispatch** (pre-defined expert spec injection) |

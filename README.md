@@ -401,7 +401,7 @@ When the structure of a processing step cannot be determined at development time
 
 Every generated spec is validated by `TopologyValidator` before any node executes (cycle detection, tool allowlist, structural integrity). The spec is logged to the Causal Trace (Art. 12). Rejection decisions are also logged.
 
-See `examples/metacognition/` for working examples.
+See `examples/adaptive/` for working examples.
 
 ---
 
@@ -918,16 +918,16 @@ We have provided **21 robust patterns** in the **[`examples/`](examples/)** dire
 | **6** | **[`fractal_polymath.py`](examples/advanced/fractal_polymath.py)** | **Recursive Graph Composition** (Nested AdaptiveNodes + Parallelism) |
 | **7** | **[`13_world_model_jepa.py`](examples/advanced/13_world_model_jepa.py)** | **Predictive World Models** |
 
-#### 6. Adaptive Execution (`examples/metacognition/`)
-See the **[Adaptive Graphs Docs](https://docs.snath.ai/core-concepts/9-metacognition)** for a deep dive.
+#### 6. Adaptive Execution (`examples/adaptive/`)
+See the **[Adaptive Graphs Docs](https://docs.snath.ai/core-concepts/9-adaptive-graphs)** for a deep dive.
 
 | # | Pattern | Concept |
 | :---: | :--- | :--- |
-| **1** | **[`1_dynamic_depth.py`](examples/metacognition/1_dynamic_depth.py)** | **Adaptive Worker Count** (1 Node vs N Nodes) |
-| **2** | **[`2_tool_inventor.py`](examples/metacognition/2_tool_inventor.py)** | **Runtime Code Generation** (sandboxed executor required) |
-| **3** | **[`3_self_healing.py`](examples/metacognition/3_self_healing.py)** | **Error Recovery Pipeline** (validated recovery subgraph) |
-| **4** | **[`4_adaptive_deep_dive.py`](examples/metacognition/4_adaptive_deep_dive.py)** | **Structural Adaptation** (node topology determined at runtime) |
-| **5** | **[`5_expert_summoner.py`](examples/metacognition/5_expert_summoner.py)** | **Domain Subgraph Dispatch** (pre-defined expert spec injection) |
+| **1** | **[`1_dynamic_depth.py`](examples/adaptive/1_dynamic_depth.py)** | **Adaptive Worker Count** (1 Node vs N Nodes) |
+| **2** | **[`2_tool_inventor.py`](examples/adaptive/2_tool_inventor.py)** | **Runtime Code Generation** (sandboxed executor required) |
+| **3** | **[`3_self_healing.py`](examples/adaptive/3_self_healing.py)** | **Error Recovery Pipeline** (validated recovery subgraph) |
+| **4** | **[`4_adaptive_deep_dive.py`](examples/adaptive/4_adaptive_deep_dive.py)** | **Structural Adaptation** (node topology determined at runtime) |
+| **5** | **[`5_expert_summoner.py`](examples/adaptive/5_expert_summoner.py)** | **Domain Subgraph Dispatch** (pre-defined expert spec injection) |
 
 
 ---
