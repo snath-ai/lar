@@ -11,7 +11,7 @@ sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 import lar
 from lar import GraphState, GraphExecutor, LLMNode, RouterNode, ToolNode, BatchNode
-from lar.dynamic import DynamicNode, TopologyValidator
+from lar.adaptive import DynamicNode, TopologyValidator
 
 # --- MOCKING ---
 from unittest.mock import patch
