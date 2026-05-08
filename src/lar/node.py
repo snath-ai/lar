@@ -611,89 +611,97 @@ class BatchNode(BaseNode):
         self.next_node = next_node
 
     def execute(self, state: GraphState):
+        MAX_STEPS = 50
+        MAX_WORKERS = min(32, len(self.nodes) + 4)
         print(f"  [BatchNode]: Starting parallel execution of {len(self.nodes)} nodes...")
-        
-        # Helper to run a single node with a cloned state
+
         def run_node_safe(node, base_state_dict):
-            # Deep copy state for isolation safety in threads
-            local_state_dict = copy.deepcopy(base_state_dict)
-            local_state = GraphState(local_state_dict)
-            
-            # Execute the node logic
-            # [FIX] Recursive Execution Loop
-            # Previously, we just ran node.execute() and ignored the return.
-            # But AdaptiveNodes return a 'next_node' (the subgraph entry) that MUST be run.
-            # So we loop here, effectively becoming a mini-GraphExecutor for this thread.
+            local_state = GraphState(copy.deepcopy(base_state_dict))
             current_node = node
-            MAX_STEPS = 50 # Safety brake for infinite loops
             steps = 0
-            
             while current_node and steps < MAX_STEPS:
-                # print(f"    [BatchThread] Executing {current_node.__class__.__name__}...")
                 current_node = current_node.execute(local_state)
                 steps += 1
-            
             if steps >= MAX_STEPS:
                 print(f"  [BatchNode] WARN: Thread hit MAX_STEPS ({MAX_STEPS}). Potential infinite loop.")
-            
             return local_state
 
-        # Snapshot current state
         base_state_dict = state.get_all()
-        results = []
-        
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            # Launch all tasks
-            future_to_node = {
-                executor.submit(run_node_safe, node, base_state_dict): node 
-                for node in self.nodes
-            }
-            
-            for future in concurrent.futures.as_completed(future_to_node):
-                node = future_to_node[future]
-                try:
-                    local_state_result = future.result()
-                    results.append(local_state_result)
-                    node_name = getattr(node, "__name__", node.__class__.__name__)
-                    print(f"  [BatchNode]: Node {node_name} ({getattr(node, 'output_key', 'unknown')}) completed.")
-                except Exception as e:
-                    node_name = getattr(node, "__name__", node.__class__.__name__)
-                    print(f"  [BatchNode] ERROR in thread for {node_name}: {e}")
-                    state.set("last_error", str(e))
-
-        # Merge results back into the main state
-        print(f"  [BatchNode]: Merging results from {len(results)} threads...")
-        
-        updates_count = 0
-        
-        # Track total token spend across threads for accurate merging
-        total_budget_spent = 0
         base_budget = base_state_dict.get("token_budget")
-        
-        for local_state in results:
-            local_dict = local_state.get_all()
-            
-            # Extract budget delta if applicable
-            if base_budget is not None and "token_budget" in local_dict:
-                thread_spent = base_budget - local_dict["token_budget"]
-                if thread_spent > 0:
-                    total_budget_spent += thread_spent
-                    
-            for k, v in local_dict.items():
-                if k == "token_budget":
-                    continue # Handled mathematically below
-                # If value is different from base, or new, we merge it.
+
+        # Collect results in deterministic insertion order, not as_completed order
+        ordered_results: List[tuple] = []
+        failed_branches: List[str] = []
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            future_to_node = {
+                executor.submit(run_node_safe, node, base_state_dict): (i, node)
+                for i, node in enumerate(self.nodes)
+            }
+            pending = {f: meta for f, meta in future_to_node.items()}
+            for future in concurrent.futures.as_completed(pending):
+                i, node = pending[future]
+                node_name = getattr(node, "__name__", node.__class__.__name__)
+                try:
+                    ordered_results.append((i, future.result()))
+                    print(f"  [BatchNode]: Branch {i} ({node_name}) completed.")
+                except Exception as e:
+                    failed_branches.append(node_name)
+                    print(f"  [BatchNode] ERROR in branch {i} ({node_name}): {e}")
+
+        if failed_branches:
+            state.set("last_error", f"BatchNode: {len(failed_branches)} branch(es) failed: {failed_branches}")
+
+        # Sort by original insertion order so merge is deterministic regardless of completion order
+        ordered_results.sort(key=lambda x: x[0])
+        local_states = [r for _, r in ordered_results]
+
+        print(f"  [BatchNode]: Merging {len(local_states)} branch results (deterministic order)...")
+
+        # First pass — detect conflicts across branches before writing anything
+        seen: dict = {}
+        conflicts: set = set()
+        for local_state in local_states:
+            for k, v in local_state.get_all().items():
+                if k in ("token_budget", "last_error"):
+                    continue
                 if k not in base_state_dict or base_state_dict[k] != v:
-                    state.set(k, v)
-                    updates_count += 1
-                    
-        # Apply reconciled budget reduction
+                    if k in seen and seen[k] != v:
+                        conflicts.add(k)
+                    seen[k] = v
+
+        if conflicts:
+            print(f"  [BatchNode] WARN: Merge conflict on keys {conflicts} — first writer wins (branch 0 priority).")
+            state.set("_batch_conflicts", list(conflicts))
+
+        # Second pass — write in order; first writer wins on conflicts
+        written: set = set()
+        updates_count = 0
+        total_budget_spent = 0
+
+        for local_state in local_states:
+            local_dict = local_state.get_all()
+
+            if base_budget is not None and "token_budget" in local_dict:
+                spent = base_budget - local_dict["token_budget"]
+                if spent > 0:
+                    total_budget_spent += spent
+
+            for k, v in local_dict.items():
+                if k in ("token_budget", "last_error"):
+                    continue
+                if k not in base_state_dict or base_state_dict[k] != v:
+                    if k not in written:
+                        state.set(k, v)
+                        written.add(k)
+                        updates_count += 1
+
         if base_budget is not None:
             new_budget = base_budget - total_budget_spent
             state.set("token_budget", new_budget)
-            print(f"  [BatchNode]: Reconciled parallel Token Budget: {base_budget} -> {new_budget} remaining.")
-        
-        print(f"  [BatchNode]: Merged {updates_count} updates.")
+            print(f"  [BatchNode]: Reconciled Token Budget: {base_budget} -> {new_budget} remaining.")
+
+        print(f"  [BatchNode]: Merged {updates_count} updates. Conflicts: {len(conflicts)}. Failed branches: {len(failed_branches)}.")
         return self.next_node
 
 class ReduceNode(LLMNode):
