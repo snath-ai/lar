@@ -315,7 +315,7 @@ class ComplianceManifestGenerator:
                 "message": (
                     f"{len(unvaulted_tools)} ToolNode(s) execute without a CredentialVault. "
                     "This violates the privilege minimization requirement. "
-                    f"Affected tools: {[t.get('tool_function') for t in unvaulted_tools]}"
+                    f"Affected tools: {[t.get('tool_function') or t.get('output_key') or t.get('node_type') for t in unvaulted_tools]}"
                 )
             })
         if dynamic_nodes:
@@ -329,12 +329,19 @@ class ComplianceManifestGenerator:
                 )
             })
         if third_party_tools:
+            def _tool_label(t: Dict) -> str:
+                return (
+                    t.get("tool_function")
+                    or t.get("output_key")
+                    or t.get("action_type")
+                    or t.get("node_type", "unknown")
+                )
             flags.append({
                 "severity": "MEDIUM",
                 "article": "Art. 50",
                 "message": (
                     f"{len(third_party_tools)} tool(s) affect third parties and trigger Art. 50 transparency obligations. "
-                    f"Verify TransparencyEngine is attached. Tools: {[t.get('tool_function') for t in third_party_tools]}"
+                    f"Verify TransparencyEngine is attached. Tools: {[_tool_label(t) for t in third_party_tools]}"
                 )
             })
         if not flags:
