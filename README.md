@@ -47,7 +47,7 @@ Lár ships a complete **Enterprise Compliance Backbone** — all 12 primitives r
 | **Step 9** | External action inventory | `ComplianceManifestGenerator` |
 | **Art. 12/14** | Stakeholder authority record | `AuthorityLedger` |
 
-**[Read the EU AI Act Deep Dive →](https://docs.snath.ai/compliance/eu-ai-act-deep-dive/)** | **[Nannini et al. (2026) Full Mapping →](docs/compliance/paper-compliance-mapping.md)**
+**[Read the EU AI Act Deep Dive →](https://docs.snath.ai/compliance/eu-ai-act-deep-dive/)** | **[Nannini et al. (2026) Full Mapping →](https://docs.snath.ai/compliance/paper-compliance-mapping/)**
 
 ---
 
