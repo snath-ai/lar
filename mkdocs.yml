@@ -90,7 +90,7 @@ nav:
     - 'ReduceNode': api-reference/reducenode.md
     - 'FunctionalNode': api-reference/functionalnode.md
     - 'HumanJuryNode': api-reference/humanjurynode.md
-    - 'AdaptiveNode': api-reference/dynamicnode.md
+    - 'AdaptiveNode': api-reference/adaptivenode.md
     - 'AddValueNode': api-reference/addvaluenode.md
     - 'ClearErrorNode': api-reference/clearerrornode.md
     - 'TopologyValidator': api-reference/topologyvalidator.md

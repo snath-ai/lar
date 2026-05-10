@@ -64,9 +64,6 @@ Lár is the first agentic framework to ship with a complete, production-ready **
 
 [Read the EU AI Act Deep Dive](compliance/eu-ai-act-deep-dive.md) | [Explore the Enterprise Reference Implementation](compliance/enterprise-reference.md)
 
-!!! warning "Legal Disclaimer"
-    Lár is open-source software infrastructure, not legal or compliance advice. Using Lár does not automatically guarantee compliance with the EU AI Act, GDPR, HIPAA, or any other regulation. Organizations are solely responsible for ensuring their AI systems undergo proper legal review and conformity assessments.
-
 ## Demos & Examples
 
 Learn by building with our ready-made demos:
