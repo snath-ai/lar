@@ -108,6 +108,14 @@ See: [`examples/comparisons/langchain_swarm_fail.py`](examples/comparisons/langc
 
 ---
 
+## Build a Compliant Agent from Scratch
+
+New to Lár? The step-by-step guide walks you through wiring every compliance primitive — from credential vault to HMAC-signed audit artefacts — starting from a blank file. Written for both engineers and AI assistants.
+
+**[Read the guide →](docs/guides/build-compliant-agent.md)** | **[Live showcase →](https://docs.snath.ai/compliance/finance-showcase/)**
+
+---
+
 ## Installation
 
 ```bash

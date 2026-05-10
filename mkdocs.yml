@@ -65,6 +65,7 @@ nav:
     - 'The Validation Suite': case-studies/validation-suite.md
     - 'Red Teaming (Security)': case-studies/red-teaming.md
   - 'Guides':
+    - 'Build a Compliant Agent from Scratch': guides/build-compliant-agent.md
     - 'Universal Model Support (LiteLLM)': guides/litellm_setup.md
     - 'Post-LLM World Models (JEPA)': guides/jepa-orchestration.md
     - 'Multi-Agent Orchestration': guides/multi-agent-orchestration.md
