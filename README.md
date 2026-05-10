@@ -76,6 +76,8 @@ Every step produces a real Article 12 causal trace, a real Article 14 AuthorityL
 
 **[Full showcase breakdown — execution trace, real JSON artefacts, 12-step coverage map →](https://docs.snath.ai/compliance/finance-showcase/)**
 
+> **Open-source vs. enterprise:** All 12 compliance primitives (`BranchTriageNode`, `BiasFilterNode`, `RiskScorerNode`, `CredentialVault`, etc.) are in `lar.compliance` and fully open-source under Apache 2.0. The finance showcase uses `build_and_run` from `lar.enterprise`, a convenience wrapper in the enterprise tier. Open-source users assemble the same pipeline from primitives — the step-by-step guide walks you through it: **[Build a Compliant Agent from Scratch →](https://docs.snath.ai/guides/build-compliant-agent/)**
+
 ---
 
 ## How It Works: The "Glass Box"
