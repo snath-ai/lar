@@ -94,8 +94,60 @@ list(executor.run_step_by_step(manager, {}))
 
 Every level of nesting produces its own Causal Trace entry (Art. 12). An auditor can reconstruct the full decision tree — which specs were proposed, which were validated, which were rejected — from the audit log alone.
 
+### Art. 14 and Meaningful Oversight in Fractal Agents
+
+A critical compliance gap emerges when `BatchNode` runs parallel branches that each produce a risk assessment: if those branches feed directly into a `ReduceNode`, the consolidated output discards per-dimension evidence before any human sees it. A principal investigator shown "MEDIUM overall" has no way to know that one branch returned CRITICAL.
+
+**The pattern that closes this gap:**
+
+```
+BatchNode → BranchTriageNode → RouterNode
+                                    ↓ "critical" → HumanJuryNode (early gate, pre-consolidation)
+                                    ↓ "ok"       → ReduceNode → parse → HumanJuryNode (final gate)
+```
+
+`BranchTriageNode` (in `lar.compliance`) sits between `BatchNode` and `RouterNode`. It:
+
+1. Parses every branch output (JSON-embedded risk assessments)
+2. Writes `branch_findings_summary` — a per-dimension breakdown the `HumanJuryNode` includes in its context, so the human sees individual findings alongside the consolidated recommendation
+3. Sets `branch_critical=True` if any branch exceeds the threshold, triggering the early-exit jury before `ReduceNode` compresses the evidence away
+
+```python
+from lar.compliance import BranchTriageNode
+from lar import RouterNode
+
+node_triage = BranchTriageNode(
+    branch_output_keys=["safety_analysis", "efficacy_analysis", "regulatory_analysis"],
+    critical_threshold="CRITICAL",   # or "HIGH" for stricter escalation
+    next_node=node_branch_router,
+)
+
+node_branch_router = RouterNode(
+    decision_function=lambda s: "critical" if s.get("branch_critical") else "ok",
+    path_map={
+        "critical": node_jury_early,   # Fires before ReduceNode
+        "ok":       node_reduce,
+    },
+)
+
+# Both HumanJuryNodes include branch_findings_summary in context_keys:
+jury = HumanJuryNode(
+    context_keys=["risk_level", "recommendation", "branch_findings_summary"],
+    ...
+)
+```
+
+This is the difference between compliance-on-paper (a single jury interrupt on an aggregated score) and meaningful oversight under Art. 14 (a human who can interrogate the evidence before it is destroyed).
+
+The full working implementation with HMAC-signed artefact verification:
+
+```bash
+python examples/compliance/23_fractal_compliance_showcase.py
+```
+
 ## See Also
 
 - [AdaptiveNode API](../api-reference/adaptivenode.md)
 - [BatchNode API](../api-reference/batchnode.md)
 - [Defensive Constraints](10-defensive-constraints.md) — token budgets and node fatigue limits
+- [Build a Compliant Agent from Scratch](../guides/build-compliant-agent.md)

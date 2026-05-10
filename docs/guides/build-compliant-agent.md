@@ -460,9 +460,59 @@ result = build_and_run(case=my_case, domain="LEGAL")       # DSA + UPL + EU AI A
 
 ---
 
+---
+
+## Step 17 (Advanced): Fractal Agents — Art. 14 Oversight Across Parallel Branches
+
+When your agent uses `BatchNode` to run parallel analysis branches, a new Art. 14 problem appears: `ReduceNode` compresses individual branch outputs into a consolidated score, destroying the per-dimension evidence before any human sees it. A reviewer approving "MEDIUM overall" may not know that the safety branch returned CRITICAL.
+
+The fix is `BranchTriageNode`, a first-class compliance primitive in `lar.compliance`. Wire it immediately after `BatchNode`:
+
+```python
+from lar.compliance import BranchTriageNode
+from lar import RouterNode
+
+# Sits between BatchNode and RouterNode
+node_triage = BranchTriageNode(
+    branch_output_keys=["safety_analysis", "efficacy_analysis", "regulatory_analysis"],
+    critical_threshold="CRITICAL",  # "HIGH" for stricter escalation
+    next_node=node_branch_router,
+)
+
+# Routes to early jury before consolidation if any branch is CRITICAL
+node_branch_router = RouterNode(
+    decision_function=lambda s: "critical" if s.get("branch_critical") else "ok",
+    path_map={
+        "critical": node_jury_early,   # HumanJuryNode fires PRE-consolidation
+        "ok":       node_reduce,
+    },
+)
+
+# Both early and final jury include branch_findings_summary in context_keys
+jury = HumanJuryNode(
+    context_keys=["risk_level", "recommendation", "branch_findings_summary"],
+    ...
+)
+```
+
+`BranchTriageNode` writes two keys to state:
+
+- `branch_findings_summary` — a formatted per-dimension breakdown the jury sees alongside the consolidated output. The PI can read "SAFETY: CRITICAL — 3 deaths, DSMB suspension" even after ReduceNode has compressed the raw analysis away.
+- `branch_critical` — boolean flag the `RouterNode` reads to decide whether to interrupt before consolidation.
+
+The full fractal showcase with CRITICAL early-exit firing, two authority ledger records, and 13 HMAC-signed steps:
+
+```bash
+python examples/compliance/23_fractal_compliance_showcase.py
+```
+
+---
+
 ## See Also
 
 - [Finance Showcase — live run through all 12 primitives →](https://docs.snath.ai/compliance/finance-showcase/)
+- [Fractal Compliance Showcase — BatchNode + AdaptiveNode + BranchTriageNode →](../../examples/compliance/23_fractal_compliance_showcase.py)
+- [Fractal Agency — Art. 14 in parallel agents →](../core-concepts/11-fractal-agency.md)
 - [Auditor's Guide — how to inspect the artefacts →](../compliance/auditor_guide.md)
 - [Nannini et al. (2026) Full Mapping →](https://docs.snath.ai/compliance/paper-compliance-mapping/)
 - [Enterprise Reference Implementation →](../compliance/enterprise-reference.md)

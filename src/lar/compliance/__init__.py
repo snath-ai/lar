@@ -11,6 +11,7 @@ from .authority_record import AuthorityRecord, AuthorityLedger
 from .lethal_trifecta_guard import LethalTrifectaGuard, LethalTrifectaError
 from .incident_reporter import IncidentReporter
 from .prohibited_practice_guard import ProhibitedPracticeGuard, ProhibitedPracticeError
+from .branch_triage import BranchTriageNode
 
 __all__ = [
     "PolicyRegistry", "ActionPolicy",
@@ -20,6 +21,7 @@ __all__ = [
     "TransparencyEngine",
     "PIIRedactionEngine",
     "BiasFilterNode",
+    "BranchTriageNode",
     "SyntheticMarkerNode",
     "ComplianceManifestGenerator",
     "AuthorityRecord", "AuthorityLedger",

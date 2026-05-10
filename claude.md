@@ -86,6 +86,7 @@ node = AddValueNode(
 - **ReduceNode**: Summarize multi-agent outputs, delete raw memory to compress state context.
 - **AdaptiveNode**: Runtime graph composition — asks an LLM to design a validated subgraph, passes it through TopologyValidator, and injects it into the execution path. Use `DynamicNode` as a deprecated alias.
 - **HumanJuryNode**: Mandatory human oversight interrupt satisfying EU AI Act Art. 14 (human oversight requirement).
+- **BranchTriageNode**: Post-BatchNode compliance primitive for fractal agents. Parses all parallel branch outputs, builds `branch_findings_summary` for jury context, and sets `branch_critical=True` if any branch breaches the threshold. Wire it between `BatchNode` and `RouterNode`. Without this, the human jury only sees the consolidated score — not which individual branch triggered the alert. That is not meaningful oversight under Art. 14. Import from `lar.compliance`.
 - **ClearErrorNode**: Clear error states for deterministic retry loops.
 
 ## Observability, Compliance, and Budgets

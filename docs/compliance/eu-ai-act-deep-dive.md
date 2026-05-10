@@ -63,6 +63,7 @@ Article 14 requires human oversight for high-risk systems to "override or revers
 *   **The `PolicyRegistry`:** Every tool and action is mapped to an ontology defining its regulatory domain and risk tier.
 *   **The `RiskScorerNode`:** This node evaluates the runtime state against the policy. If the action exceeds a predefined risk threshold (e.g., executing a financial transaction or making a medical assessment), it physically halts the autonomous loop.
 *   **The `HumanJuryNode`:** The system yields control to a human stakeholder securely over the CLI or via API webhook. The human can approve, reject, or *modify* the state manually before the graph is allowed to resume.
+*   **The `BranchTriageNode`:** In fractal or parallel agent architectures (BatchNode + multiple branches), a single consolidated score is not sufficient for meaningful human oversight. `BranchTriageNode` parses each branch output before `ReduceNode` compresses it, builds a `branch_findings_summary` the jury can inspect, and triggers an early-exit HumanJuryNode if any branch returns CRITICAL — before consolidation discards the evidence. Wire it between `BatchNode` and a `RouterNode`. See `examples/compliance/23_fractal_compliance_showcase.py` for a live run.
 
 ## 4. Runtime Behavioral Drift (Art. 3(23))
 

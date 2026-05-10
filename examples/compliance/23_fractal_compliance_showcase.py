@@ -39,6 +39,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 from lar import (
     GraphExecutor, LLMNode, FunctionalNode,
     HumanJuryNode, BatchNode, ReduceNode, RouterNode,
+    BranchTriageNode,
 )
 from lar.state import GraphState
 from lar.logger import AuditLogger
@@ -252,38 +253,14 @@ node_batch = BatchNode(
     next_node=None,
 )
 
-# Node C2: Triage — parse branch results, flag CRITICAL, build summary for jury context
-def triage_branches(state: GraphState):
-    """
-    Runs immediately after BatchNode. Two jobs:
-    1. Build branch_findings_summary so the jury (early or final) can see individual
-       dimension risk levels, not just the consolidated output.
-    2. Set branch_critical=True if any dimension returned CRITICAL — triggering the
-       early-exit jury before ReduceNode consolidates the results.
-    """
-    findings = {}
-    critical_found = False
-    for key in ["safety_analysis", "efficacy_analysis", "regulatory_analysis"]:
-        raw = state.get(key, "")
-        try:
-            start, end = raw.find("{"), raw.rfind("}") + 1
-            parsed = json.loads(raw[start:end]) if start >= 0 else {}
-        except Exception:
-            parsed = {}
-        level   = parsed.get("risk_level", "UNKNOWN")
-        finding = parsed.get("finding", raw[:120] if raw else "no output")
-        findings[key.replace("_analysis", "")] = {"risk_level": level, "finding": finding}
-        if level == "CRITICAL":
-            critical_found = True
-
-    lines = [
-        f"  {dim.upper():<12}: {data['risk_level']:<8} — {data['finding']}"
-        for dim, data in findings.items()
-    ]
-    state.set("branch_findings_summary", "Branch findings:\n" + "\n".join(lines))
-    state.set("branch_critical", critical_found)
-
-node_triage = FunctionalNode(func=triage_branches, next_node=None)
+# Node C2: BranchTriageNode — engine primitive (lar.compliance.BranchTriageNode)
+# Parses all three AdaptiveNode outputs, builds branch_findings_summary for jury context,
+# and sets branch_critical=True if any dimension breaches the threshold.
+node_triage = BranchTriageNode(
+    branch_output_keys=["safety_analysis", "efficacy_analysis", "regulatory_analysis"],
+    critical_threshold="CRITICAL",
+    next_node=None,  # → node_branch_router (wired after all nodes exist)
+)
 
 # Node D: ReduceNode — consolidates three parallel outputs into one assessment
 node_reduce = ReduceNode(
@@ -537,9 +514,9 @@ if __name__ == "__main__":
         adaptive_ok = adaptive_spec_present and len(adaptive_outputs) == 3
 
         # Early-exit HITL check: HumanJuryNode should have fired before ReduceNode
-        # if any branch returned CRITICAL (output key = jury_early_decision)
-        triage_step      = next((s for s in steps if s.get("node") == "FunctionalNode"
-                                 and "branch_critical" in s.get("state_diff", {}).get("added", {})), None)
+        # if any branch returned CRITICAL (output key = jury_early_decision).
+        # BranchTriageNode is logged as "BranchTriageNode" in the causal trace.
+        triage_step      = next((s for s in steps if s.get("node") == "BranchTriageNode"), None)
         early_jury_step  = next((s for s in steps if s.get("node") == "HumanJuryNode"
                                  and "jury_early_decision" in s.get("state_diff", {}).get("added", {})
                                  ), None)

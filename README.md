@@ -42,6 +42,7 @@ Lár ships a complete **Enterprise Compliance Backbone** — all 12 primitives r
 | **GDPR Art. 17** | PII redaction before signing | `PIIRedactionEngine` |
 | **Art. 50(2)** | Synthetic content marking | `SyntheticMarkerNode` |
 | **prEN 18283** | Runtime bias detection | `BiasFilterNode` |
+| **Art. 14 (fractal)** | Meaningful HITL in parallel agents — per-branch evidence before consolidation | `BranchTriageNode` |
 | **AEPD Rule of 2** | Lethal trifecta block | `LethalTrifectaGuard` |
 | **Art. 13** | Transparency disclosure | `TransparencyEngine` |
 | **Step 9** | External action inventory | `ComplianceManifestGenerator` |
@@ -367,6 +368,7 @@ Compliance pattern library:
 | **21** | **[`20_compliance_manifest.py`](examples/compliance/20_compliance_manifest.py)** | Compliance Manifest (Step 9) |
 | **22** | **[`21_authority_and_trifecta.py`](examples/compliance/21_authority_and_trifecta.py)** | Rule of 2 Trifecta Guard |
 | **23** | **[`22_eu_ai_act_finance_showcase.py`](examples/compliance/22_eu_ai_act_finance_showcase.py)** | **Full EU AI Act Pipeline Proof** |
+| **24** | **[`23_fractal_compliance_showcase.py`](examples/compliance/23_fractal_compliance_showcase.py)** | **Fractal Agent — BatchNode + AdaptiveNode + Art. 14 Early-Exit HITL** |
 
 #### 5. High Scale & Advanced (`examples/scale/`, `examples/advanced/`)
 | # | Pattern | Concept |

@@ -22,6 +22,7 @@ from .node import (
     node
 )
 from .adaptive import AdaptiveNode, DynamicNode, TopologyValidator
+from .compliance import BranchTriageNode
 from .executor import GraphExecutor
 from .logger import AuditLogger
 from .tracker import TokenTracker
@@ -55,6 +56,7 @@ __all__ = [
     "DynamicNode",  # Deprecated alias for AdaptiveNode
     "TopologyValidator",
     "ClearErrorNode",
+    "BranchTriageNode",
     "__version__",
     
     # Utility Functions

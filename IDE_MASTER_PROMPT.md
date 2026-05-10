@@ -23,6 +23,7 @@ Lár is designed to be fully compliant with the **EU AI Act (enforceable Aug 202
 2. **Third-Party Integrations**: Integrations (e.g., Slack bots, web scrapers, database writers) are **external actions** that must be audited. Do not bypass the Lár state object. Return integration results as a dict so they merge into the state and appear in the `state_diff`.
 3. **High-Risk Actions**: For any action that modifies production data or makes critical decisions (finance, healthcare, HR), inject a `HumanJuryNode` before the action executes to fulfill the **Art. 14 Human Oversight** requirement.
 4. **No Hidden Logic**: Do not hide LLM calls inside regular Python functions. Use `LLMNode` so the prompt and generation are exposed to the `AuditLogger`.
+5. **Fractal & Parallel Agents**: When using `BatchNode` with parallel branches that each produce a risk assessment, insert a `BranchTriageNode` between `BatchNode` and `RouterNode`. It parses all branch outputs, builds `branch_findings_summary` (so the human jury sees per-dimension evidence, not just the consolidated score), and sets `branch_critical=True` if any branch breaches the threshold. This is what makes Art. 14 oversight *meaningful* in multi-branch pipelines — the human can interrogate individual branch findings before the ReduceNode discards them. For building an agent compliant with EU AI Act from scratch, follow the step-by-step guide at `docs/guides/build-compliant-agent.md`.
 
 ---
 
@@ -274,6 +275,45 @@ adaptive = AdaptiveNode(
 
 **Supported subgraph node types**: `LLMNode`, `ToolNode`, `BatchNode`, `AdaptiveNode` (recursive composition).
 **Note**: `DynamicNode` is a deprecated alias for `AdaptiveNode` — existing code continues to work but will emit a `DeprecationWarning`.
+
+---
+
+### `BranchTriageNode` — Post-BatchNode HITL Evidence Builder (Art. 14)
+
+```python
+from lar.compliance import BranchTriageNode
+from lar import RouterNode
+
+# Place between BatchNode and RouterNode in fractal/parallel agent graphs.
+# Parses branch outputs, flags CRITICAL, builds summary for jury context.
+node_triage = BranchTriageNode(
+    branch_output_keys=["safety_analysis", "efficacy_analysis", "regulatory_analysis"],
+    risk_level_key="risk_level",      # JSON field in each branch output
+    finding_key="finding",            # JSON field for the 1-sentence finding
+    critical_threshold="CRITICAL",    # Set to "HIGH" to escalate earlier
+    summary_state_key="branch_findings_summary",  # Include in HumanJuryNode context_keys
+    critical_flag_key="branch_critical",          # RouterNode reads this key
+    next_node=node_branch_router,
+)
+
+node_branch_router = RouterNode(
+    decision_function=lambda s: "critical" if s.get("branch_critical") else "ok",
+    path_map={
+        "critical": node_jury_early,  # Fire HumanJuryNode BEFORE ReduceNode
+        "ok":       node_reduce,      # All clear — proceed to consolidation
+    },
+)
+
+# In the HumanJuryNode, include branch_findings_summary in context_keys:
+jury = HumanJuryNode(
+    ...
+    context_keys=["risk_level", "recommendation", "branch_findings_summary"],
+)
+```
+
+**Why this matters**: Without `BranchTriageNode`, a human approving a consolidated score has no visibility into which individual dimension triggered a HIGH or CRITICAL flag. The PI sees "MEDIUM overall" but safety said "CRITICAL". That is not meaningful oversight under Art. 14. `BranchTriageNode` preserves the evidence before `ReduceNode` compresses it away.
+
+**Regulatory basis**: EU AI Act Art. 14 (human oversight must be meaningful); Art. 3(23) (runtime graph composition in fractal agents is a substantial modification candidate — each branch finding must be preserved for the conformity trail).
 
 ---
 
