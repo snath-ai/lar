@@ -177,7 +177,7 @@ def main():
     console.print("Processing a high-risk credit application (Annex III, point 5(b)) containing PII.")
     console.print("[dim]Classification: FINANCE / HIGH-RISK / PRE_EXECUTION oversight / THIRD_PARTY affected[/dim]")
 
-    mock_human_inputs = ["approve", "Reviewed risk score. Debt-to-equity ratio justifies denial."]
+    mock_human_inputs = ["approve", "Reviewed FINANCE case. AI recommendation verified against policy. Approving with mandatory collateral condition."]
 
     try:
         result = build_and_run(

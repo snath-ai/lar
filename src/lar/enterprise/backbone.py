@@ -110,7 +110,7 @@ DOMAIN_PRESETS: Dict[str, Dict[str, Any]] = {
         "conformity_id":    "CA-FIN-2026",
         "stakeholder_role": "Risk Officer",
         "regulatory_tags":  ["EU_AI_ACT", "GDPR", "MIFID_II", "DORA", "FINRA"],
-        "pii_keys":         ["account_number", "ssn", "iban", "email", "name"],
+        "pii_keys":         ["account_number", "ssn", "iban", "email", "name", "dob"],
         "bias_terms":       ["race", "gender", "age", "postal_code", "nationality"],
         "analysis_prompt": (
             "You are a credit risk analyst. Assess the following loan/credit application.\n"
@@ -433,9 +433,9 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
     # ── Wire the graph ────────────────────────────────────────────────────────
     node_creds.next_node  = node_llm
     node_llm.next_node    = node_parse
-    node_parse.next_node  = node_risk
-    node_risk.next_node   = node_bias   # non-PRE_EXECUTION path
-    node_bias.next_node   = node_checks
+    node_parse.next_node  = node_bias   # bias scan always runs before risk scoring
+    node_bias.next_node   = node_risk   # bias result in state when jury sees context
+    node_risk.next_node   = node_checks # non-PRE_EXECUTION path (LOW/MEDIUM)
     node_jury.next_node   = node_checks # post-approval path
     node_checks.next_node = node_prohibited
     # node_prohibited -> node_marker
