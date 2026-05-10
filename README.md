@@ -96,6 +96,7 @@ This means:
 | **Compliance** | None. No EU AI Act primitives. | 12 compliance primitives, cryptographic logs, Art. 14 oversight. |
 | **Cost** | LLM call on every routing step. | Code-based routing — $0.00/route. |
 | **Scale** | Crashes at 25 steps (recursion limit). | 60+ node graphs run to completion. |
+| **Crash Recovery** | LLM router may branch differently on retry — "resume" is actually a new run. | Pure Python routers are deterministic. Same state in, same path out. Resumption is exact. |
 | **Core Philosophy** | Sells "Magic." | Sells "Trust." |
 
 LangGraph crashes at Step 25 on a 60-node graph:
