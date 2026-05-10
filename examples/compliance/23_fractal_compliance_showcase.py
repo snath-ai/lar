@@ -38,7 +38,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from lar import (
     GraphExecutor, LLMNode, FunctionalNode,
-    HumanJuryNode, BatchNode, ReduceNode,
+    HumanJuryNode, BatchNode, ReduceNode, RouterNode,
 )
 from lar.state import GraphState
 from lar.logger import AuditLogger
@@ -81,9 +81,9 @@ TRIAL_CASE = {
     "phase":          "Phase III",
     "indication":     "Non-small cell lung cancer (NSCLC)",
     "safety_summary": (
-        "3 serious adverse events reported: Grade 2 hepatotoxicity (n=1), "
-        "Grade 3 neutropenia (n=2). No treatment-related deaths. "
-        "Overall AE incidence: 42%. Discontinuation rate: 8%."
+        "Grade 4 hepatotoxicity (n=4, 2 requiring ICU), Grade 4 neutropenia (n=5). "
+        "3 confirmed treatment-related deaths. DSMB voted 5-0 to suspend trial. "
+        "Protocol halted pending emergency safety review. AE incidence: 78%. Discontinuation: 41%."
     ),
     "efficacy_summary": (
         "Primary endpoint (PFS): 8.4 months vs 5.1 months control (HR 0.61, 95% CI 0.48-0.78, p<0.001). "
@@ -252,6 +252,39 @@ node_batch = BatchNode(
     next_node=None,
 )
 
+# Node C2: Triage — parse branch results, flag CRITICAL, build summary for jury context
+def triage_branches(state: GraphState):
+    """
+    Runs immediately after BatchNode. Two jobs:
+    1. Build branch_findings_summary so the jury (early or final) can see individual
+       dimension risk levels, not just the consolidated output.
+    2. Set branch_critical=True if any dimension returned CRITICAL — triggering the
+       early-exit jury before ReduceNode consolidates the results.
+    """
+    findings = {}
+    critical_found = False
+    for key in ["safety_analysis", "efficacy_analysis", "regulatory_analysis"]:
+        raw = state.get(key, "")
+        try:
+            start, end = raw.find("{"), raw.rfind("}") + 1
+            parsed = json.loads(raw[start:end]) if start >= 0 else {}
+        except Exception:
+            parsed = {}
+        level   = parsed.get("risk_level", "UNKNOWN")
+        finding = parsed.get("finding", raw[:120] if raw else "no output")
+        findings[key.replace("_analysis", "")] = {"risk_level": level, "finding": finding}
+        if level == "CRITICAL":
+            critical_found = True
+
+    lines = [
+        f"  {dim.upper():<12}: {data['risk_level']:<8} — {data['finding']}"
+        for dim, data in findings.items()
+    ]
+    state.set("branch_findings_summary", "Branch findings:\n" + "\n".join(lines))
+    state.set("branch_critical", critical_found)
+
+node_triage = FunctionalNode(func=triage_branches, next_node=None)
+
 # Node D: ReduceNode — consolidates three parallel outputs into one assessment
 node_reduce = ReduceNode(
     model_name=MODEL,
@@ -300,12 +333,32 @@ node_risk = RiskScorerNode(
     action_type_key="action_type",
 )
 
-# Node H: Human jury
+# Node H-early: Human jury — fires BEFORE ReduceNode if any branch returns CRITICAL.
+# The PI sees the raw per-dimension findings and decides whether to proceed at all.
+node_jury_early = HumanJuryNode(
+    prompt=(
+        f"[{DOMAIN}] CRITICAL risk detected in one or more analysis branches.\n"
+        "Review the individual dimension findings before consolidation proceeds."
+    ),
+    choices=["approve", "reject"],
+    output_key="jury_early_decision",
+    context_keys=["branch_findings_summary"],
+    next_node=None,  # → node_reduce (wired below)
+    authority_ledger=authority_ledger,
+    stakeholder_id=os.getenv("REVIEWER_EMAIL", "pi@clinical-site.org"),
+    stakeholder_role="Principal Investigator",
+    action_description=f"{DOMAIN} CRITICAL branch — pre-consolidation safety gate",
+    risk_score_key=None,
+)
+
+# Node H-final: Human jury — fires after consolidation for PRE_EXECUTION sign-off.
+# Context includes branch_findings_summary so the PI sees dimension detail alongside
+# the consolidated recommendation. Satisfies Art. 14 meaningful human oversight.
 node_jury = HumanJuryNode(
     prompt=f"[{DOMAIN}] Multi-dimensional trial assessment ready. Do you approve?",
     choices=["approve", "reject"],
     output_key="jury_decision",
-    context_keys=["risk_level", "recommendation", "model_confidence"],
+    context_keys=["risk_level", "recommendation", "model_confidence", "branch_findings_summary"],
     next_node=None,
     authority_ledger=authority_ledger,
     stakeholder_id=os.getenv("REVIEWER_EMAIL", "pi@clinical-site.org"),
@@ -357,16 +410,27 @@ node_marker = SyntheticMarkerNode(
     next_node=None,
 )
 
+# Node C3: Router — created here so all target nodes (jury_early, reduce) already exist
+node_branch_router = RouterNode(
+    decision_function=lambda s: "critical" if s.get("branch_critical") else "ok",
+    path_map={
+        "critical": node_jury_early,
+        "ok":       node_reduce,
+    },
+)
+
 # ─────────────────────────────────────────────────────────────────────────────
 # WIRE THE GRAPH
 # ─────────────────────────────────────────────────────────────────────────────
 
 node_creds.next_node      = node_batch
-node_batch.next_node      = node_reduce
+node_batch.next_node      = node_triage
+node_triage.next_node     = node_branch_router
+node_jury_early.next_node = node_reduce    # after early approval, still consolidate
 node_reduce.next_node     = node_parse
 node_parse.next_node      = node_bias
 node_bias.next_node       = node_risk
-node_risk.next_node       = node_checks    # LOW/MEDIUM path
+node_risk.next_node       = node_checks    # LOW/MEDIUM path (no jury needed)
 node_jury.next_node       = node_checks    # PRE_EXECUTION post-approval path
 node_checks.next_node     = node_prohibited
 node_prohibited.next_node = node_marker
@@ -398,8 +462,12 @@ if __name__ == "__main__":
 
     # Mock inputs for non-interactive run
     mock_inputs = [
+        # Early jury (fires only if any branch returns CRITICAL)
         "approve",
-        "Reviewed multi-dimensional assessment. Safety and efficacy data support submission. Protocol deviations are minor and documented.",
+        "DSMB notified. Grade 4 events are within pre-specified stopping rules. Proceeding to full consolidation with enhanced monitoring protocol.",
+        # Final jury (fires always for PRE_EXECUTION domains after consolidation)
+        "approve",
+        "Reviewed consolidated assessment and all branch findings. Risk accepted with mandatory protocol amendment and DSMB oversight.",
     ]
     _idx = [0]
     _orig = builtins.input
@@ -462,14 +530,29 @@ if __name__ == "__main__":
         # logged as a top-level trace step. Detect via BatchNode's state_diff:
         #   - __graph_spec_json__ added → AdaptiveNode composed at least one validated spec
         #   - _batch_conflicts present  → multiple AdaptiveNode branches competed for the key
-        batch_added  = batch_step.get("state_diff", {}).get("added", {}) if batch_step else {}
+        batch_added   = batch_step.get("state_diff", {}).get("added", {}) if batch_step else {}
         batch_updated = batch_step.get("state_diff", {}).get("updated", {}) if batch_step else {}
-        adaptive_spec_present    = "__graph_spec_json__" in batch_added or "__graph_spec_json__" in batch_updated
-        adaptive_conflict_present = "_batch_conflicts" in batch_added
-        # Count inferred AdaptiveNode branches: safety + efficacy + regulatory outputs
+        adaptive_spec_present = "__graph_spec_json__" in batch_added or "__graph_spec_json__" in batch_updated
         adaptive_outputs = [k for k in batch_added if k in ("safety_analysis", "efficacy_analysis", "regulatory_analysis")]
-        adaptive_count = len(adaptive_outputs)
-        adaptive_ok = adaptive_spec_present and adaptive_count == 3
+        adaptive_ok = adaptive_spec_present and len(adaptive_outputs) == 3
+
+        # Early-exit HITL check: HumanJuryNode should have fired before ReduceNode
+        # if any branch returned CRITICAL (output key = jury_early_decision)
+        triage_step      = next((s for s in steps if s.get("node") == "FunctionalNode"
+                                 and "branch_critical" in s.get("state_diff", {}).get("added", {})), None)
+        early_jury_step  = next((s for s in steps if s.get("node") == "HumanJuryNode"
+                                 and "jury_early_decision" in s.get("state_diff", {}).get("added", {})
+                                 ), None)
+        # Check that branch_findings_summary reached the final jury's context
+        final_jury_step  = next((s for s in steps if s.get("node") == "HumanJuryNode"
+                                 and "jury_decision" in s.get("state_diff", {}).get("added", {})), None)
+        branch_critical_val = None
+        if triage_step:
+            branch_critical_val = triage_step.get("state_diff", {}).get("added", {}).get("branch_critical")
+        findings_in_state = any(
+            "branch_findings_summary" in s.get("state_before", {})
+            for s in steps if s.get("node") == "HumanJuryNode"
+        )
 
         print(f"\n✓ Causal Trace           : {runs[0].split('/')[-1]}")
         print(f"  Steps recorded         : {len(steps)}")
@@ -478,6 +561,10 @@ if __name__ == "__main__":
         print(f"  BatchNode fired        : {'✅ YES' if batch_step else '❌ NO'}")
         print(f"  AdaptiveNode instances : {'✅ 3 branches inferred (spec+outputs in BatchNode diff)' if adaptive_ok else '❌ NONE — check BatchNode state_diff'}")
         print(f"  BiasFilterNode fired   : {'✅ YES' if bias_step else '❌ NO'}")
+        crit_label = "CRITICAL detected" if branch_critical_val else "no CRITICAL branch"
+        print(f"  Branch triage          : {'✅ ' + crit_label if triage_step else '❌ triage node missing'}")
+        print(f"  Early-exit jury        : {'✅ FIRED (pre-consolidation safety gate)' if early_jury_step else ('⏭  skipped (no CRITICAL branch)' if triage_step else '❌ MISSING')}")
+        print(f"  Branch findings in jury: {'✅ YES (PI saw dimension breakdown)' if findings_in_state else '❌ NO — jury context missing branch summary'}")
 
     with open(f"{OUTPUT_DIR}/authority_ledger_fractal.json") as f:
         ledger = json.load(f)
