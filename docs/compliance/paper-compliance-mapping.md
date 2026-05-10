@@ -102,8 +102,11 @@ The paper notes: *"agents accumulate interaction data... that may contain protec
 | **Real-time** | `TransparencyEngine` third-party disclosure | Art. 13, Art. 50 |
 | **Pre-execution** | `HumanJuryNode` blocking interrupt | Art. 14(4) |
 | **Authority record** | `AuthorityLedger` (Fourth Tier) | Paper fn. 18 |
+| **Fractal / parallel agents** | `BranchTriageNode` — per-branch evidence before consolidation | Paper §6.2, Art. 14 |
 
 The `AuthorityLedger` directly implements the paper's footnote 18 requirement: infrastructure that *"logs the notification delivered to the responsible stakeholder, records the stakeholder's decision and rationale, and maintains an evidentiary chain from action proposal through risk assessment to human determination and execution outcome."*
+
+**Fractal agent note (§6.2):** When `BatchNode` runs parallel branches, `ReduceNode` compresses individual branch results into a consolidated output. Without `BranchTriageNode`, the human reviewer approving the consolidated result has no visibility into which individual branch triggered a HIGH or CRITICAL flag. The paper's §6.2 requirement for "meaningful oversight" is structurally violated — the reviewer is approving a summary, not the evidence. `BranchTriageNode` preserves that per-dimension evidence in `branch_findings_summary` and surfaces it directly in the `HumanJuryNode` context before consolidation occurs.
 
 ```python
 node_jury = HumanJuryNode(

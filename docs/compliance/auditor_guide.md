@@ -109,6 +109,7 @@ Use this table to verify which steps the agent's architecture addresses. Request
 | **Missing Art. 50 disclosure** | Third-party-affecting action with no transparency flag | `TransparencyEngine` |
 | **Tampered log** | HMAC verification fails | HMAC-SHA256 signing |
 | **Bias in output** | Protected characteristic in LLM output with no interrupt | `BiasFilterNode` + `HumanJuryNode` |
+| **Consolidated-only jury context** | `BatchNode` present but no `branch_findings_summary` in `HumanJuryNode` context keys | `BranchTriageNode` |
 
 ---
 
@@ -124,7 +125,7 @@ Use this table to verify which steps the agent's architecture addresses. Request
 
 ## See Also
 
-- [Finance Showcase — live run through all 12 primitives →](https://docs.snath.ai/compliance/finance-showcase/)
+- [Finance Showcase — live run through all compliance primitives →](https://docs.snath.ai/compliance/finance-showcase/)
 - [EU AI Act Deep Dive →](https://docs.snath.ai/compliance/eu-ai-act-deep-dive/)
 - [Nannini et al. (2026) Full Mapping →](https://docs.snath.ai/compliance/paper-compliance-mapping/)
 - [Enterprise Reference Implementation →](https://docs.snath.ai/compliance/enterprise-reference/)

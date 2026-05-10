@@ -20,11 +20,11 @@
 - **EU AI Act High-Risk Category:** [e.g., Annex III, Section 5(b) - Evaluating creditworthiness]
 
 ### 1.3 Architecture and Logic (Lár Framework)
-This system is orchestrated using the **Lár Framework**. It operates as a deterministic Directed Acyclic Graph (DAG) rather than an unconstrained autonomous loop.
+This system is orchestrated using the **Lár Framework v2.1.0**. It operates as a deterministic Directed Acyclic Graph (DAG) rather than an unconstrained autonomous loop.
 
 - **System Topology:** [Provide a high-level flowchart or Mermaid diagram of your Lár graph]
 - **Pre-trained Models Used:** [e.g., OpenAI `gpt-4o`, Anthropic `claude-3-opus`, Meta `Llama-3`]
-- **Oversight Architecture:** The system uses Lár's `RiskScorerNode` to enforce commensurate human-in-the-loop oversight.
+- **Oversight Architecture:** The system uses Lár's `RiskScorerNode` to enforce commensurate human-in-the-loop oversight. For fractal (parallel) agent architectures, `BranchTriageNode` preserves per-dimension evidence before `ReduceNode` compression, ensuring the human reviewer sees individual branch findings rather than only the consolidated output.
 
 ---
 
@@ -61,8 +61,23 @@ The system employs Lár's `LethalTrifectaGuard` at runtime. The system will **ha
 3. Autonomous action affecting individuals
 ...unless prior human approval (via a `HumanJuryNode`) has been cryptographically recorded for the current execution trace.
 
-### 4.2 The "Fourth Tier" Authority Ledger
-Every high-risk decision escalating to a human is recorded in the **Authority Ledger** (`authority_ledger.json`). This logs the stakeholder identity, role, rationale, and exact timestamp of the intervention.
+### 4.2 Meaningful Oversight in Fractal (Parallel) Agents
+Where the system uses `BatchNode` to run parallel sub-agents (e.g., separate safety, efficacy, and regulatory analysis branches), Lár's `BranchTriageNode` is inserted immediately after `BatchNode` and before `ReduceNode`. It:
+
+1. Parses each branch output and extracts the `risk_level` and `finding` fields.
+2. Builds `branch_findings_summary` — a per-dimension breakdown surfaced directly in the `HumanJuryNode` context, so the reviewer sees individual branch findings, not only the consolidated score.
+3. Sets `branch_critical=True` if any branch meets or exceeds the configured threshold, triggering an early-exit `HumanJuryNode` *before* `ReduceNode` compresses the evidence away.
+
+This satisfies Art. 14's requirement for **meaningful** human oversight — a human approving a consolidated "MEDIUM" score without knowing the safety branch said "CRITICAL" is not exercising meaningful oversight.
+
+```
+BatchNode → BranchTriageNode → RouterNode
+                                   ↓ critical → HumanJuryNode (pre-consolidation gate)
+                                   └── ok ────→ ReduceNode → HumanJuryNode (final gate)
+```
+
+### 4.3 The "Fourth Tier" Authority Ledger
+Every high-risk decision escalating to a human is recorded in the **Authority Ledger** (`authority_ledger.json`). This logs the stakeholder identity, role, rationale, and exact timestamp of the intervention. In fractal agents, two ledger records are produced per run: one at the early-exit gate (if CRITICAL branch detected) and one at the final consolidated review gate.
 
 ---
 
@@ -72,7 +87,7 @@ Every high-risk decision escalating to a human is recorded in the **Authority Le
 Where parallel agentic workflows are used, the system implements Lár's `BatchNode`. Parallel threads operate on perfectly isolated (deep-copied) state objects to prevent hallucination contagion between concurrent reasoners.
 
 ### 5.2 Metacognitive Boundaries
-Where the system generates its own sub-graphs (`DynamicNode`), the `TopologyValidator` enforces a strict cycle-detection algorithm and tool allowlist. The system's action capabilities cannot expand at runtime beyond the inventory declared in Section 2.
+Where the system generates its own sub-graphs (`AdaptiveNode`), the `TopologyValidator` enforces a strict cycle-detection algorithm and tool allowlist. The system's action capabilities cannot expand at runtime beyond the inventory declared in Section 2. Every injected graph specification is captured verbatim in the HMAC-signed Causal Trace, providing an Art. 3(23) substantial modification audit record.
 
 ### 5.3 Performance Metrics
 - **Validation Set Accuracy:** [e.g., 94.2% agreement with expert human underwriters]

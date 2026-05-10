@@ -36,7 +36,7 @@ Lár handles the **mechanical infrastructure** of compliance. It provides the ar
 In short: Lár provides the "flight recorder" and "emergency brakes." The organization must bring the safe model, the responsible human operators, and the governance policies.
 *   **Lár (The Framework):** Lár acts as a component supplier. We provide the architectural primitives (nodes, executor, loggers) that generate the forensic *evidence* you need to pass a conformity assessment. 
 
-Lár implements a complete **"Fourth Tier"** compliance architecture natively, providing 12 production-ready primitives that seamlessly integrate into the execution graph:
+Lár implements a complete **"Fourth Tier"** compliance architecture natively, providing 13 production-ready primitives that seamlessly integrate into the execution graph:
 
 | Primitive | EU AI Act / Regulatory Match | Description |
 | :--- | :--- | :--- |
@@ -49,6 +49,7 @@ Lár implements a complete **"Fourth Tier"** compliance architecture natively, p
 | **`AuditLogger` (Causal Trace)** | Art. 12 | Immutable State-Diff logs capturing explicit model reasoning traces. |
 | **`SyntheticMarkerNode`** | Art. 50(2) | Injects visible disclaimers or C2PA metadata into generated content. |
 | **`BiasFilterNode`** | prEN 18283 | Evaluates state variables for bias heuristics before final output. |
+| **`BranchTriageNode`** | Art. 14 (fractal) | Post-`BatchNode` primitive for parallel agents. Preserves per-dimension branch evidence before `ReduceNode` compression, ensuring the human jury sees individual branch findings — not only the consolidated score. Sets `branch_critical` for early-exit HITL routing. |
 | **`ComplianceManifestGenerator`** | Step 9, All | Statically walks the graph and auto-generates the exhaustive regulatory action inventory for auditors. |
 | **`LethalTrifectaGuard`** | GDPR Art. 5, Art. 14 | Runtime pre-execution guard enforcing the AEPD "Rule of 2" — blocks any action that combines untrusted input + sensitive data + autonomous effect without prior human approval. |
 | **`AuthorityLedger`** | Art. 12, 14 | The "Fourth Tier" — captures who exercised authority, their role, rationale, and risk score into a tamper-evident, HMAC-signed oversight record on every `HumanJuryNode` decision. |
@@ -59,7 +60,7 @@ Lár implements a complete **"Fourth Tier"** compliance architecture natively, p
 
 > The canonical, working reference that ticks every compliance box the April 2026 EU AI Act research paper identifies.
 
-Lár ships a **single reusable backbone** that wires all 12 primitives into an end-to-end auditable graph. Target any regulated vertical by supplying a domain name:
+Lár ships a **single reusable backbone** that wires all 13 primitives into an end-to-end auditable graph. Target any regulated vertical by supplying a domain name:
 
 ```bash
 python src/lar/enterprise/run.py HEALTHCARE  # MDR + EU AI Act + GDPR + FDA 21 CFR 11
@@ -103,7 +104,7 @@ DOMAIN_PRESETS["INSURANCE"] = {
 
 ## The Blueprint: EU AI Act Finance Showcase
 
-If you need to prove compliance to an auditor or understand how the 12 primitives fit together, run our definitive showcase script. This single script acts as the blueprint for high-risk EU AI Act deployments, executing a simulated SME loan application through the full compliance pipeline.
+If you need to prove compliance to an auditor or understand how the 13 primitives fit together, run our definitive showcase script. This single script acts as the blueprint for high-risk EU AI Act deployments, executing a simulated SME loan application through the full compliance pipeline.
 
 ```bash
 python examples/compliance/22_eu_ai_act_finance_showcase.py

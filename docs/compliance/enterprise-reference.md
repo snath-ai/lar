@@ -14,7 +14,7 @@
 
 ## The Blueprint: EU AI Act Finance Showcase
 
-If you need to prove compliance to an auditor or understand how the 12 primitives fit together, run our definitive showcase script. This single script acts as the blueprint for high-risk EU AI Act deployments, executing a simulated SME loan application through the full compliance pipeline.
+If you need to prove compliance to an auditor or understand how the compliance primitives fit together, run our definitive showcase script. This single script acts as the blueprint for high-risk EU AI Act deployments, executing a simulated SME loan application through the full compliance pipeline.
 
 ```bash
 python examples/compliance/22_eu_ai_act_finance_showcase.py

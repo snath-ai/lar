@@ -28,9 +28,9 @@ Lár is a ground-up agent execution engine where **auditability is structural, n
 
 ---
 
-## The 12 EU AI Act Compliance Primitives
+## The 13 EU AI Act Compliance Primitives
 
-Lár ships a complete **Enterprise Compliance Backbone** — all 12 primitives required for a conformity assessment under Nannini et al. (2026), the definitive compliance architecture paper for AI agents under EU law:
+Lár ships a complete **Enterprise Compliance Backbone** — all 13 primitives required for a conformity assessment under Nannini et al. (2026), the definitive compliance architecture paper for AI agents under EU law:
 
 | Article | Requirement | Lár Primitive |
 | :--- | :--- | :--- |
@@ -54,7 +54,7 @@ Lár ships a complete **Enterprise Compliance Backbone** — all 12 primitives r
 
 ## See It Running: The Finance Showcase
 
-One command runs a live SME credit decision through all 12 primitives and produces three HMAC-signed audit artefacts:
+One command runs a live SME credit decision through the compliance primitives and produces three HMAC-signed audit artefacts:
 
 ```bash
 python examples/compliance/22_eu_ai_act_finance_showcase.py
