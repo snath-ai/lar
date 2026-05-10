@@ -218,18 +218,22 @@ node = LLMNode(
 
 ---
 
-## Resumable Graphs — Cost Architecture
+## Resumable Graphs
 
-Every other framework re-sends the entire conversation history on retry. When a 10-step pipeline crashes on Step 8, you pay for Steps 0–7 again. Lár doesn't.
+Most frameworks cannot reliably resume a crashed execution — not because the feature is missing, but because their routers are probabilistic. On retry, the LLM may branch differently. The "resume" is actually a new run that happens to start with the same input.
 
-The `GraphExecutor` is a Python generator. Serialize `GraphState` to disk at any checkpoint, resume from exactly that step.
+Lár's routers are pure Python functions. Same state in, same decision out — deterministically. When Lár resumes at Step 47, it takes exactly the path Step 47 would have taken. The resumption is exact, not approximate.
+
+The `GraphExecutor` is a Python generator that yields after every node. `GraphState` is a plain dict — always serialisable, always decoupled from the engine. The causal trace written on every run is not just an audit log; every entry is a resumption checkpoint.
 
 | Run | Steps Executed | Tokens Sent | Cost (GPT-4o) |
 |:---|:---|:---|:---|
-| **Lár — Resume** | Step 3 only | **302 tokens** | $0.0006 |
-| **Competitor — Retry** | Steps 0+1+3 | **~776 tokens** | $0.0016 |
+| **Lár — Resume** | Step 3 only | **302 tokens** | **$0.0006** |
+| **Competitor — Retry** | Steps 0+1+3 | ~776 tokens | $0.0016 |
 
-> At 10,000 runs/day with 40% crash rate → **$9.48/day saved.**
+> At 10,000 runs/day with 40% transient failure rate → **$9.48/day saved.**
+
+The same property powers `HumanJuryNode`: the graph halts before an irreversible action, the process can be killed, and when the human responds — hours later if needed — execution resumes from exactly that node with exactly that state. This is what EU AI Act Art. 14 requires in practice.
 
 See: [`examples/patterns/9_resumable_graph.py`](examples/patterns/9_resumable_graph.py)
 
