@@ -94,5 +94,5 @@ Read our **[Deployment Guide](guides/deployment.md)** to learn how to wrap your 
 
 Get Started in 3 Minutes [https://docs.snath.ai/getting-started/](https://docs.snath.ai/getting-started/)
 
-## Author
-**[Lár](https://github.com/snath-ai/lar)** was created by **[Aadithya Vishnu Sajeev](https://github.com/axdithyaxo)**.
+## Built by Snath AI
+**[Lár](https://github.com/snath-ai/lar)** is an open-source project by **[Snath AI](https://snath.ai)**.
