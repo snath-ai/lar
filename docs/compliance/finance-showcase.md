@@ -1,6 +1,6 @@
 # EU AI Act Finance Showcase
 
-> The definitive proof-of-concept. One command runs a live SME credit decision through all 12 compliance primitives identified in Nannini et al. (2026) and produces three HMAC-signed audit artefacts.
+> The definitive proof-of-concept. One command runs a live SME credit decision through the 12-step compliance sequence from Nannini et al. (2026) and produces three HMAC-signed audit artefacts. Lár ships **13 compliance primitives** in total — `BranchTriageNode` (the 13th) is demonstrated in the [Fractal Compliance Showcase](https://docs.snath.ai/compliance/fractal-showcase/).
 
 ```bash
 python examples/compliance/22_eu_ai_act_finance_showcase.py

@@ -117,7 +117,7 @@ def main():
         print(f"    Rationale   : {r['rationale']}")
         print(f"    Risk score  : {r['risk_score_at_decision']}")
         print(f"    Timestamp   : {r['timestamp']}")
-    print(f"\n  ✅ All 12 compliance primitives executed.")
+    print(f"\n  ✅ All 13 compliance primitives executed.")
     print(f"  ✅ Audit artefacts are HMAC-SHA256 signed.")
     print(f"  ✅ PII stripped from logs before signing.")
     print(f"  ✅ Lethal trifecta check passed (jury prior approval on record).")

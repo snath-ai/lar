@@ -273,7 +273,7 @@ cd lar/
 python examples/compliance/22_eu_ai_act_finance_showcase.py
 ```
 
-The showcase runs the FINANCE backbone against a credit application, validates all 12 primitives, and produces three audit artifacts in `enterprise_audit/`:
+The showcase runs the FINANCE backbone against a credit application, validates the 12 Nannini et al. paper-mapped compliance steps (13 primitives total — see [Fractal Compliance Showcase](https://docs.snath.ai/compliance/fractal-showcase/) for `BranchTriageNode`), and produces three audit artifacts in `enterprise_audit/`:
 
 - `compliance_manifest.json` — Step 9 action inventory
 - `authority_ledger.json` — Art. 14 oversight records

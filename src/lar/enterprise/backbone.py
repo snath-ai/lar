@@ -1,8 +1,9 @@
 """
 Lár Enterprise Compliance Backbone
 ====================================
-Reusable backbone that wires ALL 12 compliance primitives into a single,
+Reusable backbone that wires the 12 paper-mapped compliance primitives into a single,
 auditable graph. Drop in a DOMAIN_CONFIG dict to target any regulated vertical.
+(BranchTriageNode — the 13th primitive — is used in fractal/BatchNode patterns; see examples/compliance/23_fractal_compliance_showcase.py)
 
 Paper coverage  (every box the April 2026 paper implies):
   Art. 9    → PolicyRegistry (risk taxonomy per action)
@@ -202,7 +203,7 @@ def build_and_run(
     _mock_inputs: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """
-    Build the full 12-primitive compliance graph and execute it for a single case.
+    Build the full 12-step paper-mapped compliance graph and execute it for a single case.
 
     Args:
         case:             The intake payload (dict). Must contain 'case_summary'.

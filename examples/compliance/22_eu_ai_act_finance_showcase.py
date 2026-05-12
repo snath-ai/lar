@@ -2,7 +2,7 @@
 EU AI Act Finance Agent Showcase
 ================================
 Demonstrates the Lár Enterprise Compliance Backbone running a high-risk
-credit application through all 12 compliance primitives identified in:
+credit application through the 12-step compliance sequence identified in:
 
   Nannini et al. (2026) "AI Agents Under EU Law: A Compliance Architecture
   for AI Providers" — April 7, 2026 (arXiv:2604.04604v1)
@@ -152,7 +152,7 @@ def main():
     console.print(Panel.fit(
         "[bold green] EU AI Act Finance Agent Showcase [/bold green]\n"
         "[dim]Nannini et al. (2026) — 12-Step Compliance Architecture[/dim]",
-        subtitle="Validating all 12 Primitives"
+        subtitle="12 Paper Steps · 13 Primitives Total"
     ))
 
     console.print("\n[bold cyan]Paper Coverage Map[/bold cyan]")
@@ -237,7 +237,7 @@ def main():
     if "Signature:" in full_text or '"hmac"' in full_text or '"signature"' in full_text.lower():
         console.print("  [green]✓[/green] HMAC-SHA256 signature present — log is tamper-evident")
 
-    console.print(f"\n[bold green]All 12 primitives validated. Pipeline execution successful.[/bold green]")
+    console.print(f"\n[bold green]All 12 paper-mapped steps validated. Pipeline execution successful. (13 primitives total — BranchTriageNode in fractal showcase)[/bold green]")
     console.print(
         "[dim]See docs/compliance/paper-compliance-mapping.md for full "
         "Nannini et al. (2026) ↔ Lár primitive mapping.[/dim]"

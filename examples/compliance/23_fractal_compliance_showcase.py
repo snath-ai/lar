@@ -6,7 +6,7 @@ Demonstrates a Lár agent that combines:
   1. BatchNode       — three parallel analysis branches running simultaneously
   2. AdaptiveNode    — each branch composes its own validated subgraph at runtime
   3. ReduceNode      — consolidates parallel outputs into a single assessment
-  4. Full compliance backbone — all 12 primitives from 22_eu_ai_act_finance_showcase.py
+  4. Full compliance backbone — all 13 primitives (12 paper-mapped steps from 22_eu_ai_act_finance_showcase.py + BranchTriageNode)
 
 Scenario: Multi-dimensional pharmaceutical clinical trial assessment (PHARMA domain).
 A new compound (ZX-412) must be assessed across three independent dimensions simultaneously:
