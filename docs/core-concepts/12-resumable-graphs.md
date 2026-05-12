@@ -58,7 +58,9 @@ for step in executor.run_step_by_step(start_node=entry, initial_state=state):
         json.dump(last_good_state, f)
 ```
 
-Reference implementation: [`examples/patterns/9_resumable_graph.py`](../../examples/patterns/9_resumable_graph.py)
+Reference implementations:
+- [`examples/patterns/9_resumable_graph.py`](../../examples/patterns/9_resumable_graph.py) — Time Traveller: crash, serialise state, resume from exact node
+- [`examples/patterns/10_resumable_cost_demo.py`](../../examples/patterns/10_resumable_cost_demo.py) — Cost Demo: live 4-step legal pipeline, 302 vs ~776 token comparison printed to console
 
 ---
 

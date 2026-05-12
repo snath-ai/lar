@@ -76,7 +76,7 @@ Every step produces a real Article 12 causal trace, a real Article 14 AuthorityL
 
 **[Full showcase breakdown — execution trace, real JSON artefacts, 12-step coverage map →](https://docs.snath.ai/compliance/finance-showcase/)**
 
-> **Open-source vs. enterprise:** All 12 compliance primitives (`BranchTriageNode`, `BiasFilterNode`, `RiskScorerNode`, `CredentialVault`, etc.) are in `lar.compliance` and fully open-source under Apache 2.0. The finance showcase uses `build_and_run` from `lar.enterprise`, a convenience wrapper in the enterprise tier. Open-source users assemble the same pipeline from primitives — the step-by-step guide walks you through it: **[Build a Compliant Agent from Scratch →](https://docs.snath.ai/guides/build-compliant-agent/)**
+> **Open-source vs. enterprise:** All 13 compliance primitives (`BranchTriageNode`, `BiasFilterNode`, `RiskScorerNode`, `CredentialVault`, etc.) are in `lar.compliance` and fully open-source under Apache 2.0. The finance showcase uses `build_and_run` from `lar.enterprise`, a convenience wrapper in the enterprise tier. Open-source users assemble the same pipeline from primitives — the step-by-step guide walks you through it: **[Build a Compliant Agent from Scratch →](https://docs.snath.ai/guides/build-compliant-agent/)**
 
 ---
 
@@ -96,7 +96,7 @@ This means:
 | **Debugging** | 100-line stack trace from inside `AgentExecutor`. Guess what went wrong. | Exact node, exact error, exact state — in the log. |
 | **Auditability** | External paid tool (LangSmith) required. | Built-in. The `GraphExecutor` flight log is the audit trail. |
 | **Multi-Agent** | "Chat room" — no guaranteed order, loops possible. | Deterministic assembly line — you define the exact path. |
-| **Compliance** | None. No EU AI Act primitives. | 12 compliance primitives, cryptographic logs, Art. 14 oversight. |
+| **Compliance** | None. No EU AI Act primitives. | 13 compliance primitives, cryptographic logs, Art. 14 oversight. |
 | **Cost** | LLM call on every routing step. | Code-based routing — $0.00/route. |
 | **Scale** | Crashes at 25 steps (recursion limit). | 60+ node graphs run to completion. |
 | **Crash Recovery** | LLM router may branch differently on retry — "resume" is actually a new run. | Pure Python routers are deterministic. Same state in, same path out. Resumption is exact. |
@@ -115,7 +115,7 @@ See: [`examples/comparisons/langchain_swarm_fail.py`](examples/comparisons/langc
 
 New to Lár? The step-by-step guide walks you through wiring every compliance primitive — from credential vault to HMAC-signed audit artefacts — starting from a blank file. Written for both engineers and AI assistants.
 
-**[Read the guide →](https://docs.snath.ai/guides/build-compliant-agent/)** | **[Live showcase →](https://docs.snath.ai/compliance/finance-showcase/)**
+**[Read the guide →](https://docs.snath.ai/guides/build-compliant-agent/)** | **[Live showcase →](https://docs.snath.ai/compliance/finance-showcase/)** | **[Continuously Running Agents →](https://docs.snath.ai/guides/continuous-operation/)**
 
 ---
 
@@ -267,7 +267,7 @@ See: [`examples/adaptive/`](examples/adaptive/)
 ## Compliance & Safety
 
 > [!IMPORTANT]
-> **Who is the "Provider"?** Under the EU AI Act (Art. 3), Lár is a software component, not an AI system. The organisation deploying a high-risk agent is the legal **Provider**. Lár provides the 12 architectural primitives to generate the *evidence* (audit logs, manifests, oversight records) required for a conformity assessment.
+> **Who is the "Provider"?** Under the EU AI Act (Art. 3), Lár is a software component, not an AI system. The organisation deploying a high-risk agent is the legal **Provider**. Lár provides the 13 architectural primitives to generate the *evidence* (audit logs, manifests, oversight records) required for a conformity assessment.
 
 > [!WARNING]
 > **Legal Disclaimer:** Lár is open-source infrastructure, not legal advice. Using Lár does not automatically guarantee compliance. Organisations are solely responsible for legal review and conformity assessments.
@@ -331,8 +331,9 @@ Compliance pattern library:
 | **6** | **[`6_meta_prompt_optimizer.py`](examples/patterns/6_meta_prompt_optimizer.py)** | Prompt Optimisation (Iterative Refinement) |
 | **7** | **[`7_integration_test.py`](examples/patterns/7_integration_test.py)** | Integration Builder (CoinCap) |
 | **8** | **[`8_ab_tester.py`](examples/patterns/8_ab_tester.py)** | A/B Tester (Parallel Prompts) |
-| **9** | **[`9_resumable_graph.py`](examples/patterns/9_resumable_graph.py)** | Time Traveller (Crash & Resume) |
-| **10** | **[`16_custom_logger_tracker.py`](examples/patterns/16_custom_logger_tracker.py)** | Advanced Observability |
+| **9** | **[`9_resumable_graph.py`](examples/patterns/9_resumable_graph.py)** | Time Traveller — Crash & Exact Resume |
+| **10** | **[`10_resumable_cost_demo.py`](examples/patterns/10_resumable_cost_demo.py)** | Cost Demo — 302 vs 776 Tokens, $9.48/day Saved |
+| **11** | **[`16_custom_logger_tracker.py`](examples/patterns/16_custom_logger_tracker.py)** | Advanced Observability |
 
 #### 3. Reasoners & Comparisons (`examples/reasoning_models/`, `examples/comparisons/`)
 | # | Pattern | Concept |
