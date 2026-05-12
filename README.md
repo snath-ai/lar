@@ -247,7 +247,11 @@ The `GraphExecutor` is a Python generator that yields after every node. `GraphSt
 
 The same property powers `HumanJuryNode`: the graph halts before an irreversible action, the process can be killed, and when the human responds — hours later if needed — execution resumes from exactly that node with exactly that state. This is what EU AI Act Art. 14 requires in practice.
 
-See: [`examples/patterns/9_resumable_graph.py`](examples/patterns/9_resumable_graph.py)
+### Time-Travel Debugging
+
+If your agent produces a wrong output at Step 5, load the state from Step 4, modify the prompt, and run Step 5 alone — repeatedly, cheaply. In a black-box framework you re-run the whole pipeline and hope the LLM reproduces the same path. In Lár you rewind to the exact state that produced the bad output.
+
+See: [`examples/patterns/9_resumable_graph.py`](examples/patterns/9_resumable_graph.py) · [`examples/patterns/10_resumable_cost_demo.py`](examples/patterns/10_resumable_cost_demo.py)
 
 ---
 
