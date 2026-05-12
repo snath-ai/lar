@@ -25,6 +25,9 @@ Lár is the first agentic framework to ship with a complete, production-ready **
 | `BiasFilter` | prEN 18283 — Bias Management |
 | `CredentialVault` (JIT provisioning) | Art. 15(4) — Privilege Minimisation |
 | `RuntimeStateVersioner` (drift detection) | Art. 3(23) — Substantial Modification |
+| `AuthorityLedger` — HMAC-signed decision record | Art. 12 / 14 — Fourth-Tier Oversight |
+| `BranchTriageNode` — per-branch findings before jury | Art. 14 — Fractal Human Oversight |
+| `ProhibitedPracticeGuard` — prohibited practice scan | Art. 5 — Prohibited AI Practices |
 
 **[Read the EU AI Act Deep Dive →](compliance/eu-ai-act-deep-dive.md)** | **[Enterprise Reference Implementation →](compliance/enterprise-reference.md)**
 
