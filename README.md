@@ -257,14 +257,45 @@ See: [`examples/patterns/9_resumable_graph.py`](examples/patterns/9_resumable_gr
 
 ## Adaptive Graphs
 
-When graph structure cannot be known at author-time, `AdaptiveNode` composes a validated subgraph at execution time.
+Most pipelines are hardcoded: you define every branch at development time. `AdaptiveNode` breaks that constraint — the **number, type, and sequence of processing nodes is decided at runtime** based on what the agent actually receives.
 
-- LLM generates a `GraphSpec` (JSON)
-- `TopologyValidator` checks: cycle detection, tool allowlist, structural integrity
-- Validated subgraph is injected into the live execution path
-- Every spec is logged to the Causal Trace (Art. 3(23))
+**The mental model:** You pre-define a set of approved tools. At runtime, an LLM acts as an architect — it receives the live input and outputs a JSON graph spec describing which tools to run and in what order. Lár validates that spec deterministically (no cycles, no unapproved tools), instantiates the nodes, and executes the subgraph. The LLM never runs again — pure Python takes over.
 
-See: [`examples/adaptive/`](examples/adaptive/)
+**When this matters:** When problem complexity is genuinely input-dependent. A simple document → 1 summarise node. A financial contract → extract entities, check compliance, then summarise. You don't hardcode which path — the agent decides. Without `AdaptiveNode`, you'd need to pre-build a branch for every possible combination upfront.
+
+```python
+# You define the tools the LLM is allowed to wire up
+validator = TopologyValidator(allowed_tools=[extract_entities, check_compliance, summarize])
+
+adaptive = AdaptiveNode(
+    llm_model="gpt-4o",
+    prompt_template="""
+    Document type: {doc_type}
+    If "simple"    → 1 node: summarize only
+    If "financial" → 3 nodes: extract_entities → check_compliance → summarize
+    Output JSON GraphSpec.
+    """,
+    validator=validator,
+    next_node=done_node,
+    context_keys=["doc_type"]
+)
+
+# Wire it like any other node — the executor handles the rest
+executor = GraphExecutor()
+for step in executor.run_step_by_step(adaptive, {"doc_type": "financial", "document": "..."}):
+    pass
+# → extract_entities runs, then check_compliance, then summarize
+# If doc_type were "simple", only summarize would have run
+```
+
+**Honest tradeoffs:**
+- Costs one extra LLM call upfront to design the subgraph before any work happens
+- The LLM must output valid JSON every time — `TopologyValidator` hard-rejects malformed specs and falls back to `next_node`, but you've spent tokens
+- Graph depth is unpredictable — use Lár's node budget limits to cap it
+
+**The real unlock** is combining `AdaptiveNode` with `BatchNode`. The LLM can decide both how many workers to spawn *and* that they should run in parallel — covering case complexity you'd need a combinatorial explosion of static branches to replicate.
+
+See: [`examples/adaptive/`](examples/adaptive/) | [Adaptive Graphs Docs →](https://docs.snath.ai/core-concepts/9-adaptive-graphs/)
 
 ---
 

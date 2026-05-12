@@ -1,8 +1,30 @@
 # Adaptive Graphs
 
-Most agent pipelines have a fixed structure defined at development time. Adaptive graphs allow part of that structure to be determined at execution time — specifically, when the number, type, or sequence of processing nodes depends on runtime inputs.
+Most agent pipelines are hardcoded: every branch exists at development time, every case is anticipated upfront. `AdaptiveNode` breaks that constraint — the number, type, and sequence of processing nodes is determined at runtime based on what the agent actually receives.
 
-This is implemented via `AdaptiveNode` and `TopologyValidator`.
+## What this actually is
+
+This is **not** metacognition. The agent is not reasoning about itself.
+
+Here is what literally happens:
+
+1. You pre-define a set of approved tools (Python functions)
+2. At runtime, an LLM receives the live input and outputs a **JSON graph spec** — a description of which tools to run and in what order
+3. `TopologyValidator` runs pure Python static analysis on that JSON — no LLM involved, no probabilities, hard pass/fail
+4. If valid, Lár instantiates real Python node objects from the spec and injects them into the live execution path
+5. The executor continues through the generated nodes — the LLM does not run again
+
+The "adaptive" decision is a **one-time LLM call that produces a data structure**. Everything after that is deterministic Python.
+
+**The bottleneck it eliminates:** You stop having to pre-build a branch for every possible input shape. A simple document gets 1 node. A complex financial contract gets 3 nodes in sequence. You define the tools and the rules — the agent decides the structure.
+
+**Honest tradeoffs:**
+- One extra LLM call per `AdaptiveNode` activation, before any work starts
+- The LLM must output valid JSON every call — `TopologyValidator` rejects malformed specs and falls back, but tokens are spent
+- Graph depth is unpredictable — cap it with Lár's node budget limits (`GraphExecutor(max_nodes=...)`)
+- The LLM pattern-matches from your prompt description; it does not reason about what tools actually do
+
+**The real unlock** is `AdaptiveNode` + `BatchNode`. The LLM can decide both how many workers to spawn *and* that they run in parallel — covering input complexity that would require a combinatorial explosion of static branches to replicate.
 
 ## When to Use Adaptive Graphs
 
