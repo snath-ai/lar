@@ -11,54 +11,88 @@ class SecurityError(Exception):
     """Raised when a validated subgraph injection violates safety policy."""
     pass
 
+_SUPPORTED_NODE_TYPES = {"LLMNode", "ToolNode", "BatchNode", "AdaptiveNode", "DynamicNode"}
+
+
 class TopologyValidator:
     """
     Static analysis for adaptive graphs.
 
-    Enforces three invariants required for EU AI Act Art. 3(23) compliance
+    Enforces six invariants required for EU AI Act Art. 3(23) compliance
     (Substantial Modification control):
 
     1. No infinite loops — cycle detection via DFS.
     2. Tool allowlist — only pre-approved functions may be referenced.
     3. Structural integrity — all next_node references resolve.
+    4. Node count ceiling — rejects oversized specs (resource exhaustion guard).
+    5. BatchNode reference integrity — concurrent_nodes IDs must exist in spec.
+    6. Supported types only — unknown node types are rejected, not silently skipped.
 
     Compliance tags: Art. 3(23), Art. 12 (Logging), Art. 9 (Risk Management)
     """
-    def __init__(self, allowed_tools: List[callable] = None):
+    def __init__(self, allowed_tools: List[callable] = None, max_nodes: int = 20):
         self.allowed_tools = {t.__name__: t for t in (allowed_tools or [])}
+        self.max_nodes = max_nodes
 
     def validate(self, graph_spec: Dict[str, Any]) -> bool:
         """
         Validates the JSON GraphSpec.
-        Raises SecurityError if invalid.
+        Raises SecurityError if any invariant is violated.
         """
         nodes = graph_spec.get("nodes", [])
         if not nodes:
             raise SecurityError("GraphSpec must contain at least one node.")
 
+        # 0. Node count ceiling (resource exhaustion guard)
+        if len(nodes) > self.max_nodes:
+            raise SecurityError(
+                f"GraphSpec has {len(nodes)} nodes, exceeding the limit of {self.max_nodes}. "
+                f"Increase TopologyValidator(max_nodes=...) if intentional."
+            )
+
         node_ids = {n["id"] for n in nodes}
 
-        # 1. Structural Integrity
+        # 1. Supported types only — unknown types are rejected, not silently dropped
         for n in nodes:
-            # Check 'next' pointer
+            ntype = n.get("type")
+            if ntype not in _SUPPORTED_NODE_TYPES:
+                raise SecurityError(
+                    f"Node '{n.get('id')}' has unsupported type '{ntype}'. "
+                    f"Supported: {sorted(_SUPPORTED_NODE_TYPES)}"
+                )
+
+        # 2. Structural integrity — next pointers must resolve
+        for n in nodes:
             nxt = n.get("next")
             if nxt and nxt != "__end__" and nxt not in node_ids:
                 raise SecurityError(f"Node '{n.get('id')}' links to non-existent node '{nxt}'.")
 
-        # 2. Cycle Detection (DFS)
-        # Simplified: We build an adjacency map
+        # 3. BatchNode reference integrity — concurrent_nodes must exist in spec
+        for n in nodes:
+            if n.get("type") == "BatchNode":
+                for cid in n.get("concurrent_nodes", []):
+                    if cid not in node_ids:
+                        raise SecurityError(
+                            f"BatchNode '{n.get('id')}' references non-existent "
+                            f"concurrent node '{cid}'."
+                        )
+
+        # 4. Cycle Detection (DFS) — covers both next and concurrent_nodes edges
         adj = {n["id"]: [] for n in nodes}
         for n in nodes:
             nxt = n.get("next")
             if nxt and nxt in node_ids:
                 adj[n["id"]].append(nxt)
 
-            # RouterNode special handling for multiple paths
             if n.get("type") == "RouterNode":
-                routes = n.get("routes", {})
-                for k, target_id in routes.items():
+                for target_id in n.get("routes", {}).values():
                     if target_id in node_ids:
                         adj[n["id"]].append(target_id)
+
+            if n.get("type") == "BatchNode":
+                for cid in n.get("concurrent_nodes", []):
+                    if cid in node_ids:
+                        adj[n["id"]].append(cid)
 
         visited = set()
         path = set()
@@ -71,7 +105,7 @@ class TopologyValidator:
                     if visit(neighbor):
                         return True
                 elif neighbor in path:
-                    return True # Cycle detected
+                    return True
             path.remove(node_id)
             return False
 
@@ -80,10 +114,14 @@ class TopologyValidator:
                 if visit(n_id):
                     raise SecurityError(f"Infinite loop detected in subgraph involving node '{n_id}'.")
 
-        # 3. Tool Allowlist
+        # 5. Tool allowlist
         for n in nodes:
             if n.get("type") == "ToolNode":
                 tool_name = n.get("tool_name")
+                if not tool_name:
+                    raise SecurityError(
+                        f"ToolNode '{n.get('id')}' is missing required field 'tool_name'."
+                    )
                 if self.allowed_tools and tool_name not in self.allowed_tools:
                     raise SecurityError(f"Tool '{tool_name}' is not in the allowlist.")
 
@@ -118,7 +156,8 @@ class AdaptiveNode(BaseNode):
                  validator: TopologyValidator,
                  next_node: BaseNode = None,
                  context_keys: List[str] = [],
-                 system_instruction: str = None):
+                 system_instruction: str = None,
+                 max_depth: int = 3):
         """
         Args:
             llm_model: Model to generate the graph JSON.
@@ -127,6 +166,9 @@ class AdaptiveNode(BaseNode):
             next_node: The node to resume after the injected subgraph completes.
             context_keys: State keys to pass to the LLM as context.
             system_instruction: System prompt for the graph-design LLM call.
+            max_depth: Maximum recursive AdaptiveNode nesting depth. Children receive
+                       max_depth - 1. When 0, the node falls through to next_node
+                       instead of making an LLM call. Prevents unbounded recursion.
         """
         self.llm_node = LLMNode(
             model_name=llm_model,
@@ -137,10 +179,15 @@ class AdaptiveNode(BaseNode):
         self.validator = validator
         self.next_node = next_node # The "Exit" of the subgraph flows here
         self.context_keys = context_keys
+        self.max_depth = max_depth
 
     def execute(self, state: GraphState):
+        if self.max_depth <= 0:
+            print("  [AdaptiveNode] DEPTH LIMIT reached — falling through to next_node.")
+            return self.next_node
+
         print("\n" + "="*40)
-        print("  [AdaptiveNode]: Composing validated subgraph")
+        print(f"  [AdaptiveNode]: Composing validated subgraph (depth remaining: {self.max_depth})")
         print("="*40)
 
         # 1. Run LLM to get GraphSpec
@@ -241,16 +288,21 @@ class AdaptiveNode(BaseNode):
                 # Store metadata to help wiring later
                 node_map[nid]._pending_concurrent_ids = n.get("concurrent_nodes", [])
             elif ntype in ("AdaptiveNode", "DynamicNode"):
-                # Recursive subgraph injection — inherits validator (safety rails propagate)
+                # Recursive subgraph injection — inherits validator and decrements depth
                 child_prompt = n.get("prompt", "Design a sub-graph.")
 
                 node_map[nid] = AdaptiveNode(
                     llm_model=n.get("model", self.llm_node.model_name),
                     prompt_template=child_prompt,
-                    validator=self.validator, # Inherit safety rails
-                    next_node=None # Wired in Pass 2
+                    validator=self.validator,       # Inherit safety rails
+                    next_node=None,                 # Wired in Pass 2
+                    max_depth=self.max_depth - 1,   # Decrement — prevents unbounded recursion
                 )
-            # Add more types as needed (Router, Batch)
+            else:
+                # TopologyValidator should have rejected this already.
+                # If we reach here, validation was skipped — log and skip safely.
+                print(f"  [AdaptiveNode] WARNING: Unsupported node type '{ntype}' for id '{nid}' — skipping. Run TopologyValidator first.")
+                continue
 
         # Second Pass: Wire 'next_node' and 'BatchNode.nodes'
         for n in nodes_data:
