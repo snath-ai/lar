@@ -28,6 +28,20 @@ Lár is a ground-up agent execution engine where **auditability is structural, n
 
 ---
 
+## The Cognitive Architecture
+
+Lár is the execution spine of a three-part system. Each repo is independent and usable alone — and they're designed to compose:
+
+| Repository | Role |
+| :--- | :--- |
+| **[Lár](https://github.com/snath-ai/lar)** ← you are here | The execution spine — deterministic graph engine, 13 EU AI Act compliance primitives, HMAC audit trail |
+| **[Lár DMN](https://github.com/snath-ai/DMN)** | The memory layer — solves catastrophic forgetting via sleep/dream consolidation into tiered ChromaDB vector store |
+| **[Lár-JEPA](https://github.com/snath-ai/Lar-JEPA)** | The world model — routes LLMs, JEPAs, diffusion models, and any future architecture as first-class nodes in the same deterministic graph |
+
+The three repos share a single engine version (`lar-engine 2.1.0`). A JEPA node predicts a trajectory, routes through an `EntropicRouter`, writes the committed heuristic to DMN's Hippocampus, and recalls it on the next planning cycle — all through the same `GraphExecutor` causal trace.
+
+---
+
 ## The 13 EU AI Act Compliance Primitives
 
 Lár ships a complete **Enterprise Compliance Backbone** — all 13 primitives required for a conformity assessment under Nannini et al. (2026), the definitive compliance architecture paper for AI agents under EU law:
