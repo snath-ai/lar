@@ -492,7 +492,7 @@ Lár is designed for **Cursor, Windsurf, and Antigravity**. Reference these file
 
 ## Author
 
-**Lár** was created by **[Aadithya Vishnu Sajeev](https://github.com/axdithyaxo)**.
+**Lár** was created by **[SnathAI](https://snath.ai)**.
 
 Lár is open-source. If this project helps you, consider supporting its development: [Sponsor on GitHub →](https://github.com/sponsors/axdithyaxo)
 
