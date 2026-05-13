@@ -209,6 +209,18 @@ for step in executor.run_step_by_step(classify, {"input": "Hello"}):
 
 ---
 
+## Tensor Routing & Scientific AI Support
+
+Agentic frameworks typically crash when attempting to route anything other than text strings. Lár v2.1.0 introduces native support for **Scientific and Biological AI Architectures** (e.g., JEPAs, Diffusion Models).
+
+The engine includes a native `TensorSafeEncoder` built directly into the core `GraphExecutor` and `AuditLogger`. This allows your agent graph to:
+1. **Route Tensors Deterministically:** Pass multi-gigabyte PyTorch (`torch.Tensor`) or NumPy tensors between nodes without serialization crashes.
+2. **Audit Latent Space:** Cryptographically log the exact multidimensional shape and type of massive data structures moving through the pipeline without blowing out memory (e.g., `{"__type__": "Tensor", "shape": [1, 5000]}`).
+
+Lár is the first EU AI Act-ready engine built not just for LLMs, but for real mathematical world models.
+
+---
+
 ## Universal Model Support
 
 Lár is built on **LiteLLM** — switch providers by changing one string. Zero refactoring.
@@ -347,7 +359,6 @@ executor = GraphExecutor(
     hmac_secret="your_enterprise_secret_key"
 )
 # Run your agent normally. Every log is HMAC-SHA256 signed.
-# Note: As of v2.1.0, the AuditLogger natively supports serialization of PyTorch and NumPy tensors via the new `TensorSafeEncoder`.
 ```
 
 Verify for auditors:
