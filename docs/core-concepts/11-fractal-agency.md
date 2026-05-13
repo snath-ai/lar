@@ -1,153 +1,217 @@
-# Recursive Graph Composition (v1.5+)
+# Fractal Agents
 
-`AdaptiveNode` can be nested: a generated subgraph can itself contain `AdaptiveNode` instances, which compose further subgraphs at runtime. This allows problems that require multiple layers of specialisation to be handled without pre-defining every layer's structure at development time.
+A fractal agent combines `AdaptiveNode` and `BatchNode`: a manager decides how many specialist sub-agents to spawn and what each one does, then runs them in parallel. The graph shape is never fixed at development time — it is determined by the input at runtime.
 
-Safety rails propagate through every level of nesting — the `TopologyValidator` passed to the parent `AdaptiveNode` is inherited by all child `AdaptiveNode` instances in the generated spec.
+This is powerful. It also introduces a compliance gap that is not obvious until you think about what the human jury actually sees.
 
-## When to Use Nested Composition
+---
 
-Use nested `AdaptiveNode` when both the number and structure of sub-pipelines are unknown at development time — the manager must decide both *how many* specialists to compose and *what each one does* based on the input it sees at runtime.
+## The Compliance Gap — Read This First
 
-A concrete example: a manager agent that receives a complex multi-disciplinary question, decides how many specialist sub-agents to spawn (and what kind), and then dispatches them in parallel via `BatchNode`.
+When `BatchNode` runs parallel branches that each produce a risk assessment, the natural next step is `ReduceNode` to consolidate them into a single score. Then a `HumanJuryNode`.
 
-## Architecture
+**The problem:** the human jury sees the consolidated score. They do not see which individual branch triggered the alert. If three parallel reviews run on a contract — legal terms, financial liability, GDPR compliance — and the financial branch returns CRITICAL, the jury might only see "overall risk: HIGH." They approved without knowing *why*.
+
+Under EU AI Act Art. 14, that is not meaningful human oversight. It is a rubber stamp on a number.
+
+**The fix: `BranchTriageNode`**
+
+Wire it between `BatchNode` and your routing logic:
+
+```
+BatchNode → BranchTriageNode → RouterNode
+                                    ↓ "critical" → HumanJuryNode  ← fires before ReduceNode
+                                    ↓ "ok"       → ReduceNode → HumanJuryNode
+```
+
+`BranchTriageNode` does three things:
+1. Parses every branch output and extracts per-branch risk findings
+2. Writes `branch_findings_summary` into state — the jury sees each branch's finding, not just the aggregate
+3. Sets `branch_critical=True` if any branch exceeds the threshold — triggers an early human gate *before* `ReduceNode` destroys the per-dimension evidence
+
+```python
+from lar.compliance import BranchTriageNode
+from lar import RouterNode, HumanJuryNode
+
+node_triage = BranchTriageNode(
+    branch_output_keys=["legal_review", "financial_review", "gdpr_review"],
+    critical_threshold="CRITICAL",
+    next_node=node_router,
+)
+
+node_router = RouterNode(
+    decision_function=lambda s: "critical" if s.get("branch_critical") else "ok",
+    path_map={
+        "critical": node_jury_early,   # Human sees per-branch findings before consolidation
+        "ok":       node_reduce,
+    },
+)
+
+# Both jury nodes include branch_findings_summary in context
+jury = HumanJuryNode(
+    context_keys=["overall_risk", "recommendation", "branch_findings_summary"],
+    ...
+)
+```
+
+Without `BranchTriageNode`: the human sees `"risk: HIGH"`.
+With `BranchTriageNode`: the human sees `"risk: HIGH — Financial branch CRITICAL: uncapped liability clause. GDPR branch HIGH: data retention clause missing."` That is what Art. 14 requires.
+
+---
+
+## How it Works
 
 ```
 AdaptiveNode (Manager)
 │
-├── Generates JSON spec containing BatchNode + child AdaptiveNodes
-├── TopologyValidator validates the full spec
+├── LLM generates JSON spec: BatchNode + child AdaptiveNodes + synthesiser
+├── TopologyValidator validates the full spec (cycles, allowlist, depth)
 │
 └── Injects subgraph:
-    ├── BatchNode
+    ├── BatchNode (parallel threads)
     │   ├── Thread 1: AdaptiveNode (Specialist A)
-    │   │   └── Generates + validates + injects its own subgraph
+    │   │   └── Generates + validates + executes its own subgraph
     │   └── Thread 2: AdaptiveNode (Specialist B)
-    │       └── Generates + validates + injects its own subgraph
-    └── LLMNode (Synthesiser)
+    │       └── Generates + validates + executes its own subgraph
+    ├── BranchTriageNode  ← compliance gate
+    ├── RouterNode
+    └── HumanJuryNode / ReduceNode
 ```
+
+The manager makes one LLM call to design the structure. Each specialist makes one LLM call to design its own internal pipeline. All subsequent execution is deterministic Python.
+
+---
+
+## A Concrete Example: Contract Review
+
+A legal team receives contracts of varying complexity. A simple two-page NDA needs one review. A multi-party software license with financial terms and data processing clauses needs three independent reviews run in parallel.
+
+You don't hardcode both pipelines. The manager decides at runtime.
+
+**State entering the manager:**
+```python
+{
+    "document": "...(contract text)...",
+    "doc_type": "software_license",
+    "party_count": 3
+}
+```
+
+**Manager prompt (simplified):**
+```
+Document type: {doc_type}, parties: {party_count}
+
+If simple (NDA, <2 parties): 1 LLMNode — general review
+If complex (license, >2 parties): BatchNode with 3 specialists:
+  - legal_specialist: review terms and obligations
+  - financial_specialist: review liability and payment clauses
+  - compliance_specialist: review GDPR and data handling
+
+Output JSON GraphSpec.
+```
+
+**What executes for "software_license, 3 parties":**
+
+```
+Manager AdaptiveNode
+  → designs: BatchNode([legal, financial, compliance]) → BranchTriageNode → router
+
+BatchNode (3 threads simultaneously):
+  Thread 1: legal_specialist AdaptiveNode
+    → designs: LLMNode("review obligations") → LLMNode("flag missing clauses")
+    → output: {"risk": "MEDIUM", "finding": "arbitration clause absent"}
+
+  Thread 2: financial_specialist AdaptiveNode
+    → designs: LLMNode("review liability") → LLMNode("quantify exposure")
+    → output: {"risk": "CRITICAL", "finding": "uncapped liability, no indemnity cap"}
+
+  Thread 3: compliance_specialist AdaptiveNode
+    → designs: LLMNode("check GDPR clauses")
+    → output: {"risk": "HIGH", "finding": "data retention period unspecified"}
+
+BranchTriageNode:
+  branch_findings_summary:
+    "Legal: MEDIUM — arbitration clause absent
+     Financial: CRITICAL — uncapped liability
+     Compliance: HIGH — GDPR retention clause missing"
+  branch_critical: True (Thread 2 exceeded threshold)
+
+RouterNode → "critical" → HumanJuryNode (fires before ReduceNode)
+
+Human jury sees the full per-branch breakdown — not just a score.
+Approves with rationale → signed AuthorityLedger record.
+```
+
+**What executes for a simple NDA:**
+
+```
+Manager AdaptiveNode
+  → designs: LLMNode("general NDA review") → done
+  (1 node, no parallel branches, no jury needed for low-risk)
+```
+
+Same entry point. Completely different execution shape. Both produce HMAC-signed causal traces.
+
+---
 
 ## Validator Inheritance
 
-The parent's `TopologyValidator` is passed to every child `AdaptiveNode` instantiated from the generated spec. This means:
-- The same tool allowlist applies at every level
-- Cycle detection runs on every nested spec independently
-- A rejected spec at any level causes that branch to fall through to `next_node` without halting the rest of the graph
+The `TopologyValidator` passed to the manager propagates to every child `AdaptiveNode` automatically:
+
+```python
+validator = TopologyValidator(
+    allowed_tools=[fetch_legal_database, flag_clause, summarize],
+    max_nodes=10,   # No specialist can generate more than 10 nodes
+)
+
+manager = AdaptiveNode(
+    llm_model="gpt-4o",
+    prompt_template=manager_prompt,
+    validator=validator,   # Same validator, same limits, all the way down
+    max_depth=3,           # Manager(1) → Specialist(2) → max depth
+)
+```
+
+- The same tool allowlist applies at every nesting level
+- `max_nodes` limits how large any individual spec can be
+- `max_depth` prevents unbounded recursion (child gets `max_depth - 1`)
+- Cycle detection runs independently on every generated spec
+- A rejected spec at any level falls through to `next_node` without halting other branches
+
+---
+
+## Fractal Compliance Checklist
+
+If you are deploying a fractal agent in a regulated context, verify all of these:
+
+| ✓ | What to check | How |
+|---|---|---|
+| ☐ | Every branch output is structured (JSON with `risk` + `finding` keys) | Required for `BranchTriageNode` to parse findings |
+| ☐ | `BranchTriageNode` is between `BatchNode` and any jury | Without it the jury sees consolidated score only — not Art. 14 compliant |
+| ☐ | Both early-exit and final jury nodes include `branch_findings_summary` in `context_keys` | Ensures the human sees per-branch evidence at both gates |
+| ☐ | `TopologyValidator` has a `max_nodes` limit set | Prevents LLM from generating an arbitrarily large subgraph |
+| ☐ | `AdaptiveNode` has `max_depth` set | Prevents unbounded recursive nesting |
+| ☐ | `GraphExecutor` has `hmac_secret` set | Signs the causal trace — required for Art. 12 tamper evidence |
+| ☐ | `PIIRedactionEngine` fires before HMAC signing | Required for GDPR Art. 17 if inputs contain personal data |
+
+---
 
 ## Token Budget Propagation
 
-When a `token_budget` is set in state, the budget is shared across all parallel branches. After `BatchNode` merges results, the total spend across all threads is reconciled mathematically:
+Token budgets are shared across all parallel branches. After `BatchNode` merges results, spend across all threads is reconciled:
 
 ```
 budget_remaining = initial_budget - sum(spend_per_thread)
 ```
 
-This prevents unbounded execution costs regardless of nesting depth.
+This prevents unbounded cost regardless of how many specialists the manager spawns.
 
-## Examples
-
-### Fractal Polymath
-
-See `examples/advanced/fractal_polymath.py` for a working example where a manager `AdaptiveNode` composes a `BatchNode` containing two specialist `AdaptiveNode` instances running in parallel threads.
-
-### Multi-Site Clinical Trial (Pharma)
-
-This architecture maps directly to a multi-site clinical trial. Each site has a different distribution of patient complexity, adverse event rates, and protocol deviations. A static graph cannot anticipate how many review pipelines any given site's data batch will need.
-
-```
-AdaptiveNode (Site Manager)
-│   Receives: site_data_batch (patient records, AE reports, protocol logs)
-│   Decides: which specialist sub-pipelines this batch requires and how many
-│
-└── Generates spec:
-    ├── BatchNode (parallel site review)
-    │   ├── Thread 1: LLMNode — Standard patient record review
-    │   ├── Thread 2: LLMNode — Adverse event review  (only if AE rate > threshold)
-    │   └── Thread 3: LLMNode — Protocol deviation review  (only if deviations present)
-    └── LLMNode — Site-level summary for regulatory submission
-```
-
-The `TopologyValidator` passed to the manager is inherited by every child node — no site-level subgraph can call tools outside the approved clinical data toolset, regardless of what the LLM proposes. The HMAC-signed Causal Trace across all threads is the complete Article 12 audit record for that site's batch, reconstructible by a regulator from the log alone.
-
-```python
-from lar.adaptive import AdaptiveNode, TopologyValidator
-from lar import GraphExecutor
-
-def run_python_code(code: str) -> str:
-    # Sandboxed executor — Docker/e2b required in production
-    ...
-
-validator = TopologyValidator(allowed_tools=[run_python_code])
-
-manager = AdaptiveNode(
-    llm_model="gpt-4o",
-    prompt_template=manager_prompt,  # Asks LLM to design BatchNode + child AdaptiveNodes
-    validator=validator,
-    next_node=None
-)
-
-executor = GraphExecutor(log_dir="audit_logs")
-list(executor.run_step_by_step(manager, {}))
-```
-
-## Compliance
-
-Every level of nesting produces its own Causal Trace entry (Art. 12). An auditor can reconstruct the full decision tree — which specs were proposed, which were validated, which were rejected — from the audit log alone.
-
-### Art. 14 and Meaningful Oversight in Fractal Agents
-
-A critical compliance gap emerges when `BatchNode` runs parallel branches that each produce a risk assessment: if those branches feed directly into a `ReduceNode`, the consolidated output discards per-dimension evidence before any human sees it. A principal investigator shown "MEDIUM overall" has no way to know that one branch returned CRITICAL.
-
-**The pattern that closes this gap:**
-
-```
-BatchNode → BranchTriageNode → RouterNode
-                                    ↓ "critical" → HumanJuryNode (early gate, pre-consolidation)
-                                    ↓ "ok"       → ReduceNode → parse → HumanJuryNode (final gate)
-```
-
-`BranchTriageNode` (in `lar.compliance`) sits between `BatchNode` and `RouterNode`. It:
-
-1. Parses every branch output (JSON-embedded risk assessments)
-2. Writes `branch_findings_summary` — a per-dimension breakdown the `HumanJuryNode` includes in its context, so the human sees individual findings alongside the consolidated recommendation
-3. Sets `branch_critical=True` if any branch exceeds the threshold, triggering the early-exit jury before `ReduceNode` compresses the evidence away
-
-```python
-from lar.compliance import BranchTriageNode
-from lar import RouterNode
-
-node_triage = BranchTriageNode(
-    branch_output_keys=["safety_analysis", "efficacy_analysis", "regulatory_analysis"],
-    critical_threshold="CRITICAL",   # or "HIGH" for stricter escalation
-    next_node=node_branch_router,
-)
-
-node_branch_router = RouterNode(
-    decision_function=lambda s: "critical" if s.get("branch_critical") else "ok",
-    path_map={
-        "critical": node_jury_early,   # Fires before ReduceNode
-        "ok":       node_reduce,
-    },
-)
-
-# Both HumanJuryNodes include branch_findings_summary in context_keys:
-jury = HumanJuryNode(
-    context_keys=["risk_level", "recommendation", "branch_findings_summary"],
-    ...
-)
-```
-
-This is the difference between compliance-on-paper (a single jury interrupt on an aggregated score) and meaningful oversight under Art. 14 (a human who can interrogate the evidence before it is destroyed).
-
-The full working implementation with HMAC-signed artefact verification:
-
-```bash
-python examples/compliance/23_fractal_compliance_showcase.py
-```
+---
 
 ## See Also
 
-- [AdaptiveNode API](../api-reference/adaptivenode.md)
-- [BatchNode API](../api-reference/batchnode.md)
-- [Defensive Constraints](10-defensive-constraints.md) — token budgets and node fatigue limits
-- [Build a Compliant Agent from Scratch](../guides/build-compliant-agent.md)
+- [AdaptiveNode — how it works →](9-adaptive-graphs.md)
+- [BranchTriageNode API →](../api-reference/branchTriageNode.md)
+- [Fractal Compliance Showcase (full working example) →](../../examples/compliance/23_fractal_compliance_showcase.py)
+- [Defensive Constraints — token budgets and node limits →](10-defensive-constraints.md)
+- [Build a Compliant Agent from Scratch →](../guides/build-compliant-agent.md)

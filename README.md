@@ -295,7 +295,11 @@ for step in executor.run_step_by_step(adaptive, {"doc_type": "financial", "docum
 
 **The real unlock** is combining `AdaptiveNode` with `BatchNode`. The LLM can decide both how many workers to spawn *and* that they should run in parallel — covering case complexity you'd need a combinatorial explosion of static branches to replicate.
 
-See: [`examples/adaptive/`](examples/adaptive/) | [Adaptive Graphs Docs →](https://docs.snath.ai/core-concepts/9-adaptive-graphs/)
+**This stays compliant regardless of graph shape.** Every generated spec is logged to the HMAC-signed Causal Trace before any node executes (Art. 12). `TopologyValidator` is pure Python — deterministic, not probabilistic — so the safety decision is never delegated to an LLM. All 13 compliance primitives (`HumanJuryNode`, `PIIRedactionEngine`, `BiasFilterNode`, etc.) work inside generated subgraphs exactly as they do in static ones. The graph shape changes at runtime; the compliance guarantees don't.
+
+In fractal agents (manager `AdaptiveNode` + `BatchNode` of specialist `AdaptiveNode`s), wire `BranchTriageNode` between `BatchNode` and the human jury. Without it the human sees a rolled-up score — they don't know which parallel branch triggered the alert. That's not meaningful oversight under Art. 14. With it, the jury context includes per-branch findings before `ReduceNode` compresses them away.
+
+See: [`examples/adaptive/`](examples/adaptive/) | [`examples/compliance/23_fractal_compliance_showcase.py`](examples/compliance/23_fractal_compliance_showcase.py) | [Adaptive Graphs Docs →](https://docs.snath.ai/core-concepts/9-adaptive-graphs/)
 
 ---
 

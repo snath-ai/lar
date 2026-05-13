@@ -160,8 +160,40 @@ executor = GraphExecutor()
 results = list(executor.run_step_by_step(node, {"task": "summarise this document"}))
 ```
 
+## Compliance in Adaptive Graphs
+
+The graph shape changes at runtime. The compliance guarantees don't.
+
+**Every generated spec is logged before it executes.** The Causal Trace (Art. 12) records the full JSON spec, the `TopologyValidator` result, and every node execution within the subgraph — whether that subgraph was hardcoded or generated at runtime. An auditor can reconstruct the exact topology that ran from the log alone.
+
+**The safety decision is never delegated to an LLM.** `TopologyValidator` is pure Python — same spec in, same result out, deterministically. The LLM proposes a graph; a non-probabilistic function decides if it is safe to run. This matters for Art. 3(23) (Substantial Modification): you can prove the validator's decision, not just assert it.
+
+**All 13 compliance primitives work inside generated subgraphs.** If your spec includes an `LLMNode` that processes personal data, wire `PIIRedactionEngine` after it exactly as you would in a static graph. `HumanJuryNode` halts the generated subgraph the same way it halts any other. `BiasFilterNode`, `ProhibitedPracticeGuard`, `LethalTrifectaGuard` — all fire correctly regardless of whether the node containing them was hardcoded or generated.
+
+**In fractal agents (parallel specialist sub-agents), add `BranchTriageNode`.** Without it, the human jury only sees a consolidated score — not which parallel branch triggered the alert. That is not meaningful oversight under Art. 14. See [Fractal Agents →](11-fractal-agency.md) for the full pattern.
+
+```python
+executor = GraphExecutor(
+    hmac_secret=os.environ["HMAC_SECRET"],  # Signs the causal trace including all generated specs
+    log_dir="/var/audit_logs"
+)
+
+validator = TopologyValidator(
+    allowed_tools=[approved_tool_1, approved_tool_2],
+    max_nodes=15,    # Rejects any spec with more than 15 nodes
+)
+
+adaptive = AdaptiveNode(
+    llm_model="gpt-4o",
+    prompt_template=YOUR_PROMPT,
+    validator=validator,
+    max_depth=3,     # Prevents unbounded recursive nesting
+)
+```
+
 ## See Also
 
 - [AdaptiveNode API](../api-reference/adaptivenode.md)
 - [TopologyValidator API](../api-reference/topologyvalidator.md)
+- [Fractal Agents — BatchNode + AdaptiveNode + BranchTriageNode →](11-fractal-agency.md)
 - [EU AI Act Deep Dive](../compliance/eu-ai-act-deep-dive.md)
