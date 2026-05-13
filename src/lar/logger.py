@@ -7,6 +7,23 @@ from typing import List, Dict, Any, Optional
 from .compliance.pii_redactor import PIIRedactionEngine
 
 
+class TensorSafeEncoder(json.JSONEncoder):
+    """
+    Serializes objects safely, specifically converting PyTorch Tensors
+    to metadata instead of crashing.
+    """
+    def default(self, obj):
+        if type(obj).__name__ == "Tensor" and type(obj).__module__ == "torch":
+            return {
+                "__type__": "Tensor",
+                "shape": list(obj.shape)
+            }
+        try:
+            return super().default(obj)
+        except TypeError:
+            return str(obj)
+
+
 class AuditLogger:
     """
     Handles audit trail logging and persistence for Lár graph executions.
@@ -87,7 +104,7 @@ class AuditLogger:
 
         try:
             with open(filename, "w") as f:
-                json.dump(log_data, f, indent=2)
+                json.dump(log_data, f, indent=2, cls=TensorSafeEncoder)
             print(f"\n[AuditLogger] Log saved to: {filename}")
         except Exception as e:
             print(f"\n[AuditLogger] Failed to save log: {e}")
@@ -105,7 +122,7 @@ class AuditLogger:
         clean_payload = {k: v for k, v in payload.items() if k != "signature"}
         
         # Canonicalize JSON (sorted keys, no extra spaces)
-        payload_str = json.dumps(clean_payload, sort_keys=True, separators=(',', ':'))
+        payload_str = json.dumps(clean_payload, sort_keys=True, separators=(',', ':'), cls=TensorSafeEncoder)
         
         mac = hmac.new(
             self.hmac_secret.encode('utf-8'),

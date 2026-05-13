@@ -13,17 +13,23 @@ def compute_state_diff(before: dict, after: dict) -> dict:
             diff["added"][key] = after[key]
         elif key not in after:
             diff["removed"][key] = before[key]
-        elif before[key] != after[key]:
-            # Use JSON dumps for a more robust comparison of complex types
+        else:
             try:
-                before_json = json.dumps(before[key], sort_keys=True)
-                after_json = json.dumps(after[key], sort_keys=True)
-                
-                if before_json != after_json:
+                are_equal = bool(before[key] == after[key])
+            except Exception:
+                are_equal = False
+
+            if not are_equal:
+                # Use JSON dumps for a more robust comparison of complex types
+                try:
+                    before_json = json.dumps(before[key], sort_keys=True)
+                    after_json = json.dumps(after[key], sort_keys=True)
+                    
+                    if before_json != after_json:
+                        diff["updated"][key] = after[key]
+                except TypeError:
+                    # Fallback for non-serializable objects
                     diff["updated"][key] = after[key]
-            except TypeError:
-                # Fallback for non-serializable objects
-                diff["updated"][key] = after[key]
             
     return diff
 

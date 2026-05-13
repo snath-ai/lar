@@ -6,12 +6,12 @@
     {
       "record_type": "AUTHORITY_EXERCISE",
       "eu_ai_act_article": "Art. 12, 14",
-      "timestamp": "2026-05-04T13:19:21.220333Z",
+      "timestamp": "2026-05-10T18:09:26.775530Z",
       "action_description": "FINANCE AI case analysis \u2014 external action pending",
       "stakeholder_id": "reviewer@enterprise.org",
       "stakeholder_role": "Risk Officer",
       "decision": "approve",
-      "rationale": "Reviewed risk score. Debt-to-equity ratio justifies denial.",
+      "rationale": "Reviewed FINANCE case. AI recommendation verified against policy. Approving with mandatory collateral condition.",
       "risk_score_at_decision": 0.85,
       "context_snapshot_keys": [
         "risk_level",
@@ -20,5 +20,5 @@
       ]
     }
   ],
-  "signature": "62927fa93278c7a58d1b1755d9a62063d5eb8a1a1b2bb8e64b10cb619a6a1902"
+  "signature": "9c32f143b6b427828b1af0ca24229023b4ac77e2b4d1979f35ef0d41a22fd8af"
 }

@@ -1,33 +1,37 @@
 {
   "manifest_version": "1.0",
   "system_name": "AI Credit / Trading Decision Agent",
-  "generated_at": "2026-05-04T13:18:41.933773Z",
+  "generated_at": "2026-05-10T18:09:19.845906Z",
   "eu_ai_act_reference": "Step 9 \u2014 External Action Inventory (Section 8.1, Nannini et al., 2026)",
   "summary": {
     "total_nodes_inventoried": 8,
     "node_type_breakdown": {
       "FunctionalNode": 3,
       "LLMNode": 1,
-      "RiskScorerNode": 1,
       "BiasFilterNode": 1,
+      "RiskScorerNode": 1,
       "ProhibitedPracticeGuard": 1,
       "SyntheticMarkerNode": 1
     },
-    "total_external_actions": 0,
-    "third_party_affecting_actions": 0,
+    "total_external_actions": 2,
+    "third_party_affecting_actions": 2,
     "tools_without_credential_vault": 0,
     "dynamic_topology_nodes": 0,
     "llm_inference_nodes": 1
   },
   "risk_flags": [
     {
-      "severity": "INFO",
-      "message": "No critical risk flags detected. Proceed to manual review of action_inventory."
+      "severity": "MEDIUM",
+      "article": "Art. 50",
+      "message": "2 tool(s) affect third parties and trigger Art. 50 transparency obligations. Verify TransparencyEngine is attached. Tools: ['ai_output', 'external_write']"
     }
   ],
   "action_inventory": [
     {
       "node_type": "FunctionalNode",
+      "action_type": "internal",
+      "affected_parties": "USER_ONLY",
+      "external_action": false,
       "eu_act_relevance": {
         "article": "Review required",
         "note": "Custom node type 'FunctionalNode'. Manual review needed to determine regulatory triggers."
@@ -40,23 +44,22 @@
       "prompt_template_preview": "You are a credit risk analyst. Assess the following loan/credit application.\nApplication: {case_summary}\n\nReply with ONL...",
       "system_instruction": null,
       "fallbacks": null,
+      "action_type": "llm_inference",
+      "affected_parties": "THIRD_PARTY",
+      "external_action": true,
       "eu_act_relevance": {
-        "article": "Art. 12 (Logging), Art. 13 (Transparency)",
-        "note": "LLM inference. Prompt and output are logged to the Causal Audit Trail."
+        "article": "Art. 12 (Logging), Art. 13 (Transparency), Art. 50 (Transparency to third parties)",
+        "note": "LLM inference on applicant PII data \u2014 directly affects the case subject's credit outcome. EXTERNAL ACTION \u2014 activates Art. 50 transparency obligations."
       }
     },
     {
       "node_type": "FunctionalNode",
+      "action_type": "internal",
+      "affected_parties": "USER_ONLY",
+      "external_action": false,
       "eu_act_relevance": {
         "article": "Review required",
         "note": "Custom node type 'FunctionalNode'. Manual review needed to determine regulatory triggers."
-      }
-    },
-    {
-      "node_type": "RiskScorerNode",
-      "eu_act_relevance": {
-        "article": "Art. 9, 14 (Risk Management & Oversight)",
-        "note": "Pre-execution risk scoring gate. Scores risk tier and routes to HumanJury if threshold exceeded."
       }
     },
     {
@@ -67,14 +70,27 @@
       }
     },
     {
-      "node_type": "FunctionalNode",
+      "node_type": "RiskScorerNode",
       "eu_act_relevance": {
-        "article": "Review required",
-        "note": "Custom node type 'FunctionalNode'. Manual review needed to determine regulatory triggers."
+        "article": "Art. 9, 14 (Risk Management & Oversight)",
+        "note": "Pre-execution risk scoring gate. Scores risk tier and routes to HumanJury if threshold exceeded."
+      }
+    },
+    {
+      "node_type": "FunctionalNode",
+      "action_type": "external_write",
+      "affected_parties": "THIRD_PARTY",
+      "external_action": true,
+      "eu_act_relevance": {
+        "article": "Art. 15(4) (Cybersecurity/Privilege), Art. 14 (Oversight), Art. 50 (Transparency to third parties)",
+        "note": "Post-approval external write to case management \u2014 affects third-party case subject."
       }
     },
     {
       "node_type": "ProhibitedPracticeGuard",
+      "action_type": "internal",
+      "affected_parties": "USER_ONLY",
+      "external_action": false,
       "eu_act_relevance": {
         "article": "Review required",
         "note": "Custom node type 'ProhibitedPracticeGuard'. Manual review needed to determine regulatory triggers."
