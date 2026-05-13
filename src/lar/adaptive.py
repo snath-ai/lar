@@ -155,9 +155,10 @@ class AdaptiveNode(BaseNode):
                  prompt_template: str,
                  validator: TopologyValidator,
                  next_node: BaseNode = None,
-                 context_keys: List[str] = [],
+                 context_keys: Optional[List[str]] = None,
                  system_instruction: str = None,
-                 max_depth: int = 3):
+                 max_depth: int = 3,
+                 generation_config: Optional[Dict[str, Any]] = None):
         """
         Args:
             llm_model: Model to generate the graph JSON.
@@ -174,12 +175,14 @@ class AdaptiveNode(BaseNode):
             model_name=llm_model,
             prompt_template=prompt_template,
             output_key="__graph_spec_json__",
-            system_instruction=system_instruction or "You are a software architect. Output ONLY valid JSON representing a Lár Graph."
+            system_instruction=system_instruction or "You are a software architect. Output ONLY valid JSON representing a Lár Graph.",
+            generation_config=generation_config or {},
         )
         self.validator = validator
-        self.next_node = next_node # The "Exit" of the subgraph flows here
-        self.context_keys = context_keys
+        self.next_node = next_node
+        self.context_keys = context_keys if context_keys is not None else []
         self.max_depth = max_depth
+        self._generation_config = generation_config or {}
 
     def execute(self, state: GraphState):
         if self.max_depth <= 0:
@@ -294,9 +297,10 @@ class AdaptiveNode(BaseNode):
                 node_map[nid] = AdaptiveNode(
                     llm_model=n.get("model", self.llm_node.model_name),
                     prompt_template=child_prompt,
-                    validator=self.validator,       # Inherit safety rails
-                    next_node=None,                 # Wired in Pass 2
-                    max_depth=self.max_depth - 1,   # Decrement — prevents unbounded recursion
+                    validator=self.validator,
+                    next_node=None,
+                    max_depth=self.max_depth - 1,
+                    generation_config=self._generation_config,
                 )
             else:
                 # TopologyValidator should have rejected this already.
