@@ -347,6 +347,7 @@ executor = GraphExecutor(
     hmac_secret="your_enterprise_secret_key"
 )
 # Run your agent normally. Every log is HMAC-SHA256 signed.
+# Note: As of v2.1.0, the AuditLogger natively supports serialization of PyTorch and NumPy tensors via the new `TensorSafeEncoder`.
 ```
 
 Verify for auditors:
