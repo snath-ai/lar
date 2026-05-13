@@ -1,3 +1,4 @@
+import sys
 import time
 import copy
 import json
@@ -392,7 +393,7 @@ class LLMNode(BaseNode):
                 raise e
 
         print(f"  [LLMNode] FATAL: Failed after {self.max_retries} retries.")
-        raise APIError(f"LLMNode failed after {self.max_retries} retries.", status_code=429)
+        raise APIError(f"LLMNode failed after {self.max_retries} retries.")
 
 class RouterNode(BaseNode):
     """
@@ -435,7 +436,12 @@ class RouterNode(BaseNode):
         self.default_node = default_node
 
     def execute(self, state: GraphState):
-        route_key = self.decision_function(state)
+        try:
+            route_key = self.decision_function(state)
+        except Exception as e:
+            print(f"  [RouterNode] ERROR: decision_function raised: {e}")
+            state.set("last_error", str(e))
+            return self.default_node
         print(f"  [RouterNode]: Decision function returned '{route_key}'")
         
         # Log the decision to state so it appears in the diff
@@ -568,11 +574,8 @@ class ClearErrorNode(BaseNode):
     A simple "janitor" node. Its only job is to clean up
     the 'last_error' key from the state.
     """
-    def __init__(self, next_node: BaseNode):
-        # Validation
-        if not isinstance(next_node, BaseNode):
-            raise ValueError(f"next_node must be a BaseNode instance, got {type(next_node).__name__}")
-        
+    def __init__(self, next_node: BaseNode = None):
+        self._validate_next_node(next_node)
         self.next_node = next_node
 
     def execute(self, state: GraphState):
@@ -665,8 +668,16 @@ class BatchNode(BaseNode):
             for k, v in local_state.get_all().items():
                 if k in ("token_budget", "last_error"):
                     continue
-                if k not in base_state_dict or base_state_dict[k] != v:
-                    if k in seen and seen[k] != v:
+                try:
+                    changed = k not in base_state_dict or bool(base_state_dict[k] != v)
+                except Exception:
+                    changed = True
+                if changed:
+                    try:
+                        conflict = k in seen and bool(seen[k] != v)
+                    except Exception:
+                        conflict = True
+                    if conflict:
                         conflicts.add(k)
                     seen[k] = v
 
@@ -690,7 +701,11 @@ class BatchNode(BaseNode):
             for k, v in local_dict.items():
                 if k in ("token_budget", "last_error"):
                     continue
-                if k not in base_state_dict or base_state_dict[k] != v:
+                try:
+                    changed = k not in base_state_dict or bool(base_state_dict[k] != v)
+                except Exception:
+                    changed = True
+                if changed:
                     if k not in written:
                         state.set(k, v)
                         written.add(k)
@@ -751,7 +766,7 @@ class HumanJuryNode(BaseNode):
                  prompt: str, 
                  choices: List[str], 
                  output_key: str, 
-                 context_keys: List[str] = [],
+                 context_keys: Optional[List[str]] = None,
                  next_node: BaseNode = None,
                  # --- Art. 12/14 Authority Record ---
                  authority_ledger: Optional[Any] = None,
@@ -786,14 +801,14 @@ class HumanJuryNode(BaseNode):
                 raise ValueError(f"choices must contain only strings, got {type(choice).__name__}")
         if not isinstance(output_key, str) or not output_key:
             raise ValueError("output_key must be a non-empty string")
-        if not isinstance(context_keys, list):
+        if context_keys is not None and not isinstance(context_keys, list):
             raise ValueError("context_keys must be a list")
         self._validate_next_node(next_node)
-        
+
         self.prompt = prompt
         self.choices = [c.lower() for c in choices]
         self.output_key = output_key
-        self.context_keys = context_keys
+        self.context_keys = context_keys if context_keys is not None else []
         self.next_node = next_node
         # Authority Record fields
         self.authority_ledger = authority_ledger
@@ -821,21 +836,26 @@ class HumanJuryNode(BaseNode):
                 print(f"  - {key}: {val_str}")
             print("-" * 60)
             
-        # 2. Loop until valid input
+        # 2. Loop until valid input (non-interactive fallback: default to first choice)
         rationale = ""
-        while True:
-            user_input = input(f"{self.prompt} ({'/'.join(self.choices)}): ").strip().lower()
-            if user_input in self.choices:
-                print(f"  [HumanJuryNode]: Stakeholder selected '{user_input}'")
-                state.set(self.output_key, user_input)
-                # Capture rationale for authority record
-                if self.authority_ledger:
-                    rationale = input("  Rationale (required for compliance record): ").strip()
-                    if not rationale:
-                        rationale = f"No rationale provided. Decision: {user_input}."
-                break
-            else:
-                print(f"  [HumanJuryNode]: Invalid input. Please type one of: {self.choices}")
+        if not sys.stdin.isatty():
+            user_input = self.choices[0]
+            print(f"  [HumanJuryNode]: Non-interactive environment detected. Auto-selecting '{user_input}'.")
+            state.set(self.output_key, user_input)
+            rationale = "Auto-selected in non-interactive environment."
+        else:
+            while True:
+                user_input = input(f"{self.prompt} ({'/'.join(self.choices)}): ").strip().lower()
+                if user_input in self.choices:
+                    print(f"  [HumanJuryNode]: Stakeholder selected '{user_input}'")
+                    state.set(self.output_key, user_input)
+                    if self.authority_ledger:
+                        rationale = input("  Rationale (required for compliance record): ").strip()
+                        if not rationale:
+                            rationale = f"No rationale provided. Decision: {user_input}."
+                    break
+                else:
+                    print(f"  [HumanJuryNode]: Invalid input. Please type one of: {self.choices}")
                 
         # 3. Write Authority Record to ledger (Art. 12/14 Fourth Tier)
         if self.authority_ledger:

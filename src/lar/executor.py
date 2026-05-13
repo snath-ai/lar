@@ -1,5 +1,6 @@
 import copy
 import uuid
+import datetime
 from typing import Optional
 from .node import BaseNode
 from .state import GraphState
@@ -186,7 +187,7 @@ class GraphExecutor:
                     # Log the termination event
                     final_log = {
                         "run_id": run_id,
-                        "timestamp": self.logger._get_utc_timestamp(),
+                        "timestamp": datetime.datetime.now().isoformat(),
                         "step": step_index,
                         "node": "CIRCUIT_BREAKER",
                         "state_before": state_after,
@@ -206,5 +207,5 @@ class GraphExecutor:
                 **self.tracker.get_summary()  # Unpack token summary
             }
             # Only save if we actually ran something
-            if step_index > 0:
+            if step_index >= 0:
                 self.logger.save_to_file(run_id, user_id=self.user_id, summary=summary)

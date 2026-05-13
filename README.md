@@ -203,8 +203,8 @@ for step in executor.run_step_by_step(classify, {"input": "Hello"}):
 | `BatchNode` | Fan-out / fan-in parallelism. Each thread gets an isolated `copy.deepcopy` of state. |
 | `ReduceNode` | Summarises multi-agent outputs and deletes raw keys — explicit memory compression. |
 | `AdaptiveNode` | Runtime graph composition: LLM generates a `GraphSpec` → `TopologyValidator` validates → injects subgraph. |
-| `HumanJuryNode` | Art. 14 mandatory interrupt. Blocks execution for human approval. Produces signed `AuthorityRecord`. |
-| `ClearErrorNode` | Resets `last_error` to `None`. Required for deterministic self-correction loops. |
+| `HumanJuryNode` | Art. 14 mandatory interrupt. Blocks execution for human approval. Produces signed `AuthorityRecord`. Degrades gracefully in non-interactive environments (CI/CD, piped stdin) — auto-selects the first valid choice rather than hanging. |
+| `ClearErrorNode` | Resets `last_error` to `None`. Required for deterministic self-correction loops. Accepts `next_node=None` to terminate after clearing. |
 | `@node` decorator | Converts any Python function into a Lár node. |
 
 ---
