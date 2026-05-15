@@ -82,7 +82,7 @@ class GraphExecutor:
         node_counts = {}
         try:
             while current_node is not None:
-                node_name = current_node.__class__.__name__
+                node_name = getattr(current_node, '_node_id', current_node.__class__.__name__)
                 
                 # --- NODE FATIGUE (Economic & Loop Constraint) ---
                 node_counts[node_name] = node_counts.get(node_name, 0) + 1

@@ -58,3 +58,5 @@ hmac_compliance_logs/
 test_v1_*.py
 
 site/
+enterprise_audit/
+lar_logs/
