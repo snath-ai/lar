@@ -49,9 +49,9 @@ def verify_log(log_path: str, secret_key: str):
 
     # 3. Compute the HMAC-SHA256 Hash
     mac = hmac.new(
-        secret_key.encode('utf-8'),
-        payload_str.encode('utf-8'),
-        hashlib.sha256
+        key=secret_key.encode('utf-8'),
+        msg=payload_str.encode('utf-8'),
+        digestmod=hashlib.sha256,
     )
     computed_signature = mac.hexdigest()
 

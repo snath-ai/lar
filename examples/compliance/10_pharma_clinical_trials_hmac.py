@@ -99,9 +99,9 @@ def main():
     payload_str = json.dumps(clean_payload, sort_keys=True, separators=(',', ':'))
     
     mac = hmac.new(
-        GXP_VAULT_KEY.encode('utf-8'),
-        payload_str.encode('utf-8'),
-        hashlib.sha256
+        key=GXP_VAULT_KEY.encode('utf-8'),
+        msg=payload_str.encode('utf-8'),
+        digestmod=hashlib.sha256,
     )
     computed_signature = mac.hexdigest()
     

@@ -139,9 +139,9 @@ class AuthorityLedger:
         if self.hmac_secret:
             canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
             sig = hmac.new(
-                self.hmac_secret.encode("utf-8"),
-                canonical.encode("utf-8"),
-                hashlib.sha256,
+                key=self.hmac_secret.encode("utf-8"),
+                msg=canonical.encode("utf-8"),
+                digestmod=hashlib.sha256,
             ).hexdigest()
             payload["signature"] = sig
 

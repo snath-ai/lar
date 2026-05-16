@@ -54,9 +54,9 @@ def test_hmac_signing(clean_logs):
     payload_str = json.dumps(clean_payload, sort_keys=True, separators=(',', ':'))
     
     mac = hmac.new(
-        secret.encode('utf-8'),
-        payload_str.encode('utf-8'),
-        hashlib.sha256
+        key=secret.encode('utf-8'),
+        msg=payload_str.encode('utf-8'),
+        digestmod=hashlib.sha256,
     )
     computed_signature = mac.hexdigest()
 
@@ -65,11 +65,11 @@ def test_hmac_signing(clean_logs):
     # Intentionally break the payload to ensure validation works
     broken_payload = clean_payload.copy()
     broken_payload["tampered"] = True
-    
+
     broken_str = json.dumps(broken_payload, sort_keys=True, separators=(',', ':'))
     broken_mac = hmac.new(
-        secret.encode('utf-8'),
-        broken_str.encode('utf-8'),
-        hashlib.sha256
+        key=secret.encode('utf-8'),
+        msg=broken_str.encode('utf-8'),
+        digestmod=hashlib.sha256,
     )
     assert saved_signature != broken_mac.hexdigest(), "Broken payload should not match!"
