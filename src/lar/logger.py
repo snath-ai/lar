@@ -125,8 +125,8 @@ class AuditLogger:
         payload_str = json.dumps(clean_payload, sort_keys=True, separators=(',', ':'), cls=TensorSafeEncoder)
         
         mac = hmac.new(
-            self.hmac_secret.encode('utf-8'),
-            payload_str.encode('utf-8'),
-            hashlib.sha256
+            key=self.hmac_secret.encode('utf-8'),
+            msg=payload_str.encode('utf-8'),
+            digestmod=hashlib.sha256,
         )
         return mac.hexdigest()
