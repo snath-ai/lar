@@ -1,13 +1,13 @@
-name: Publish lar-engine to GitHub Packages
+name: Publish lar-engine
 
-# Trigger: create a GitHub Release (e.g. tag v2.1.0 → Release)
+# Trigger: create a GitHub Release (e.g. tag v2.1.1 → Release)
 on:
   release:
     types: [published]
 
 permissions:
-  contents: read
-  packages: write   # Required to push to GitHub Packages
+  contents: write   # Needed to upload wheel to the Release
+  packages: write
 
 jobs:
   build_and_test:
@@ -40,12 +40,9 @@ jobs:
           path: dist/
 
   publish:
-    name: Publish to GitHub Packages
+    name: Attach wheel to GitHub Release
     needs: build_and_test
     runs-on: ubuntu-latest
-    environment:
-      name: github-packages
-      url: https://github.com/snath-ai/lar/packages
 
     steps:
       - uses: actions/download-artifact@v4
@@ -53,8 +50,7 @@ jobs:
           name: lar-engine-dist
           path: dist/
 
-      - name: Publish to GitHub Packages PyPI registry
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Upload wheel + sdist to Release
+        uses: softprops/action-gh-release@v2
         with:
-          repository-url: https://pypi.pkg.github.com/snath-ai/
-          password: ${{ secrets.GITHUB_TOKEN }}
+          files: dist/*
