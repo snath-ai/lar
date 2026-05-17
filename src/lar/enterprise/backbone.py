@@ -1,23 +1,28 @@
 """
 Lár Enterprise Compliance Backbone
 ====================================
-Reusable backbone that wires the 12 paper-mapped compliance primitives into a single,
-auditable graph. Drop in a DOMAIN_CONFIG dict to target any regulated vertical.
-(BranchTriageNode — the 13th primitive — is used in fractal/BatchNode patterns; see examples/compliance/23_fractal_compliance_showcase.py)
+Reusable backbone that wires the compliance primitives into a single auditable graph.
+Drop in a DOMAIN_CONFIG dict to target any regulated vertical.
 
-Paper coverage  (every box the April 2026 paper implies):
-  Art. 9    → PolicyRegistry (risk taxonomy per action)
-  Art. 12   → AuditLogger / Causal Trace + AuthorityLedger (action-level records)
-  Art. 13   → TransparencyEngine (third-party disclosure)
-  Art. 14   → RiskScorerNode + HumanJuryNode (commensurate oversight)
-  Art. 3(23)→ RuntimeStateVersioner + DriftDetector (substantial modification)
-  Art. 15(4)→ CredentialVault (NHI just-in-time privilege)
-  Art. 50(2)→ SyntheticMarkerNode (C2PA / visible disclaimer)
-  prEN18283 → BiasFilterNode (bias management)
-  GDPR 5/17 → PIIRedactionEngine (right to erasure)
-  Step 9    → ComplianceManifestGenerator (exhaustive action inventory)
-  AEPD PoP  → LethalTrifectaGuard (Rule-of-2 runtime block)
-  Fourth Tier→ AuthorityLedger (who/role/rationale/risk signed record)
+Paper coverage (Nannini et al., 2026 — all mapped steps):
+  Art. 9      → PolicyRegistry + FundamentalRightsImpactNode (FRIA)
+  Art. 9 PMM  → BehavioralEnvelopeMonitor (output variance monitoring)
+  Art. 12     → AuditLogger (causal trace + verify_step_integrity) + AuthorityLedger
+  Art. 13     → DeployerTransparencyNode (instructions for use) + TransparencyEngine
+  Art. 14     → RiskScorerNode + HumanJuryNode (automation_boundary + decision_type)
+  Art. 3(23)  → RuntimeStateVersioner + DriftDetector + DynamicToolDiscoveryMonitor
+  Art. 15(4)  → CredentialVault (get_with_trust — trust-based privilege)
+  Art. 25(4)  → SupplierAgreementRegistry (written agreement enforcement)
+  Art. 50(2)  → SyntheticMarkerNode (C2PA / visible disclaimer)
+  Art. 73-74  → IncidentReporterNode (real-time incident detection + 24/72h deadlines)
+  Art. 3      → MultiAgentBoundaryNode (internal vs. market-placed sub-agents)
+  GDPR 5/17   → PIIRedactionEngine + SessionMemoryNode (erasable per-subject memory)
+  prEN18283   → BiasFilterNode (bias management)
+  Step 9      → ComplianceManifestGenerator (action inventory + adjacent legislation)
+  AEPD PoP    → LethalTrifectaGuard (Rule-of-2 runtime block)
+  Fourth Tier → AuthorityLedger (stakeholder/role/rationale/risk signed record)
+  Art. 5      → ProhibitedPracticeGuard (auto-wired into executor)
+  BranchTriage→ BranchTriageNode (fractal agents — see 23_fractal_compliance_showcase.py)
 """
 
 from __future__ import annotations
@@ -32,7 +37,7 @@ from lar.compliance.pii_redactor import PIIRedactionEngine
 from lar.compliance import (
     PolicyRegistry, ActionPolicy,
     RiskScorerNode,
-    RuntimeStateVersioner,
+    RuntimeStateVersioner, BehavioralEnvelopeMonitor,
     CredentialVault,
     TransparencyEngine,
     PIIRedactionEngine,
@@ -41,7 +46,15 @@ from lar.compliance import (
     ComplianceManifestGenerator,
     AuthorityLedger,
     LethalTrifectaGuard, LethalTrifectaError,
+    IncidentReporterNode,
     ProhibitedPracticeGuard,
+    # v2.2.0 gap-closure
+    FundamentalRightsImpactNode,
+    SessionMemoryNode,
+    SupplierAgreementRegistry,
+    DeployerTransparencyNode,
+    DynamicToolDiscoveryMonitor,
+    MultiAgentBoundaryNode,
 )
 
 

@@ -4,7 +4,7 @@ Lár: A "Define-by-Run" Agentic Framework.
 This file makes the core classes and utilities available for easy import
 by any developer who runs `pip install lar-engine`.
 """
-__version__ = "2.1.1"
+__version__ = "2.2.0"
 
 # Import the core classes to the top level of the package
 from .state import GraphState
@@ -22,7 +22,18 @@ from .node import (
     node
 )
 from .adaptive import AdaptiveNode, DynamicNode, TopologyValidator
-from .compliance import BranchTriageNode
+from .compliance import (
+    BranchTriageNode,
+    # v2.2.0 gap-closure nodes
+    FundamentalRightsImpactNode, FRIAViolation,
+    SessionMemoryNode,
+    SupplierAgreementRegistry, AgreementNotFoundError,
+    DeployerTransparencyNode,
+    DynamicToolDiscoveryMonitor, UndisclosedToolError,
+    MultiAgentBoundaryNode,
+    IncidentReporterNode,
+    BehavioralEnvelopeMonitor,
+)
 from .executor import GraphExecutor
 from .logger import AuditLogger
 from .tracker import TokenTracker
@@ -57,6 +68,15 @@ __all__ = [
     "TopologyValidator",
     "ClearErrorNode",
     "BranchTriageNode",
+    # v2.2.0 gap-closure nodes
+    "FundamentalRightsImpactNode", "FRIAViolation",
+    "SessionMemoryNode",
+    "SupplierAgreementRegistry", "AgreementNotFoundError",
+    "DeployerTransparencyNode",
+    "DynamicToolDiscoveryMonitor", "UndisclosedToolError",
+    "MultiAgentBoundaryNode",
+    "IncidentReporterNode",
+    "BehavioralEnvelopeMonitor",
     "__version__",
     
     # Utility Functions

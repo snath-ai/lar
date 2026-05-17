@@ -1,7 +1,18 @@
 import os
 import json
 import glob
-from typing import List, Dict, Any
+import datetime
+from typing import List, Dict, Any, Optional
+
+# IncidentReporterNode is imported lazily to avoid a circular import with lar.node
+# (lar.node imports from lar.state; lar.compliance.incident_reporter is loaded by
+#  lar.compliance.__init__ which is imported by lar.executor — always after lar.node).
+try:
+    from lar.node import BaseNode
+    from lar.state import GraphState
+    _NODE_AVAILABLE = True
+except ImportError:
+    _NODE_AVAILABLE = False
 
 class IncidentReporter:
     """
@@ -109,5 +120,184 @@ class IncidentReporter:
             report.append("> [!WARNING]\n> **High Rejection Rate Alert:** Human reviewers are rejecting >20% of agent actions. Root cause analysis required.")
         if high_severity_drifts > 0:
             report.append("> [!CRITICAL]\n> **Substantial Modification Alert:** Structural graph drift detected. CE Marking may be invalidated. Immediate review required.")
-            
+
         return "\n".join(report)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# IncidentReporterNode — real-time Art. 73 incident detection
+# ─────────────────────────────────────────────────────────────────────────────
+
+class IncidentReporterNode:
+    """
+    Real-time incident detection and structured record creation for EU AI Act Art. 73-74.
+
+    This class serves two roles:
+
+    1. **As a graph node** (``BaseNode`` subclass via ``_make_node()``) — scans
+       the graph state for harm signals after each LLM or Tool step.
+    2. **As an executor hook** — called by ``GraphExecutor`` on unhandled
+       exceptions via ``report_runtime_error()``.
+
+    Incident records are written to ``incident_log_path`` as a JSON-Lines file.
+    If a ``webhook_url`` is provided it is stored in each record so the deployer
+    can POST to their CSIRT / ENISA pipeline.
+
+    EU Reference: Art. 73–74 EU AI Act — Serious Incident Reporting obligations.
+
+    DEADLINE_HOURS:
+      CRITICAL → 24 h (Art. 73(3) — serious incidents causing death / serious harm)
+      HIGH     → 24 h
+      MEDIUM   → 72 h (Art. 73(4) — serious malfunctions)
+      LOW      → None  (internal log only)
+    """
+
+    EU_REFERENCE = "Art. 73–74 EU AI Act — Serious Incident Reporting"
+
+    DEADLINE_HOURS: Dict[str, Optional[int]] = {
+        "CRITICAL": 24,
+        "HIGH": 24,
+        "MEDIUM": 72,
+        "LOW": None,
+    }
+
+    # Heuristic harm signals in graph state
+    _HARM_KEYS = {
+        "last_error": "RUNTIME_ERROR",
+        "_prohibited_practice_flag": "PROHIBITED_PRACTICE",
+        "_trifecta_check": "LETHAL_TRIFECTA",
+        "fria_findings": "FRIA_VIOLATION",
+        "bias_detected": "BIAS_DETECTED",
+    }
+
+    def __init__(
+        self,
+        severity_threshold: str = "HIGH",
+        incident_log_path: str = "lar_logs/incidents.jsonl",
+        webhook_url: Optional[str] = None,
+        next_node: Optional["BaseNode"] = None,
+    ):
+        """
+        Args:
+            severity_threshold: Minimum severity to write an incident record.
+                One of ``CRITICAL | HIGH | MEDIUM | LOW``.
+            incident_log_path: JSON-Lines file path for incident records.
+            webhook_url: Deployer-provided CSIRT webhook URL stored in each record
+                (framework does **not** POST automatically — deployer wires this up).
+            next_node: Next node when used as a graph node.
+        """
+        if severity_threshold not in self.DEADLINE_HOURS:
+            raise ValueError(
+                f"severity_threshold must be one of {list(self.DEADLINE_HOURS)}, "
+                f"got '{severity_threshold}'"
+            )
+        self.severity_threshold = severity_threshold
+        self.incident_log_path = incident_log_path
+        self.webhook_url = webhook_url
+        self.next_node = next_node
+        os.makedirs(os.path.dirname(self.incident_log_path) or ".", exist_ok=True)
+
+    # ── Graph node mode ───────────────────────────────────────────────────────
+
+    def execute(self, state: "GraphState") -> Optional["BaseNode"]:
+        """
+        Scans the current graph state for harm signals and files an incident
+        record for any that meet the severity threshold.
+        """
+        for state_key, harm_type in self._HARM_KEYS.items():
+            val = state.get(state_key)
+            if not val:
+                continue
+            # Skip empty lists / dicts
+            if isinstance(val, (list, dict)) and not val:
+                continue
+
+            severity = self._classify_severity_from_harm(harm_type, val)
+            levels = list(self.DEADLINE_HOURS)
+            if levels.index(severity) <= levels.index(self.severity_threshold):
+                self._write_incident(
+                    {
+                        "trigger": state_key,
+                        "harm_type": harm_type,
+                        "severity": severity,
+                        "value_summary": str(val)[:300],
+                        "run_id": state.get("__run_id"),
+                    }
+                )
+        return self.next_node
+
+    # ── Executor hook mode ────────────────────────────────────────────────────
+
+    def report_runtime_error(
+        self,
+        node_name: str,
+        error: Exception,
+        state: "GraphState",
+        run_id: str,
+        step: int,
+    ) -> None:
+        """
+        Called by ``GraphExecutor`` on an unhandled node exception.
+
+        Classifies the error severity and writes a structured incident record.
+        """
+        severity = self._classify_severity(error, state)
+        levels = list(self.DEADLINE_HOURS)
+        if levels.index(severity) <= levels.index(self.severity_threshold):
+            self._write_incident(
+                {
+                    "trigger": "unhandled_exception",
+                    "harm_type": "RUNTIME_ERROR",
+                    "severity": severity,
+                    "node_name": node_name,
+                    "error_type": type(error).__name__,
+                    "error_message": str(error)[:500],
+                    "run_id": run_id,
+                    "step": step,
+                }
+            )
+
+    # ── Helpers ───────────────────────────────────────────────────────────────
+
+    def _classify_severity(self, error: Exception, state: "GraphState") -> str:
+        name = type(error).__name__
+        if name in ("ProhibitedPracticeError", "LethalTrifectaError", "FRIAViolation"):
+            return "CRITICAL"
+        if name in ("SecurityError", "AgreementNotFoundError", "UndisclosedToolError"):
+            return "HIGH"
+        if state.get("_trifecta_check") or state.get("_prohibited_practice_flag"):
+            return "HIGH"
+        return "MEDIUM"
+
+    def _classify_severity_from_harm(self, harm_type: str, val: Any) -> str:
+        if harm_type in ("PROHIBITED_PRACTICE", "LETHAL_TRIFECTA", "FRIA_VIOLATION"):
+            return "CRITICAL"
+        if harm_type == "RUNTIME_ERROR":
+            return "HIGH"
+        if harm_type == "BIAS_DETECTED" and val is True:
+            return "MEDIUM"
+        return "LOW"
+
+    def _write_incident(self, details: Dict) -> None:
+        now = datetime.datetime.utcnow().isoformat() + "Z"
+        severity = details.get("severity", "MEDIUM")
+        deadline_h = self.DEADLINE_HOURS.get(severity)
+        record = {
+            "schema": "lar-incident-v1",
+            "eu_reference": self.EU_REFERENCE,
+            "reported_at": now,
+            "severity": severity,
+            "reporting_deadline_hours": deadline_h,
+            "deadline_by": (
+                (datetime.datetime.utcnow() + datetime.timedelta(hours=deadline_h)).isoformat() + "Z"
+                if deadline_h else None
+            ),
+            "webhook_url": self.webhook_url,
+            **details,
+        }
+        with open(self.incident_log_path, "a") as f:
+            f.write(json.dumps(record) + "\n")
+        print(
+            f"  [IncidentReporterNode] [{severity}] Incident recorded "
+            f"(deadline: {deadline_h}h). → {self.incident_log_path}"
+        )

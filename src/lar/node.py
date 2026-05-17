@@ -590,12 +590,25 @@ class BatchNode(BaseNode):
     Useful for Fan-Out patterns where branches are independent.
     Each node runs in its own thread with a *copy* of the state.
     Non-conflicting updates are merged back into the main state.
+
+    Dependency-aware execution (v2.2.0):
+    ``branch_timeout`` prevents a blocking branch (e.g., a ``HumanJuryNode``
+    waiting for stdin) from freezing the entire pipeline.  Branches that do not
+    complete within the timeout are collected separately and their partial results
+    are not merged — independent branches keep running and return their results
+    while the slow branch is still pending.
     """
-    def __init__(self, nodes: List[BaseNode], next_node: BaseNode = None):
+    def __init__(self, nodes: List[BaseNode], next_node: BaseNode = None,
+                 branch_timeout: Optional[float] = None):
         """
         Args:
             nodes: List of nodes to execute in parallel.
             next_node: The single node to execute after all parallel nodes finish.
+            branch_timeout: Per-branch timeout in seconds.  ``None`` = no timeout
+                (original behaviour).  When a branch exceeds the timeout its
+                result is skipped and a warning is written to ``state['_batch_timeouts']``.
+                Use this to prevent a blocking ``HumanJuryNode`` in one branch
+                from freezing independent branches.
         """
         # Validation
         if not isinstance(nodes, list):
@@ -609,9 +622,10 @@ class BatchNode(BaseNode):
                     f"nodes[{i}] must be a BaseNode instance, got {type(node).__name__}"
                 )
         self._validate_next_node(next_node)
-        
+
         self.nodes = nodes
         self.next_node = next_node
+        self.branch_timeout = branch_timeout
 
     def execute(self, state: GraphState):
         MAX_STEPS = 50
@@ -636,24 +650,34 @@ class BatchNode(BaseNode):
         ordered_results: List[tuple] = []
         failed_branches: List[str] = []
 
+        timed_out_branches: List[str] = []
+
         with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             future_to_node = {
                 executor.submit(run_node_safe, node, base_state_dict): (i, node)
                 for i, node in enumerate(self.nodes)
             }
             pending = {f: meta for f, meta in future_to_node.items()}
-            for future in concurrent.futures.as_completed(pending):
+            for future in concurrent.futures.as_completed(pending, timeout=self.branch_timeout):
                 i, node = pending[future]
                 node_name = getattr(node, "__name__", node.__class__.__name__)
                 try:
                     ordered_results.append((i, future.result()))
                     print(f"  [BatchNode]: Branch {i} ({node_name}) completed.")
+                except concurrent.futures.TimeoutError:
+                    timed_out_branches.append(node_name)
+                    print(
+                        f"  [BatchNode] TIMEOUT: Branch {i} ({node_name}) exceeded "
+                        f"{self.branch_timeout}s — skipping merge for this branch."
+                    )
                 except Exception as e:
                     failed_branches.append(node_name)
                     print(f"  [BatchNode] ERROR in branch {i} ({node_name}): {e}")
 
         if failed_branches:
             state.set("last_error", f"BatchNode: {len(failed_branches)} branch(es) failed: {failed_branches}")
+        if timed_out_branches:
+            state.set("_batch_timeouts", timed_out_branches)
 
         # Sort by original insertion order so merge is deterministic regardless of completion order
         ordered_results.sort(key=lambda x: x[0])
@@ -762,10 +786,10 @@ class HumanJuryNode(BaseNode):
     Articles 12-14 require and that the paper (Section 9, Finding 10) identifies as
     absent from all current governance tooling.
     """
-    def __init__(self, 
-                 prompt: str, 
-                 choices: List[str], 
-                 output_key: str, 
+    def __init__(self,
+                 prompt: str,
+                 choices: List[str],
+                 output_key: str,
                  context_keys: Optional[List[str]] = None,
                  next_node: BaseNode = None,
                  # --- Art. 12/14 Authority Record ---
@@ -773,7 +797,10 @@ class HumanJuryNode(BaseNode):
                  stakeholder_id: str = "UNKNOWN",
                  stakeholder_role: str = "REVIEWER",
                  action_description: str = None,
-                 risk_score_key: str = None):
+                 risk_score_key: str = None,
+                 # --- Art. 14 Automation Boundary (v2.2.0) ---
+                 decision_type: Optional[str] = None,
+                 automation_boundary: Optional[Dict[str, str]] = None):
         """
         Args:
             prompt: The question to ask the human stakeholder.
@@ -790,6 +817,19 @@ class HumanJuryNode(BaseNode):
                 Defaults to the prompt text if not provided.
             risk_score_key: Optional state key containing the risk score from a
                 RiskScorerNode, to include in the authority record for full evidence chain.
+            decision_type: Identifier for the type of decision (e.g. 'CREDIT_DECISION',
+                'ALERT_REVIEW').  Used to look up the policy in ``automation_boundary``.
+            automation_boundary: Dict mapping decision_type strings to policies.
+                Policies control non-interactive (CI/automated) fallback behaviour:
+                  ``"always_human"``      — always require a real human (block in CI)
+                  ``"auto_if_low_risk"``  — auto-select first choice only when risk is LOW
+                  ``"auto_first_choice"`` — legacy behaviour (auto-select first choice)
+                Example::
+
+                    automation_boundary={
+                        "CREDIT_DECISION": "always_human",
+                        "ALERT_REVIEW": "auto_if_low_risk",
+                    }
         """
         # Validation
         if not isinstance(prompt, str) or not prompt:
@@ -816,6 +856,9 @@ class HumanJuryNode(BaseNode):
         self.stakeholder_role = stakeholder_role
         self.action_description = action_description or prompt
         self.risk_score_key = risk_score_key
+        # Automation boundary (Art. 14)
+        self.decision_type = decision_type
+        self.automation_boundary: Dict[str, str] = automation_boundary or {}
 
     def execute(self, state: GraphState):
         print("\n" + "="*60)
@@ -836,13 +879,40 @@ class HumanJuryNode(BaseNode):
                 print(f"  - {key}: {val_str}")
             print("-" * 60)
             
-        # 2. Loop until valid input (non-interactive fallback: default to first choice)
+        # 2. Loop until valid input — with automation_boundary policy for non-interactive envs
         rationale = ""
         if not sys.stdin.isatty():
-            user_input = self.choices[0]
-            print(f"  [HumanJuryNode]: Non-interactive environment detected. Auto-selecting '{user_input}'.")
+            # Determine fallback policy for this decision_type
+            policy = self.automation_boundary.get(
+                self.decision_type or "", "auto_first_choice"
+            )
+
+            if policy == "always_human":
+                # Strict: block in non-interactive environments — human signature required
+                raise RuntimeError(
+                    f"[HumanJuryNode] decision_type='{self.decision_type}' requires a "
+                    f"human decision (automation_boundary policy='always_human') but "
+                    f"running in a non-interactive environment. Halt execution."
+                )
+            elif policy == "auto_if_low_risk":
+                risk = state.get(self.risk_score_key) if self.risk_score_key else None
+                risk_level = risk.get("risk_level") if isinstance(risk, dict) else str(risk or "")
+                if risk_level in ("LOW", "MINIMAL"):
+                    user_input = self.choices[0]
+                    rationale = f"Auto-selected '{user_input}' (policy=auto_if_low_risk, risk={risk_level})."
+                else:
+                    raise RuntimeError(
+                        f"[HumanJuryNode] decision_type='{self.decision_type}' requires "
+                        f"human review at risk level '{risk_level}' "
+                        f"(automation_boundary policy='auto_if_low_risk')."
+                    )
+            else:
+                # Default legacy behaviour: auto-select first choice
+                user_input = self.choices[0]
+                rationale = "Auto-selected in non-interactive environment."
+
+            print(f"  [HumanJuryNode]: Non-interactive environment. {rationale}")
             state.set(self.output_key, user_input)
-            rationale = "Auto-selected in non-interactive environment."
         else:
             while True:
                 user_input = input(f"{self.prompt} ({'/'.join(self.choices)}): ").strip().lower()

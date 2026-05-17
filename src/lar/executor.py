@@ -8,6 +8,7 @@ from .utils import compute_state_diff
 from .logger import AuditLogger
 from .tracker import TokenTracker
 from .compliance.runtime_versioner import RuntimeStateVersioner
+from .compliance.prohibited_practice_guard import ProhibitedPracticeGuard, ProhibitedPracticeError
 
 
 class SecurityError(Exception):
@@ -21,33 +22,46 @@ class GraphExecutor:
     This is the core execution engine that runs nodes step-by-step,
     delegating logging to AuditLogger and token tracking to TokenTracker.
     """
-    def __init__(self, 
-                 log_dir: str = "lar_logs", 
-                 offline_mode: bool = False, 
+    def __init__(self,
+                 log_dir: str = "lar_logs",
+                 offline_mode: bool = False,
                  user_id: Optional[str] = None,
                  logger: Optional[AuditLogger] = None,
                  tracker: Optional[TokenTracker] = None,
                  hmac_secret: Optional[str] = None,
                  max_node_fatigue: int = 20,
-                 versioner: Optional[RuntimeStateVersioner] = None):
+                 versioner: Optional[RuntimeStateVersioner] = None,
+                 prohibited_practice_guard: Optional[ProhibitedPracticeGuard] = None,
+                 incident_reporter=None):
         """
         Initialize the GraphExecutor.
-        
+
         Args:
             log_dir (str): Directory for audit logs (used if logger not provided)
             user_id (str, optional): User identifier for multi-tenant systems
             logger (AuditLogger, optional): Custom logger instance. If None, creates default.
             tracker (TokenTracker, optional): Custom tracker instance. If None, creates default.
             hmac_secret (str, optional): Secret key for cryptographically signing the log.
+            prohibited_practice_guard (ProhibitedPracticeGuard, optional):
+                If provided, automatically scanned against every key in state that
+                contains LLM output after each node executes.  Operationalises EU AI
+                Act Art. 5 without requiring a manual node in every graph.
+            incident_reporter (IncidentReporterNode, optional):
+                If provided, ``report_runtime_error`` is called automatically on every
+                unhandled node exception — satisfying Art. 73 real-time detection
+                without a manual node placement.
         """
         self.offline_mode = offline_mode
         self.user_id = user_id
-        
+
         # Use provided instances or create defaults
         self.logger = logger if logger is not None else AuditLogger(log_dir, hmac_secret=hmac_secret)
         self.tracker = tracker if tracker is not None else TokenTracker()
         self.max_node_fatigue = max_node_fatigue
         self.versioner = versioner
+        # Phase 1 compliance hooks — fire automatically on every step
+        self.prohibited_practice_guard = prohibited_practice_guard
+        self.incident_reporter = incident_reporter
 
     def run_step_by_step(self, start_node: BaseNode, initial_state: dict, max_steps: int = 100):
         """
@@ -112,20 +126,50 @@ class GraphExecutor:
                 try:
                     # Execute the node
                     next_node = current_node.execute(state)
-                    
+
+                    # --- Art. 5: ProhibitedPracticeGuard auto-hook ---
+                    # Scan the output key written by this step (if any) without
+                    # requiring a manual guard node in every graph.
+                    if self.prohibited_practice_guard is not None:
+                        added_keys = list(
+                            compute_state_diff(state_before, state.get_all())
+                            .get("added", {}).keys()
+                        ) + list(
+                            compute_state_diff(state_before, state.get_all())
+                            .get("updated", {}).keys()
+                        )
+                        for _k in added_keys:
+                            _v = state.get(_k)
+                            if isinstance(_v, str) and _v and not _k.startswith("__"):
+                                _orig_key = self.prohibited_practice_guard.input_key
+                                self.prohibited_practice_guard.input_key = _k
+                                self.prohibited_practice_guard.execute(state)
+                                self.prohibited_practice_guard.input_key = _orig_key
+
                     # Check if the node set an error in the state (graceful error handling)
                     if state.get("last_error"):
                         log_entry["outcome"] = "error"
                         log_entry["error"] = state.get("last_error")
                     else:
                         log_entry["outcome"] = "success"
-                    
+
                 except Exception as e:
-                    # Handle a critical error
+                    # --- Art. 73: IncidentReporterNode auto-hook ---
+                    if self.incident_reporter is not None:
+                        try:
+                            self.incident_reporter.report_runtime_error(
+                                node_name=node_name,
+                                error=e,
+                                state=state,
+                                run_id=run_id,
+                                step=step_index,
+                            )
+                        except Exception:
+                            pass  # Never let incident reporter crash the executor
                     print(f"  [GraphExecutor] CRITICAL ERROR in {node_name}: {e}")
                     log_entry["outcome"] = "error"
                     log_entry["error"] = str(e)
-                    next_node = None 
+                    next_node = None
                 
                 # Capture the state *after* the node runs
                 state_after = copy.deepcopy(state.get_all())

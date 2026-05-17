@@ -809,7 +809,7 @@ class TestComplianceManifestGenerator:
         assert os.path.exists(filepath)
         with open(filepath) as f:
             data = json.load(f)
-        assert data["manifest_version"] == "1.0"
+        assert data["manifest_version"] == "2.0"
 
     def test_as_markdown_returns_string_with_headers(self):
         manifest = ComplianceManifestGenerator(

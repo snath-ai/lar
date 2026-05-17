@@ -34,20 +34,50 @@ class ComplianceManifestGenerator:
 
         from lar.compliance import ComplianceManifestGenerator
 
-        manifest = ComplianceManifestGenerator(start_node=entry_node)
+        manifest = ComplianceManifestGenerator(
+            start_node=entry_node,
+            system_name="Credit Decision Agent",
+            domain="FINANCE",
+        )
         report = manifest.generate()
         manifest.save("compliance_manifest.json")
         print(manifest.as_markdown())
     """
 
-    def __init__(self, start_node: Any, system_name: str = "Unnamed Agent System"):
+    # ── Domain → Adjacent Legislation Map (v2.2.0) ───────────────────────────
+    # Maps domain keywords (case-insensitive substring match on system_name /
+    # action_type fields in the inventory) to the adjacent legislation that
+    # activates alongside the EU AI Act in that sector.
+    DOMAIN_TRIGGER_MAP: Dict[str, List[str]] = {
+        "FINANCE":     ["MiFID II (investment advice)", "DORA (ICT risk)", "PSD2 (payment flows)"],
+        "CREDIT":      ["CRD VI (creditworthiness)", "DORA (ICT risk)", "GDPR (scoring profiles)"],
+        "HEALTH":      ["MDR 2017/745 (medical device)", "GDPR Art. 9 (special category data)"],
+        "PHARMA":      ["GxP (data integrity)", "GDPR Art. 9 (health data)"],
+        "HR":          ["GDPR Art. 22 (automated decisions)", "Anti-discrimination Directives"],
+        "LEGAL":       ["Legal privilege obligations", "GDPR Art. 22 (automated decisions)"],
+        "INSURANCE":   ["Solvency II", "GDPR Art. 22 (automated profiling)"],
+        "ENERGY":      ["CER Directive (critical infrastructure)", "NIS2 Directive"],
+        "TRANSPORT":   ["NIS2 Directive", "CER Directive"],
+        "SOCIAL":      ["GDPR Art. 22 (automated decisions)", "DSA (platform obligations)"],
+        "EMAIL":       ["ePrivacy Directive", "GDPR (data minimisation)"],
+        "BIOMETRIC":   ["GDPR Art. 9 (special category)", "EU AI Act Art. 5(1)(a) (prohibited)"],
+        "THIRD_PARTY": ["DSA (due diligence)", "Art. 50 EU AI Act (transparency)"],
+    }
+
+    def __init__(self, start_node: Any, system_name: str = "Unnamed Agent System",
+                 domain: Optional[str] = None):
         """
         Args:
             start_node (BaseNode): The entry point node of the graph to analyze.
             system_name (str): A human-readable name for the agent system being inventoried.
+            domain (str, optional): Explicit domain key for ``DOMAIN_TRIGGER_MAP``
+                (e.g. ``"FINANCE"``).  If not provided, ``_auto_detect_regulatory_triggers()``
+                infers triggered legislation from the inventory's action_type and
+                affected_parties fields.
         """
         self.start_node = start_node
         self.system_name = system_name
+        self.domain = domain
         self._visited: Set[int] = set()
         self._manifest: Optional[Dict] = None
 
@@ -260,6 +290,64 @@ class ComplianceManifestGenerator:
 
         return entries
 
+    # ── Regulatory trigger auto-detection (v2.2.0) ────────────────────────────
+
+    def _auto_detect_regulatory_triggers(self, inventory: List[Dict]) -> Dict[str, List[str]]:
+        """
+        Infers which adjacent legislation is triggered based on:
+        1. An explicit ``domain`` passed to the constructor.
+        2. ``action_type``, ``affected_parties``, and node types found in the inventory.
+
+        Returns a dict mapping legislation name to the list of inventory entries
+        that triggered it, for full traceability.
+        """
+        triggered: Dict[str, List[str]] = {}
+
+        def _add(leg: str, reason: str) -> None:
+            triggered.setdefault(leg, [])
+            if reason not in triggered[leg]:
+                triggered[leg].append(reason)
+
+        # 1. Explicit domain override
+        if self.domain:
+            for key, laws in self.DOMAIN_TRIGGER_MAP.items():
+                if key in self.domain.upper():
+                    for law in laws:
+                        _add(law, f"explicit domain='{self.domain}'")
+
+        # 2. System name substring match
+        name_upper = self.system_name.upper()
+        for key, laws in self.DOMAIN_TRIGGER_MAP.items():
+            if key in name_upper:
+                for law in laws:
+                    _add(law, f"system_name contains '{key}'")
+
+        # 3. Inventory signals
+        for entry in inventory:
+            at = str(entry.get("action_type") or "").upper()
+            ap = str(entry.get("affected_parties") or "").upper()
+            nt = str(entry.get("node_type") or "").upper()
+
+            if "EMAIL" in at:
+                _add("ePrivacy Directive", f"action_type={at}")
+            if ap in ("THIRD_PARTY", "BOTH"):
+                _add("DSA (due diligence)", f"affected_parties={ap}")
+                _add("Art. 50 EU AI Act (transparency)", f"affected_parties={ap}")
+            if "PAYMENT" in at or "FINANCIAL" in at:
+                _add("PSD2 (payment flows)", f"action_type={at}")
+                _add("DORA (ICT risk)", f"action_type={at}")
+            if "BIOMETRIC" in at:
+                _add("GDPR Art. 9 (special category)", f"action_type={at}")
+                _add("EU AI Act Art. 5(1)(a) (prohibited biometric use)", f"action_type={at}")
+            if "HEALTH" in at or "MEDICAL" in at:
+                _add("MDR 2017/745 (medical device)", f"action_type={at}")
+                _add("GDPR Art. 9 (special category data)", f"action_type={at}")
+            if "CREDIT" in at or "SCORE" in at:
+                _add("CRD VI (creditworthiness)", f"action_type={at}")
+                _add("GDPR (scoring profiles)", f"action_type={at}")
+
+        return triggered
+
     def generate(self) -> Dict:
         """
         Traverses the graph and returns the full compliance manifest as a dict.
@@ -280,9 +368,13 @@ class ComplianceManifestGenerator:
         dynamic_nodes = [e for e in inventory if e.get("node_type") in ("AdaptiveNode", "DynamicNode")]
         llm_nodes = [e for e in inventory if e.get("node_type") in ("LLMNode", "ReduceNode")]
 
+        # v2.2.0: auto-detect adjacent legislation
+        regulatory_triggers = self._auto_detect_regulatory_triggers(inventory)
+
         self._manifest = {
-            "manifest_version": "1.0",
+            "manifest_version": "2.0",
             "system_name": self.system_name,
+            "domain": self.domain,
             "generated_at": datetime.datetime.utcnow().isoformat() + "Z",
             "eu_ai_act_reference": "Step 9 — External Action Inventory (Section 8.1, Nannini et al., 2026)",
             "summary": {
@@ -294,6 +386,7 @@ class ComplianceManifestGenerator:
                 "dynamic_topology_nodes": len(dynamic_nodes),
                 "llm_inference_nodes": len(llm_nodes),
             },
+            "adjacent_legislation_triggered": regulatory_triggers,
             "risk_flags": self._compute_risk_flags(
                 unvaulted_tools, dynamic_nodes, third_party_tools
             ),
