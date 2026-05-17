@@ -47,3 +47,26 @@ jobs:
       - name: Run tests
         run: |
           poetry run pytest
+
+  dispatch:
+    name: Trigger downstream CIs
+    needs: test
+    # Only fire on pushes to main, not on PRs — avoids double-triggering
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch lar-dmn CI
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" -X POST \
+            -H "Authorization: Bearer ${{ secrets.CROSS_REPO_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/snath-ai/DMN/dispatches \
+            -d '{"event_type":"lar-engine-updated"}'
+
+      - name: Dispatch lar-jepa CI
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" -X POST \
+            -H "Authorization: Bearer ${{ secrets.CROSS_REPO_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/snath-ai/Lar-JEPA/dispatches \
+            -d '{"event_type":"lar-engine-updated"}'
