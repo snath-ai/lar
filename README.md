@@ -38,29 +38,43 @@ Lár is the execution spine of a three-part system. Each repo is independent and
 | **[Lár DMN](https://github.com/snath-ai/DMN)** | The memory layer — solves catastrophic forgetting via sleep/dream consolidation into tiered ChromaDB vector store |
 | **[Lár-JEPA](https://github.com/snath-ai/Lar-JEPA)** | The world model — routes LLMs, JEPAs, diffusion models, and any future architecture as first-class nodes in the same deterministic graph |
 
-The three repos share a single engine version (`lar-engine 2.1.0`). A JEPA node predicts a trajectory, routes through an `EntropicRouter`, writes the committed heuristic to DMN's Hippocampus, and recalls it on the next planning cycle — all through the same `GraphExecutor` causal trace.
+The three repos share a single engine version (`lar-engine 2.2.0`). A JEPA node predicts a trajectory, routes through an `EntropicRouter`, writes the committed heuristic to DMN's Hippocampus, and recalls it on the next planning cycle — all through the same `GraphExecutor` causal trace.
 
 ---
 
-## The 13 EU AI Act Compliance Primitives
+## The 20 EU AI Act Compliance Primitives (v2.2.0)
 
-Lár ships a complete **Enterprise Compliance Backbone** — all 13 primitives required for a conformity assessment under Nannini et al. (2026), the definitive compliance architecture paper for AI agents under EU law:
+Lár ships a complete **Enterprise Compliance Backbone** — 20 primitives covering all 23 requirements mapped by Nannini et al. (2026), the definitive compliance architecture paper for AI agents under EU law. Validated live against `ollama/phi4:latest`:
+
+**Core primitives (v2.1.x)**
 
 | Article | Requirement | Lár Primitive |
 | :--- | :--- | :--- |
-| **Art. 12** | Causal audit logging | `GraphExecutor` → HMAC-SHA256 signed JSON trace |
-| **Art. 14** | Human oversight interrupt | `HumanJuryNode` + `AuthorityLedger` (Fourth Tier) |
+| **Art. 12** | Causal audit logging + per-step integrity | `GraphExecutor` → HMAC-SHA256 signed JSON trace + `verify_step_integrity()` |
+| **Art. 14** | Human oversight interrupt + automation boundary | `HumanJuryNode(automation_boundary=…)` + `AuthorityLedger` (Fourth Tier) |
 | **Art. 3(23)** | Substantial modification guard | `AdaptiveNode` + `TopologyValidator` + `RuntimeStateVersioner` |
-| **Art. 9** | Risk management gate | `RiskScorerNode` + `PolicyRegistry` |
-| **Art. 15(4)** | JIT privilege minimisation | `CredentialVault` (NHI provisioning) |
-| **GDPR Art. 17** | PII redaction before signing | `PIIRedactionEngine` |
+| **Art. 9** | Risk management gate + FRIA | `RiskScorerNode` + `PolicyRegistry` + `FundamentalRightsImpactNode` |
+| **Art. 15(4)** | JIT + trust-based privilege minimisation | `CredentialVault` — `get()` and `get_with_trust()` |
+| **GDPR Art. 17** | PII redaction + erasable per-subject memory | `PIIRedactionEngine` + `SessionMemoryNode` |
 | **Art. 50(2)** | Synthetic content marking | `SyntheticMarkerNode` |
 | **prEN 18283** | Runtime bias detection | `BiasFilterNode` |
-| **Art. 14 (fractal)** | Meaningful HITL in parallel agents — per-branch evidence before consolidation | `BranchTriageNode` |
+| **Art. 14 (fractal)** | Meaningful HITL in parallel agents | `BranchTriageNode` |
 | **AEPD Rule of 2** | Lethal trifecta block | `LethalTrifectaGuard` |
-| **Art. 13** | Transparency disclosure | `TransparencyEngine` |
-| **Step 9** | External action inventory | `ComplianceManifestGenerator` |
+| **Art. 50 / Art. 13** | Third-party + deployer transparency | `TransparencyEngine` + `DeployerTransparencyNode` |
+| **Step 9** | External action inventory + adjacent legislation | `ComplianceManifestGenerator` (auto-detects DORA, MiFID II, ePrivacy…) |
 | **Art. 12/14** | Stakeholder authority record | `AuthorityLedger` |
+
+**New in v2.2.0 — gap closure**
+
+| Article | Requirement | Lár Primitive |
+| :--- | :--- | :--- |
+| **Art. 9 FRIA** | Fundamental rights impact (6 EU Charter dimensions) | `FundamentalRightsImpactNode` |
+| **Art. 9 PMM** | Stochastic output variance monitoring | `BehavioralEnvelopeMonitor` |
+| **Art. 25(4)** | Written supplier agreement enforcement | `SupplierAgreementRegistry` |
+| **Art. 3(23)** | Post-conformity tool addition detection | `DynamicToolDiscoveryMonitor` |
+| **Art. 3** | Sub-agent boundary classification | `MultiAgentBoundaryNode` |
+| **Art. 73–74** | Real-time incident detection + reporting deadlines | `IncidentReporterNode` (executor hook — fires automatically) |
+| **Art. 5** | Prohibited practice guard | `ProhibitedPracticeGuard` (executor hook — fires automatically) |
 
 **[Read the EU AI Act Deep Dive →](https://docs.snath.ai/compliance/eu-ai-act-deep-dive/)** | **[Nannini et al. (2026) Full Mapping →](https://docs.snath.ai/compliance/paper-compliance-mapping/)**
 
@@ -90,7 +104,7 @@ Every step produces a real Article 12 causal trace, a real Article 14 AuthorityL
 
 **[Full showcase breakdown — execution trace, real JSON artefacts, 12-step coverage map →](https://docs.snath.ai/compliance/finance-showcase/)**
 
-> **Open-source vs. enterprise:** All 13 compliance primitives (`BranchTriageNode`, `BiasFilterNode`, `RiskScorerNode`, `CredentialVault`, etc.) are in `lar.compliance` and fully open-source under Apache 2.0. The finance showcase uses `build_and_run` from `lar.enterprise`, a convenience wrapper in the enterprise tier. Open-source users assemble the same pipeline from primitives — the step-by-step guide walks you through it: **[Build a Compliant Agent from Scratch →](https://docs.snath.ai/guides/build-compliant-agent/)**
+> **Open-source vs. enterprise:** All 20 compliance primitives (`FundamentalRightsImpactNode`, `IncidentReporterNode`, `BehavioralEnvelopeMonitor`, `SessionMemoryNode`, `BranchTriageNode`, `CredentialVault`, etc.) are in `lar.compliance` and fully open-source under Apache 2.0. The finance showcase uses `build_and_run` from `lar.enterprise`, a convenience wrapper in the enterprise tier. Open-source users assemble the same pipeline from primitives — the step-by-step guide walks you through it: **[Build a Compliant Agent from Scratch →](https://docs.snath.ai/guides/build-compliant-agent/)**
 
 ---
 
@@ -110,7 +124,7 @@ This means:
 | **Debugging** | 100-line stack trace from inside `AgentExecutor`. Guess what went wrong. | Exact node, exact error, exact state — in the log. |
 | **Auditability** | External paid tool (LangSmith) required. | Built-in. The `GraphExecutor` flight log is the audit trail. |
 | **Multi-Agent** | "Chat room" — no guaranteed order, loops possible. | Deterministic assembly line — you define the exact path. |
-| **Compliance** | None. No EU AI Act primitives. | 13 compliance primitives, cryptographic logs, Art. 14 oversight. |
+| **Compliance** | None. No EU AI Act primitives. | 20 compliance primitives, cryptographic logs, Art. 14 oversight — all 23 requirements from Nannini et al. (2026). |
 | **Cost** | LLM call on every routing step. | Code-based routing — $0.00/route. |
 | **Scale** | Crashes at 25 steps (recursion limit). | 60+ node graphs run to completion. |
 | **Crash Recovery** | LLM router may branch differently on retry — "resume" is actually a new run. | Pure Python routers are deterministic. Same state in, same path out. Resumption is exact. |

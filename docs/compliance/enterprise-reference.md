@@ -1,6 +1,6 @@
 # Enterprise Reference Implementation
 
-> **This is the canonical, working reference that ticks every compliance box the April 2026 EU AI Act research paper identifies for agentic systems.**
+> **v2.2.0** — The canonical, working reference that ticks all **23 compliance boxes** from the April 2026 EU AI Act research paper. Validated live with `ollama/phi4:latest` — no API key required.
 
 **Files:**
 
@@ -20,17 +20,34 @@ If you need to prove compliance to an auditor or understand how the compliance p
 python examples/compliance/22_eu_ai_act_finance_showcase.py
 ```
 
-It explicitly validates:
-1. **Article 15(4)**: JIT Privilege (CredentialVault)
-2. **GDPR Article 17**: PII Redaction
-3. **Article 12**: Causal Audit Logging
-4. **Article 9 & 14**: Policy Registry & Risk Scoring
-5. **Article 14**: Human-in-the-Loop Oversight
-6. **AEPD Rule of 2**: Lethal Trifecta Guard
-7. **Article 13 & 50**: Transparency Disclosure
-8. **Article 3(23)**: Runtime Drift Detection
-9. **Step 9**: Action Inventory Manifest
-10. **prEN 18283**: Bias Management Detection
+It explicitly validates all 23 requirements from Nannini et al. (2026):
+
+**Original 12 steps:**
+1. **Art. 15(4)**: JIT + trust-based privilege (`CredentialVault.get_with_trust()`)
+2. **GDPR Art. 17**: PII redaction + erasable per-subject memory (`SessionMemoryNode`)
+3. **Art. 12**: Causal audit logging + per-step integrity (`verify_step_integrity()`)
+4. **Art. 9 & 14**: PolicyRegistry + RiskScorerNode
+5. **Art. 14**: Human-in-the-Loop with automation boundary (`HumanJuryNode(automation_boundary=…)`)
+6. **AEPD Rule of 2**: LethalTrifectaGuard
+7. **Art. 13 & 50**: DeployerTransparencyNode + TransparencyEngine
+8. **Art. 3(23)**: RuntimeStateVersioner + DynamicToolDiscoveryMonitor
+9. **Step 9**: ComplianceManifestGenerator (auto-detects adjacent legislation)
+10. **prEN 18283**: BiasFilterNode
+
+**v2.2.0 gap-closure (A–L):**
+11. **Art. 9 FRIA**: FundamentalRightsImpactNode (6 EU Charter dimensions)
+12. **Art. 9 PMM**: BehavioralEnvelopeMonitor (output variance vs. baseline)
+13. **Art. 12 depth**: `log_plan_switch()` for RouterNode branch-switch events
+14. **Art. 13 deployer**: DeployerTransparencyNode (instructions for use)
+15. **Art. 14 boundary**: `automation_boundary` + `decision_type` on HumanJuryNode
+16. **Art. 25(4)**: SupplierAgreementRegistry (written agreement enforcement)
+17. **Art. 3(23) tools**: DynamicToolDiscoveryMonitor (post-conformity additions)
+18. **Art. 3 boundary**: MultiAgentBoundaryNode (INTERNAL vs. EXTERNAL_MARKET)
+19. **Art. 73–74**: IncidentReporterNode (executor hook — auto-fires on exceptions)
+20. **GDPR Art. 17 memory**: SessionMemoryNode (write/read/erase/audit modes)
+21. **Art. 15(4) trust**: `get_with_trust()` — trust-level-gated credential access
+22. **Art. 5 auto**: ProhibitedPracticeGuard executor hook (fires on every LLM output)
+23. **Art. 50(2)**: SyntheticMarkerNode (AI content marking)
 
 ---
 
