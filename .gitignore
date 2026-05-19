@@ -59,4 +59,31 @@ test_v1_*.py
 
 site/
 enterprise_audit/
+audit/
+
+# --- Runtime log directories (all variants) ---
 lar_logs/
+advanced_logs/
+shared_logs/
+infrastructure_logs/
+sample_outputs_hmac/
+
+# --- Runtime data files ---
+*.jsonl
+dreams.json
+long_term_insights.json
+chroma_db/
+vector_store*/
+lab_reports/
+
+# --- Runtime binary artifacts ---
+*.pkl
+*.idx
+*.bin
+*.pth
+
+# --- Generated agent outputs ---
+compliance_manifest.json
+generated_code_output.txt
+lar_time_machine.json
+*stacktrace*
