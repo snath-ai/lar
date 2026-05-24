@@ -6,15 +6,17 @@
     {
       "record_type": "AUTHORITY_EXERCISE",
       "eu_ai_act_article": "Art. 12, 14",
-      "timestamp": "2026-05-24T19:11:49.646795Z",
+      "timestamp": "2026-05-24T19:24:10.145275Z",
       "action_description": "Execution of AI-recommended medical treatment plan.",
       "stakeholder_id": "cmo@hospital.com",
       "stakeholder_role": "Chief Medical Officer",
       "decision": "approve",
-      "rationale": "Asynchronous CLI Approval",
+      "rationale": "Auto-selected in non-interactive environment.",
       "risk_score_at_decision": null,
-      "context_snapshot_keys": []
+      "context_snapshot_keys": [
+        "ai_recommendation"
+      ]
     }
   ],
-  "signature": "a23b6f9ca411ee581aa340a101d4a0a761a556a7c2a099b93aa36c9ca7452e54"
+  "signature": "0152293b1ac13c92dc991d0973fb0bbb9419076432fdd85cacdd86bf6d1e542d"
 }

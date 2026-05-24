@@ -1,0 +1,49 @@
+{
+  "run_id": "c24664b1-6938-4d9a-876a-31bd96b5e9c6",
+  "user_id": null,
+  "timestamp": "2026-05-24T20:24:08.130978",
+  "steps": [
+    {
+      "step": 0,
+      "node": "LLMNode",
+      "state_before": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "LLMNode": 1
+        }
+      },
+      "state_diff": {
+        "added": {
+          "ai_recommendation": "The patient, a 45-year-old with a past history of hypertension, is experiencing elevated blood pressure alongside tachycardia, suggesting potential poor control or exacerbation of their hypertensive condition."
+        },
+        "removed": {},
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 45,
+        "output_tokens": 41,
+        "total_tokens": 86,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "prompt": "Patient presents with high BP. Analyze: Age 45, Heart rate 110bpm. Past history of hypertension.. Keep it to 1 sentence.",
+      "state_after": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "LLMNode": 1
+        },
+        "ai_recommendation": "The patient, a 45-year-old with a past history of hypertension, is experiencing elevated blood pressure alongside tachycardia, suggesting potential poor control or exacerbation of their hypertensive condition."
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 1,
+    "total_prompt_tokens": 45,
+    "total_completion_tokens": 41,
+    "total_tokens": 86,
+    "tokens_by_model": {
+      "ollama/phi4:latest": 86
+    }
+  },
+  "signature": "c758e6a2d630e7f39dd934abc95e61386a843cf28153f73f2f1a695fe86cfb47"
+}

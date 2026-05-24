@@ -62,21 +62,18 @@ def main():
 
     action_node = FunctionalNode(func=execute_treatment, next_node=None)
 
-    # Node 3: The Human Jury
-    # Normally this hangs on input(). Because we are resuming, we bypass the input
-    # by directly injecting the decision from the CLI into the AuthorityLedger.
-    def mock_human_signoff(state: GraphState):
-        decision = state.get("__cli_decision__", "reject")
-        authority_ledger.record(
-            stakeholder_id="cmo@hospital.com",
-            stakeholder_role="Chief Medical Officer",
-            decision=decision,
-            rationale="Asynchronous CLI Approval",
-            action_description="Execution of AI-recommended medical treatment plan."
-        )
-        state.set("jury_decision", decision)
-    
-    jury_node = FunctionalNode(func=mock_human_signoff, next_node=action_node)
+    # Node 3: The Native Human Jury
+    jury_node = HumanJuryNode(
+        prompt="[URGENT] Chief Medical Officer: Approve AI treatment plan?",
+        choices=["approve", "reject"],
+        output_key="jury_decision",
+        context_keys=["ai_recommendation"],
+        authority_ledger=authority_ledger,
+        stakeholder_id="cmo@hospital.com",
+        stakeholder_role="Chief Medical Officer",
+        action_description="Execution of AI-recommended medical treatment plan.",
+        next_node=action_node
+    )
 
     # Node 2: Suspend Node (The Pause)
     def suspend_logic(state: GraphState):
@@ -142,16 +139,20 @@ def main():
             
         print("✅ HMAC Signature Verified. State is pristine.")
         
-        if args.resume == "tamper":
-             print("Wait, how did you pass tamper check? You shouldn't be here.")
-             sys.exit(1)
-        
-        # Inject CLI decision
-        raw_state["__cli_decision__"] = args.resume
+        # Mock the built-in input to feed the CLI argument directly into HumanJuryNode
+        import builtins
+        _orig_input = builtins.input
+        def mock_input(prompt):
+            print(f"{prompt}{args.resume}")
+            return args.resume
+        builtins.input = mock_input
         
         # Resume execution at jury_node
-        for step in executor.run_step_by_step(jury_node, raw_state):
-             print(f"Step {step.get('step')} (RESUMED): {step.get('node')} -> {step.get('outcome')}")
+        try:
+            for step in executor.run_step_by_step(jury_node, raw_state):
+                 print(f"Step {step.get('step')} (RESUMED): {step.get('node')} -> {step.get('outcome')}")
+        finally:
+            builtins.input = _orig_input
              
         authority_ledger.save("resume_audit_logs/authority_ledger.json")
         os.remove(STATE_FILE)

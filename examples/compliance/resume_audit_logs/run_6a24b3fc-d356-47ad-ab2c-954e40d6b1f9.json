@@ -1,0 +1,84 @@
+{
+  "run_id": "6a24b3fc-d356-47ad-ab2c-954e40d6b1f9",
+  "user_id": null,
+  "timestamp": "2026-05-24T20:24:10.145321",
+  "steps": [
+    {
+      "step": 0,
+      "node": "HumanJuryNode",
+      "state_before": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "HumanJuryNode": 1
+        },
+        "__last_prompt": null,
+        "ai_recommendation": "The patient, a 45-year-old with a past history of hypertension, is experiencing elevated blood pressure alongside tachycardia, suggesting potential poor control or exacerbation of their hypertensive condition.",
+        "__last_run_metadata": null
+      },
+      "state_diff": {
+        "added": {
+          "jury_decision": "approve"
+        },
+        "removed": {
+          "__last_prompt": null,
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "HumanJuryNode": 1
+        },
+        "ai_recommendation": "The patient, a 45-year-old with a past history of hypertension, is experiencing elevated blood pressure alongside tachycardia, suggesting potential poor control or exacerbation of their hypertensive condition.",
+        "jury_decision": "approve"
+      }
+    },
+    {
+      "step": 1,
+      "node": "FunctionalNode",
+      "state_before": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "FunctionalNode": 1
+        },
+        "__last_prompt": null,
+        "ai_recommendation": "The patient, a 45-year-old with a past history of hypertension, is experiencing elevated blood pressure alongside tachycardia, suggesting potential poor control or exacerbation of their hypertensive condition.",
+        "__last_run_metadata": null,
+        "jury_decision": "approve"
+      },
+      "state_diff": {
+        "added": {},
+        "removed": {
+          "__last_prompt": null,
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "FunctionalNode": 1
+        },
+        "ai_recommendation": "The patient, a 45-year-old with a past history of hypertension, is experiencing elevated blood pressure alongside tachycardia, suggesting potential poor control or exacerbation of their hypertensive condition.",
+        "jury_decision": "approve"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 2,
+    "total_prompt_tokens": 0,
+    "total_completion_tokens": 0,
+    "total_tokens": 0,
+    "tokens_by_model": {}
+  },
+  "signature": "d67acd94158881319e354fa6501334fdffb63989a82367899e1107dd0007aecf"
+}
