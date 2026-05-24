@@ -126,11 +126,11 @@ This means:
 | **Multi-Agent** | "Chat room" — no guaranteed order, loops possible. | Deterministic assembly line — you define the exact path. |
 | **Compliance** | None. No EU AI Act primitives. | 20 compliance primitives, cryptographic logs, Art. 14 oversight — all 23 requirements from Nannini et al. (2026). |
 | **Cost** | LLM call on every routing step. | Code-based routing — $0.00/route. |
-| **Scale** | Crashes at 25 steps (recursion limit). | 60+ node graphs run to completion. |
+| **Scale** | Crashes at 25 steps (recursion limit) and suffers race conditions writing to shared state dicts. | Effortlessly executes a massive 191-node deeply nested graph with true parallel fan-outs (`BatchNode`), deterministic execution, and zero state conflict errors. |
 | **Crash Recovery** | LLM router may branch differently on retry — "resume" is actually a new run. | Pure Python routers are deterministic. Same state in, same path out. Resumption is exact. |
 | **Core Philosophy** | Sells "Magic." | Sells "Trust." |
 
-LangGraph crashes at Step 25 on a 60-node graph:
+LangGraph crashes at Step 25 on a 60-node graph, while Lár effortlessly handles a 191-node concurrent graph:
 ```text
 CRASH CONFIRMED: Recursion limit of 25 reached without hitting a stop condition.
 LangGraph Engine stopped execution due to Recursion Limit.
@@ -462,6 +462,8 @@ Compliance pattern library:
 | **5** | **[`11_map_reduce_budget.py`](examples/advanced/11_map_reduce_budget.py)** | Memory Compression & Token Budgets |
 | **6** | **[`fractal_polymath.py`](examples/advanced/fractal_polymath.py)** | Recursive Graph Composition (Nested AdaptiveNodes + Parallelism) |
 | **7** | **[`13_world_model_jepa.py`](examples/advanced/13_world_model_jepa.py)** | Predictive World Models |
+| **8** | **[`fractal_finance_agent.py`](examples/advanced/fractal_finance_agent.py)** | Parallel Multi-Dimensional Finance Compliance |
+| **9** | **[`extreme_stress_test.py`](examples/advanced/extreme_stress_test.py)** | Extreme 191-Node Parallel Swarm Stress Test |
 
 #### 6. Adaptive Execution (`examples/adaptive/`)
 See the **[Adaptive Graphs Docs →](https://docs.snath.ai/core-concepts/9-adaptive-graphs)**
