@@ -1,0 +1,22 @@
+{
+  "ledger_type": "AUTHORITY_EXERCISE_LEDGER",
+  "eu_ai_act_reference": "Articles 12\u201314: Human Oversight Evidence Chain",
+  "total_records": 1,
+  "records": [
+    {
+      "record_type": "AUTHORITY_EXERCISE",
+      "eu_ai_act_article": "Art. 12, 14",
+      "timestamp": "2026-05-24T18:55:34.168773Z",
+      "action_description": "Emergency portfolio liquidation based on fractal swarm intelligence.",
+      "stakeholder_id": "director.alpha@hedgefund.com",
+      "stakeholder_role": "Managing Director",
+      "decision": "approve",
+      "rationale": "Auto-selected in non-interactive environment.",
+      "risk_score_at_decision": null,
+      "context_snapshot_keys": [
+        "branch_findings_summary"
+      ]
+    }
+  ],
+  "signature": "48fe5f42df9b1a90d8731f53988db5ab5b58a55cb2a195fd34080b1ba6d96998"
+}

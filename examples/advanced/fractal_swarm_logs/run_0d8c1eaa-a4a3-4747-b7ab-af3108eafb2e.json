@@ -1,0 +1,389 @@
+{
+  "run_id": "0d8c1eaa-a4a3-4747-b7ab-af3108eafb2e",
+  "user_id": null,
+  "timestamp": "2026-05-24T19:55:48.639129",
+  "steps": [
+    {
+      "step": 0,
+      "node": "AdaptiveNode",
+      "state_before": {
+        "__node_counts": {
+          "AdaptiveNode": 1
+        }
+      },
+      "state_diff": {
+        "added": {
+          "__graph_spec_json__": "```json\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW/MEDIUM/HIGH/CRITICAL\\\", \\\"finding\\\": \\\"string\\\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n```"
+        },
+        "removed": {},
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 533,
+        "output_tokens": 297,
+        "total_tokens": 830,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "prompt": "You are the Root Architect AI. \nGenerate a JSON subgraph containing a BatchNode ('batch_1') that runs 3 LLMNodes in parallel to analyze TECH, ENERGY, and HEALTHCARE.\nYou MUST output EXACTLY this JSON structure:\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\"risk_level\": \"LOW/MEDIUM/HIGH/CRITICAL\", \"finding\": \"string\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\"risk_level\": \"LOW\", \"finding\": \"Stable\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\"risk_level\": \"LOW\", \"finding\": \"Stable\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n\n\nOutput a JSON object with this structure:\n{\n  \"nodes\": [\n    {\"id\": \"unique_id\", \"type\": \"LLMNode\", \"prompt\": \"...\", \"output_key\": \"result\", \"next\": null}\n  ],\n  \"entry_point\": \"unique_id\"\n}\nSupported node types and their required fields:\n- LLMNode: 'prompt', 'output_key', 'next'\n- ToolNode: 'tool_name', 'input_keys' (array), 'output_key', 'next'\n- BatchNode: 'concurrent_nodes' (array of node ids), 'next'\n- AdaptiveNode: 'prompt', 'model' (optional), 'next'\nUse 'next': null to indicate the end of the subgraph (which will return to the main graph).\n",
+      "system_instruction": "You are a software architect. Output ONLY valid JSON representing a L\u00e1r Graph.",
+      "state_after": {
+        "__node_counts": {
+          "AdaptiveNode": 1
+        },
+        "__graph_spec_json__": "```json\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW/MEDIUM/HIGH/CRITICAL\\\", \\\"finding\\\": \\\"string\\\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n```"
+      }
+    },
+    {
+      "step": 1,
+      "node": "BatchNode",
+      "state_before": {
+        "__node_counts": {
+          "AdaptiveNode": 1,
+          "BatchNode": 1
+        },
+        "__last_prompt": null,
+        "__last_system_instruction": null,
+        "__graph_spec_json__": "```json\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW/MEDIUM/HIGH/CRITICAL\\\", \\\"finding\\\": \\\"string\\\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n```",
+        "__last_run_metadata": null
+      },
+      "state_diff": {
+        "added": {
+          "branch_critical": true,
+          "branch_findings_summary": "Branch findings (threshold: CRITICAL):\n  TECH          : CRITICAL \u2014 A sudden and unforeseen geopolitical event causes widespread disruption in global supply chains, severely impacting the production capabilities of major tech companies. Concurrently, a breakthrough in quantum computing by an unexpected competitor leads to rapid obsolescence of existing encryption technologies, causing massive data security concerns and loss of consumer trust across the industry.\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+          "_batch_conflicts": [
+            "branch_critical",
+            "branch_findings_summary",
+            "master_strategy",
+            "__last_run_metadata",
+            "__last_prompt",
+            "_router_decision"
+          ],
+          "final_status": "LIQUIDATED",
+          "master_strategy": "Swarm Executive Summary: Branch findings (threshold: CRITICAL):\n  TECH          : CRITICAL \u2014 A sudden and unforeseen geopolitical event causes widespread disruption in global supply chains, severely impacting the production capabilities of major tech companies. Concurrently, a breakthrough in quantum computing by an unexpected competitor leads to rapid obsolescence of existing encryption technologies, causing massive data security concerns and loss of consumer trust across the industry.\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+          "jury_decision": "approve",
+          "_router_decision": "PANIC"
+        },
+        "removed": {
+          "__last_system_instruction": null,
+          "__last_prompt": null,
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 55,
+        "output_tokens": 83,
+        "total_tokens": 138,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "prompt": "Evaluate TECH sector. Reply ONLY in JSON: {\"risk_level\": \"LOW/MEDIUM/HIGH/CRITICAL\", \"finding\": \"string\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.",
+      "system_instruction": null,
+      "state_after": {
+        "__node_counts": {
+          "AdaptiveNode": 1,
+          "BatchNode": 1
+        },
+        "__graph_spec_json__": "```json\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW/MEDIUM/HIGH/CRITICAL\\\", \\\"finding\\\": \\\"string\\\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n```",
+        "_batch_conflicts": [
+          "branch_critical",
+          "branch_findings_summary",
+          "master_strategy",
+          "__last_run_metadata",
+          "__last_prompt",
+          "_router_decision"
+        ],
+        "branch_findings_summary": "Branch findings (threshold: CRITICAL):\n  TECH          : CRITICAL \u2014 A sudden and unforeseen geopolitical event causes widespread disruption in global supply chains, severely impacting the production capabilities of major tech companies. Concurrently, a breakthrough in quantum computing by an unexpected competitor leads to rapid obsolescence of existing encryption technologies, causing massive data security concerns and loss of consumer trust across the industry.\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "branch_critical": true,
+        "_router_decision": "PANIC",
+        "jury_decision": "approve",
+        "master_strategy": "Swarm Executive Summary: Branch findings (threshold: CRITICAL):\n  TECH          : CRITICAL \u2014 A sudden and unforeseen geopolitical event causes widespread disruption in global supply chains, severely impacting the production capabilities of major tech companies. Concurrently, a breakthrough in quantum computing by an unexpected competitor leads to rapid obsolescence of existing encryption technologies, causing massive data security concerns and loss of consumer trust across the industry.\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "final_status": "LIQUIDATED"
+      }
+    },
+    {
+      "step": 2,
+      "node": "BranchTriageNode",
+      "state_before": {
+        "__node_counts": {
+          "AdaptiveNode": 1,
+          "BatchNode": 1,
+          "BranchTriageNode": 1
+        },
+        "__last_prompt": null,
+        "__last_system_instruction": null,
+        "__graph_spec_json__": "```json\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW/MEDIUM/HIGH/CRITICAL\\\", \\\"finding\\\": \\\"string\\\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n```",
+        "__last_run_metadata": null,
+        "_batch_conflicts": [
+          "branch_critical",
+          "branch_findings_summary",
+          "master_strategy",
+          "__last_run_metadata",
+          "__last_prompt",
+          "_router_decision"
+        ],
+        "branch_findings_summary": "Branch findings (threshold: CRITICAL):\n  TECH          : CRITICAL \u2014 A sudden and unforeseen geopolitical event causes widespread disruption in global supply chains, severely impacting the production capabilities of major tech companies. Concurrently, a breakthrough in quantum computing by an unexpected competitor leads to rapid obsolescence of existing encryption technologies, causing massive data security concerns and loss of consumer trust across the industry.\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "branch_critical": true,
+        "_router_decision": "PANIC",
+        "jury_decision": "approve",
+        "master_strategy": "Swarm Executive Summary: Branch findings (threshold: CRITICAL):\n  TECH          : CRITICAL \u2014 A sudden and unforeseen geopolitical event causes widespread disruption in global supply chains, severely impacting the production capabilities of major tech companies. Concurrently, a breakthrough in quantum computing by an unexpected competitor leads to rapid obsolescence of existing encryption technologies, causing massive data security concerns and loss of consumer trust across the industry.\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "final_status": "LIQUIDATED"
+      },
+      "state_diff": {
+        "added": {},
+        "removed": {
+          "__last_prompt": null,
+          "__last_system_instruction": null,
+          "__last_run_metadata": null
+        },
+        "updated": {
+          "branch_findings_summary": "Branch findings (threshold: CRITICAL):\n  TECH          : UNKNOWN  \u2014 no output\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+          "branch_critical": false
+        }
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "system_instruction": null,
+      "state_after": {
+        "__node_counts": {
+          "AdaptiveNode": 1,
+          "BatchNode": 1,
+          "BranchTriageNode": 1
+        },
+        "__graph_spec_json__": "```json\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW/MEDIUM/HIGH/CRITICAL\\\", \\\"finding\\\": \\\"string\\\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n```",
+        "_batch_conflicts": [
+          "branch_critical",
+          "branch_findings_summary",
+          "master_strategy",
+          "__last_run_metadata",
+          "__last_prompt",
+          "_router_decision"
+        ],
+        "branch_findings_summary": "Branch findings (threshold: CRITICAL):\n  TECH          : UNKNOWN  \u2014 no output\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "branch_critical": false,
+        "_router_decision": "PANIC",
+        "jury_decision": "approve",
+        "master_strategy": "Swarm Executive Summary: Branch findings (threshold: CRITICAL):\n  TECH          : CRITICAL \u2014 A sudden and unforeseen geopolitical event causes widespread disruption in global supply chains, severely impacting the production capabilities of major tech companies. Concurrently, a breakthrough in quantum computing by an unexpected competitor leads to rapid obsolescence of existing encryption technologies, causing massive data security concerns and loss of consumer trust across the industry.\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "final_status": "LIQUIDATED"
+      }
+    },
+    {
+      "step": 3,
+      "node": "RouterNode",
+      "state_before": {
+        "__node_counts": {
+          "AdaptiveNode": 1,
+          "BatchNode": 1,
+          "BranchTriageNode": 1,
+          "RouterNode": 1
+        },
+        "__last_prompt": null,
+        "__last_system_instruction": null,
+        "__graph_spec_json__": "```json\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW/MEDIUM/HIGH/CRITICAL\\\", \\\"finding\\\": \\\"string\\\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n```",
+        "__last_run_metadata": null,
+        "_batch_conflicts": [
+          "branch_critical",
+          "branch_findings_summary",
+          "master_strategy",
+          "__last_run_metadata",
+          "__last_prompt",
+          "_router_decision"
+        ],
+        "branch_findings_summary": "Branch findings (threshold: CRITICAL):\n  TECH          : UNKNOWN  \u2014 no output\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "branch_critical": false,
+        "_router_decision": "PANIC",
+        "jury_decision": "approve",
+        "master_strategy": "Swarm Executive Summary: Branch findings (threshold: CRITICAL):\n  TECH          : CRITICAL \u2014 A sudden and unforeseen geopolitical event causes widespread disruption in global supply chains, severely impacting the production capabilities of major tech companies. Concurrently, a breakthrough in quantum computing by an unexpected competitor leads to rapid obsolescence of existing encryption technologies, causing massive data security concerns and loss of consumer trust across the industry.\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "final_status": "LIQUIDATED"
+      },
+      "state_diff": {
+        "added": {},
+        "removed": {
+          "__last_prompt": null,
+          "__last_system_instruction": null,
+          "__last_run_metadata": null
+        },
+        "updated": {
+          "_router_decision": "CHILL"
+        }
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "system_instruction": null,
+      "state_after": {
+        "__node_counts": {
+          "AdaptiveNode": 1,
+          "BatchNode": 1,
+          "BranchTriageNode": 1,
+          "RouterNode": 1
+        },
+        "__graph_spec_json__": "```json\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW/MEDIUM/HIGH/CRITICAL\\\", \\\"finding\\\": \\\"string\\\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n```",
+        "_batch_conflicts": [
+          "branch_critical",
+          "branch_findings_summary",
+          "master_strategy",
+          "__last_run_metadata",
+          "__last_prompt",
+          "_router_decision"
+        ],
+        "branch_findings_summary": "Branch findings (threshold: CRITICAL):\n  TECH          : UNKNOWN  \u2014 no output\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "branch_critical": false,
+        "_router_decision": "CHILL",
+        "jury_decision": "approve",
+        "master_strategy": "Swarm Executive Summary: Branch findings (threshold: CRITICAL):\n  TECH          : CRITICAL \u2014 A sudden and unforeseen geopolitical event causes widespread disruption in global supply chains, severely impacting the production capabilities of major tech companies. Concurrently, a breakthrough in quantum computing by an unexpected competitor leads to rapid obsolescence of existing encryption technologies, causing massive data security concerns and loss of consumer trust across the industry.\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "final_status": "LIQUIDATED"
+      }
+    },
+    {
+      "step": 4,
+      "node": "FunctionalNode",
+      "state_before": {
+        "__node_counts": {
+          "AdaptiveNode": 1,
+          "BatchNode": 1,
+          "BranchTriageNode": 1,
+          "RouterNode": 1,
+          "FunctionalNode": 1
+        },
+        "__last_prompt": null,
+        "__last_system_instruction": null,
+        "__graph_spec_json__": "```json\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW/MEDIUM/HIGH/CRITICAL\\\", \\\"finding\\\": \\\"string\\\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n```",
+        "__last_run_metadata": null,
+        "_batch_conflicts": [
+          "branch_critical",
+          "branch_findings_summary",
+          "master_strategy",
+          "__last_run_metadata",
+          "__last_prompt",
+          "_router_decision"
+        ],
+        "branch_findings_summary": "Branch findings (threshold: CRITICAL):\n  TECH          : UNKNOWN  \u2014 no output\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "branch_critical": false,
+        "_router_decision": "CHILL",
+        "jury_decision": "approve",
+        "master_strategy": "Swarm Executive Summary: Branch findings (threshold: CRITICAL):\n  TECH          : CRITICAL \u2014 A sudden and unforeseen geopolitical event causes widespread disruption in global supply chains, severely impacting the production capabilities of major tech companies. Concurrently, a breakthrough in quantum computing by an unexpected competitor leads to rapid obsolescence of existing encryption technologies, causing massive data security concerns and loss of consumer trust across the industry.\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "final_status": "LIQUIDATED"
+      },
+      "state_diff": {
+        "added": {},
+        "removed": {
+          "__last_prompt": null,
+          "__last_system_instruction": null,
+          "__last_run_metadata": null
+        },
+        "updated": {
+          "master_strategy": "Swarm Executive Summary: Branch findings (threshold: CRITICAL):\n  TECH          : UNKNOWN  \u2014 no output\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output"
+        }
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "system_instruction": null,
+      "state_after": {
+        "__node_counts": {
+          "AdaptiveNode": 1,
+          "BatchNode": 1,
+          "BranchTriageNode": 1,
+          "RouterNode": 1,
+          "FunctionalNode": 1
+        },
+        "__graph_spec_json__": "```json\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW/MEDIUM/HIGH/CRITICAL\\\", \\\"finding\\\": \\\"string\\\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n```",
+        "_batch_conflicts": [
+          "branch_critical",
+          "branch_findings_summary",
+          "master_strategy",
+          "__last_run_metadata",
+          "__last_prompt",
+          "_router_decision"
+        ],
+        "branch_findings_summary": "Branch findings (threshold: CRITICAL):\n  TECH          : UNKNOWN  \u2014 no output\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "branch_critical": false,
+        "_router_decision": "CHILL",
+        "jury_decision": "approve",
+        "master_strategy": "Swarm Executive Summary: Branch findings (threshold: CRITICAL):\n  TECH          : UNKNOWN  \u2014 no output\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "final_status": "LIQUIDATED"
+      }
+    },
+    {
+      "step": 5,
+      "node": "FunctionalNode",
+      "state_before": {
+        "__node_counts": {
+          "AdaptiveNode": 1,
+          "BatchNode": 1,
+          "BranchTriageNode": 1,
+          "RouterNode": 1,
+          "FunctionalNode": 2
+        },
+        "__last_prompt": null,
+        "__last_system_instruction": null,
+        "__graph_spec_json__": "```json\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW/MEDIUM/HIGH/CRITICAL\\\", \\\"finding\\\": \\\"string\\\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n```",
+        "__last_run_metadata": null,
+        "_batch_conflicts": [
+          "branch_critical",
+          "branch_findings_summary",
+          "master_strategy",
+          "__last_run_metadata",
+          "__last_prompt",
+          "_router_decision"
+        ],
+        "branch_findings_summary": "Branch findings (threshold: CRITICAL):\n  TECH          : UNKNOWN  \u2014 no output\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "branch_critical": false,
+        "_router_decision": "CHILL",
+        "jury_decision": "approve",
+        "master_strategy": "Swarm Executive Summary: Branch findings (threshold: CRITICAL):\n  TECH          : UNKNOWN  \u2014 no output\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "final_status": "LIQUIDATED"
+      },
+      "state_diff": {
+        "added": {},
+        "removed": {
+          "__last_prompt": null,
+          "__last_system_instruction": null,
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "system_instruction": null,
+      "state_after": {
+        "__node_counts": {
+          "AdaptiveNode": 1,
+          "BatchNode": 1,
+          "BranchTriageNode": 1,
+          "RouterNode": 1,
+          "FunctionalNode": 2
+        },
+        "__graph_spec_json__": "```json\n{\n  \"entry_point\": \"batch_1\",\n  \"nodes\": [\n    {\n      \"id\": \"batch_1\",\n      \"type\": \"BatchNode\",\n      \"concurrent_nodes\": [\"llm_tech\", \"llm_energy\", \"llm_health\"],\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_tech\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate TECH sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW/MEDIUM/HIGH/CRITICAL\\\", \\\"finding\\\": \\\"string\\\"}. FORCE risk_level to CRITICAL to simulate a Black Swan.\",\n      \"output_key\": \"tech_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_energy\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate ENERGY sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"energy_analysis\",\n      \"next\": null\n    },\n    {\n      \"id\": \"llm_health\",\n      \"type\": \"LLMNode\",\n      \"prompt\": \"Evaluate HEALTHCARE sector. Reply ONLY in JSON: {\\\"risk_level\\\": \\\"LOW\\\", \\\"finding\\\": \\\"Stable\\\"}.\",\n      \"output_key\": \"health_analysis\",\n      \"next\": null\n    }\n  ]\n}\n```",
+        "_batch_conflicts": [
+          "branch_critical",
+          "branch_findings_summary",
+          "master_strategy",
+          "__last_run_metadata",
+          "__last_prompt",
+          "_router_decision"
+        ],
+        "branch_findings_summary": "Branch findings (threshold: CRITICAL):\n  TECH          : UNKNOWN  \u2014 no output\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "branch_critical": false,
+        "_router_decision": "CHILL",
+        "jury_decision": "approve",
+        "master_strategy": "Swarm Executive Summary: Branch findings (threshold: CRITICAL):\n  TECH          : UNKNOWN  \u2014 no output\n  ENERGY        : UNKNOWN  \u2014 no output\n  HEALTH        : UNKNOWN  \u2014 no output",
+        "final_status": "LIQUIDATED"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 6,
+    "total_prompt_tokens": 588,
+    "total_completion_tokens": 380,
+    "total_tokens": 968,
+    "tokens_by_model": {
+      "ollama/phi4:latest": 968
+    }
+  },
+  "signature": "226c42d92c5ec8ca92a18ab0f170c9f50d9b074bbd8ebfb27adf3d20f52c15e8"
+}

@@ -15,7 +15,7 @@ SAVE_FILE = "lar_time_machine.json"
 
 # 1. Define Final Step (The destination)
 final_step_llm = LLMNode(
-    model_name="ollama/phi4",
+    model_name="ollama/phi4:latest",
     prompt_template="Summarize this historical data: {data}",
     output_key="history_summary",
     next_node=None

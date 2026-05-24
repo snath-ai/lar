@@ -467,6 +467,7 @@ Compliance pattern library:
 | **8** | **[`fractal_finance_agent.py`](examples/advanced/fractal_finance_agent.py)** | Parallel Multi-Dimensional Finance Compliance |
 | **9** | **[`extreme_stress_test.py`](examples/advanced/extreme_stress_test.py)** | Extreme 191-Node Parallel Swarm Stress Test |
 | **10** | **[`omni_pipeline_stress_test.py`](examples/advanced/omni_pipeline_stress_test.py)** | 9-Primitive Omni-Architecture Test (Dynamic Graphs + Triage) |
+| **11** | **[`25_extreme_fractal_swarm.py`](examples/advanced/25_extreme_fractal_swarm.py)** | True Fractal Swarm: Dynamic Parallel Generation + Asynchronous Triage Intercept |
 
 #### 6. Adaptive Execution (`examples/adaptive/`)
 See the **[Adaptive Graphs Docs →](https://docs.snath.ai/core-concepts/9-adaptive-graphs)**
