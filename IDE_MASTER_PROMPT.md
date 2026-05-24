@@ -6,7 +6,7 @@
 
 ## Core Principles
 
-1. **Reverse Definition (CRITICAL)**: Define nodes in **reverse execution order** (End → Middle → Start). Node B must exist as a Python object before Node A can hold a reference to it. Violating this causes `NameError`.
+1. **Forward Definition & Wiring (CRITICAL)**: Define your nodes first with `next_node=None`, and then wire them forward in execution order (e.g., `node_a.next_node = node_b`). This is much cleaner than reverse-definition.
 2. **Strict Typing**: Every node argument and tool function MUST have Python type hints.
 3. **Explicit Linking**: Connect nodes with `node_a.next_node = node_b` or `RouterNode(path_map={...})`. There is no auto-wiring.
 4. **No Magic State**: Always `state.get("key")` and `state.set("key", value)`. Never assume a key exists.
@@ -23,7 +23,10 @@ Lár is designed to be fully compliant with the **EU AI Act (enforceable Aug 202
 2. **Third-Party Integrations**: Integrations (e.g., Slack bots, web scrapers, database writers) are **external actions** that must be audited. Do not bypass the Lár state object. Return integration results as a dict so they merge into the state and appear in the `state_diff`.
 3. **High-Risk Actions**: For any action that modifies production data or makes critical decisions (finance, healthcare, HR), inject a `HumanJuryNode` before the action executes to fulfill the **Art. 14 Human Oversight** requirement.
 4. **No Hidden Logic**: Do not hide LLM calls inside regular Python functions. Use `LLMNode` so the prompt and generation are exposed to the `AuditLogger`.
-5. **Fractal & Parallel Agents**: When using `BatchNode` with parallel branches that each produce a risk assessment, insert a `BranchTriageNode` between `BatchNode` and `RouterNode`. It parses all branch outputs, builds `branch_findings_summary` (so the human jury sees per-dimension evidence, not just the consolidated score), and sets `branch_critical=True` if any branch breaches the threshold. This is what makes Art. 14 oversight *meaningful* in multi-branch pipelines — the human can interrogate individual branch findings before the ReduceNode discards them. For building an agent compliant with EU AI Act from scratch, follow the step-by-step guide at `docs/guides/build-compliant-agent.md`.
+5. **Fractal & Parallel Agents**: When using `BatchNode` with parallel branches that each produce a risk assessment, insert a `BranchTriageNode` between `BatchNode` and `RouterNode`. It parses all branch outputs, builds `branch_findings_summary` (so the human jury sees per-dimension evidence, not just the consolidated score), and sets `branch_critical=True` if any branch breaches the threshold. This is what makes Art. 14 oversight *meaningful* in multi-branch pipelines.
+6. **Resumable Graphs & Asynchronous HitL**: For enterprise workloads, do not block the Python process on `HumanJuryNode`. Instead, inject a `SuspendNode` (a `FunctionalNode` that calls `sys.exit(0)`) to gracefully exit the script, and dump the state to JSON *cryptographically signed with HMAC-SHA256*. When resuming, mathematically verify the HMAC, inject the CLI response into a native `HumanJuryNode`, and execute the remainder of the graph.
+7. **Lethal Trifecta Guard**: Any external execution tool MUST be verified by a `LethalTrifectaGuard` before execution (AEPD Rule of 2 compliance).
+8. **Session Memory Erasure**: To comply with GDPR Art 17, use `SessionMemoryNode` with `mode="erase"` at the very end of the pipeline to purge intermediate PII.
 
 ---
 
@@ -211,20 +214,37 @@ cleanup = ClearErrorNode(next_node=retry_node)
 
 ---
 
-### `HumanJuryNode` — Human-in-the-Loop (EU AI Act Article 14)
-```python
-from lar import HumanJuryNode
+### `HumanJuryNode` & `SuspendNode` — Human-in-the-Loop (EU AI Act Article 14)
 
+In high-risk enterprise graphs, execution should **suspend to disk** rather than block the process.
+
+```python
+import sys, json, hmac, hashlib
+from lar import HumanJuryNode, FunctionalNode, GraphState
+
+# 1. The HMAC Suspend Node (Pauses execution and exits)
+def suspend_logic(state: GraphState):
+    raw_state = state.get_all()
+    sig = hmac.new(b"secret", json.dumps(raw_state, sort_keys=True).encode(), hashlib.sha256).hexdigest()
+    with open("suspend.json", "w") as f:
+        json.dump({"signature": sig, "state": raw_state}, f)
+    sys.exit(0)
+
+suspend_node = FunctionalNode(func=suspend_logic, next_node=None)
+
+# 2. The Native Human Jury (Resumes execution)
 jury = HumanJuryNode(
     prompt       = "Approve deployment of this AI recommendation?",
-    choices      = ["approve", "reject", "escalate"],   # Always lowercase
+    choices      = ["approve", "reject"],
     output_key   = "jury_verdict",
-    context_keys = ["synthesis", "risk_score"],          # Shown to the human before prompt
-    next_node    = post_jury_router,
+    context_keys = ["synthesis", "risk_score"],
+    next_node    = None,
 )
+
+suspend_node.next_node = jury
 ```
 
-> **Blocking**: Pauses execution and waits for stdin input. For non-interactive / CI runs, replace with `AddValueNode(key="jury_verdict", value="approve", ...)`.
+> **Resuming**: When you restart the script with `--resume approve`, load `suspend.json`, verify the HMAC signature with `hmac.compare_digest`, mock `builtins.input` to return the CLI argument, and pass the state directly to `executor.run_step_by_step(jury, state)`.
 
 ---
 
@@ -435,34 +455,42 @@ def word_count(text: str) -> dict:
 def sanitise(state: GraphState) -> str:
     return state.get("raw_query", "").strip().lower()
 
-# ── Graph (reverse definition) ────────────────────────────────────────────────
-final = LLMNode(
-    model_name="ollama/llama3.2",
-    prompt_template="Write a report on: {synthesis}",
-    output_key="report",
-)
+# ── Graph (Forward Wiring) ────────────────────────────────────────────────────
+seed = AddValueNode(key="token_budget", value=50_000, next_node=None)
 
-jury = HumanJuryNode(
-    prompt="Approve this synthesis?", choices=["approve", "reject"],
-    output_key="verdict", context_keys=["synthesis"], next_node=final,
-)
+# We use the @node decorator defined above, its next_node is wired later.
+# sanitise is already defined
+
+view_a = LLMNode(model_name="ollama/llama3.2",
+                  prompt_template="Optimistic view of {clean_query}", output_key="view_a", next_node=None)
+view_b = LLMNode(model_name="ollama/llama3.2",
+                  prompt_template="Critical view of {clean_query}", output_key="view_b", next_node=None)
+
+batch = BatchNode(nodes=[view_a, view_b], next_node=None)
 
 reducer = ReduceNode(
     model_name="ollama/llama3.2",
     prompt_template="Merge: {view_a}\n{view_b}",
-    input_keys=["view_a", "view_b"], output_key="synthesis", next_node=jury,
+    input_keys=["view_a", "view_b"], output_key="synthesis", next_node=None,
 )
 
-view_a = LLMNode(model_name="ollama/llama3.2",
-                  prompt_template="Optimistic view of {clean_query}", output_key="view_a")
-view_b = LLMNode(model_name="ollama/llama3.2",
-                  prompt_template="Critical view of {clean_query}", output_key="view_b")
+jury = HumanJuryNode(
+    prompt="Approve this synthesis?", choices=["approve", "reject"],
+    output_key="verdict", context_keys=["synthesis"], next_node=None,
+)
 
-batch = BatchNode(nodes=[view_a, view_b], next_node=reducer)
+final = LLMNode(
+    model_name="ollama/llama3.2",
+    prompt_template="Write a report on: {synthesis}",
+    output_key="report", next_node=None
+)
 
-sanitise.next_node = batch   # Wire @node AFTER downstream nodes exist
-
-seed = AddValueNode(key="token_budget", value=50_000, next_node=sanitise)
+# ── Wire the Graph Forward ────────────────────────────────────────────────────
+seed.next_node = sanitise
+sanitise.next_node = batch
+batch.next_node = reducer
+reducer.next_node = jury
+jury.next_node = final
 
 # ── Run ───────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
@@ -492,5 +520,5 @@ if __name__ == "__main__":
 | `for state, _ in executor.run(...)` | `for step_log in executor.run_step_by_step(...)` |
 | `metadata.get(...)` without guard | `(step_log.get("run_metadata") or {}).get("total_tokens", 0)` |
 | `print(build_log_table(history))` | `Console().print(build_log_table(history))` — Rich Table object |
-| `normalise.next_node = x` before `x` exists | Define `x` first, then wire `normalise.next_node = x` |
+| `normalise.next_node = x` before `x` exists | Use forward definition! Define `normalise` and `x` with `next_node=None`, then wire `normalise.next_node = x` later. |
 | Using `gemini/gemini-1.5-pro` for local runs | Use `ollama/llama3.2` or `ollama/qwen2.5:14b` for local/air-gapped |

@@ -33,8 +33,8 @@ Identify the 3 core components before writing a line of code:
 
 ---
 
-## Phase 3: The Universal Template
-Use this structure. It is battle-tested for Lár agents.
+## Phase 3: The Universal Template (EU AI Act Compliant)
+Use this structure. It leverages the v2.2.0 enterprise primitives for strict legal compliance.
 
 ```python
 import os
@@ -42,37 +42,59 @@ import json
 # Requires: pip install your_sdk
 # import your_sdk
 
-from lar import node
+from lar import GraphState, FunctionalNode
+from lar.compliance import CredentialVault, SupplierAgreementRegistry, TransparencyEngine
 
-@node(output_key=None, next_node=None)
-def integration_action(state):
+# 1. Initialize Primitives (these should be injected or globally available)
+vault = CredentialVault()
+supplier_registry = SupplierAgreementRegistry(block_on_missing=True)
+transparency = TransparencyEngine()
+
+def integration_action(state: GraphState):
     """
     [Docstring: Explain what this tool does and what state keys it expects]
     """
-    # 1. Secure Authentication
-    api_key = state.get("service_api_key") or os.getenv("SERVICE_API_KEY")
-    if not api_key:
-        raise ValueError("Missing SERVICE_API_KEY in state or environment")
+    tool_name = "your_integration"
+    
+    # 2. Compliance: Verify Data Processing Agreement (Art 25)
+    supplier_registry.assert_agreement(tool_name)
+    
+    # 3. Compliance: Trust-gated Authentication (Art 15)
+    # Replaces unsafe os.getenv() calls
+    api_key = vault.get_with_trust(
+        tool_name=tool_name, 
+        scope="write:data", 
+        credential_key="YOUR_SERVICE_API_KEY", 
+        trust_level="HIGH"
+    )
 
-    # 2. State Extraction
+    # 4. State Extraction
     # param_1 = state.get("param_1")
     
-    # 3. Execution & Error Handling
+    # 5. Execution & Error Handling
     try:
         # client = your_sdk.Client(api_key)
         # result = client.do_action(...)
         
-        # 4. Return Flat Dict (Best Practice)
-        # Merges returned dict directly into GraphState because output_key=None
-        return {
-            "result_id": "123",
-            "status": "success"
-        }
+        # 6. Compliance: Log External Action (Art 13)
+        transparency.flag(
+            action_type="external_api_call",
+            tool_name=tool_name,
+            affected_description="Third-party system",
+            run_id=state.get("run_id", "unknown")
+        )
+        
+        # 7. Merge Flat Dict into State
+        state.set("integration_result_id", "123")
+        state.set("integration_status", "success")
+        
     except ImportError:
-        return {"error": "Library not installed. Run `pip install ...`"}
+        state.set("last_error", "Library not installed. Run `pip install ...`")
     except Exception as e:
-        # Catch-all for safety, but try to catch specific library errors first
-        return {"error": f"Integration Action Failed: {str(e)}"}
+        state.set("last_error", f"Integration Action Failed: {str(e)}")
+
+# Create the node with forward wiring
+integration_node = FunctionalNode(func=integration_action, next_node=None)
 ```
 
 ---
@@ -81,11 +103,11 @@ def integration_action(state):
 Verify your generated code against these rules:
 
 1.  **[ ] Dependencies Marked**: Did you add a comment `# Requires: pip install X`?
-2.  **[ ] Zero Hallucinations**: Did you invent an implementation? If you aren't 100% sure of the SDK method signature, ask the user or write a generic `requests` wrapper using the provided curl.
-3.  **[ ] Environment First**: Always check `os.getenv` for secrets.
-4.  **[ ] ImportError Handling**: Catch `ImportError` and return a helpful message (agents often run in sparse environments).
-5.  **[ ] Flat Dictionary Return**: Don't return complex objects that aren't JSON serializable. Return a dict.
-6.  **[ ] Type Hints**: Type the function `def func(state: dict) -> dict:`.
+2.  **[ ] Zero Hallucinations**: Did you invent an implementation? If you aren't 100% sure of the SDK method signature, ask the user or write a generic `requests` wrapper.
+3.  **[ ] Credential Vault**: Did you use `CredentialVault.get_with_trust()` instead of `os.getenv()`?
+4.  **[ ] Supplier Registry**: Did you call `SupplierAgreementRegistry.assert_agreement()`?
+5.  **[ ] Transparency Engine**: Did you call `TransparencyEngine.flag()` after successful execution?
+6.  **[ ] Type Hints**: Type the function `def func(state: GraphState)`.
 
 ---
 
@@ -95,34 +117,40 @@ Verify your generated code against these rules:
 
 **You**:
 ```python
-import os
 # Requires: pip install stripe
 import stripe
-from lar import node
+from lar import GraphState, FunctionalNode
+from lar.compliance import CredentialVault, SupplierAgreementRegistry, TransparencyEngine
 
-@node(output_key=None, next_node=None)
-def stripe_refund_action(state: dict) -> dict:
+# Primitives
+vault = CredentialVault()
+supplier_registry = SupplierAgreementRegistry(block_on_missing=True)
+transparency = TransparencyEngine()
+
+def stripe_refund_action(state: GraphState):
     """
     Refunds a charge on Stripe.
-    Expects: 'stripe_api_key', 'charge_id'
+    Expects state key: 'charge_id'
     """
-    api_key = state.get("stripe_api_key") or os.getenv("STRIPE_API_KEY")
-    if not api_key:
-        return {"error": "Missing STRIPE_API_KEY"}
-
+    tool_name = "stripe_api"
+    
+    supplier_registry.assert_agreement(tool_name)
+    api_key = vault.get_with_trust(tool_name, "write:refunds", "STRIPE_API_KEY", trust_level="HIGH")
     stripe.api_key = api_key
     
     try:
-        refund = stripe.Refund.create(
-            charge=state.get("charge_id")
-        )
-        return {
-            "refund_id": refund.id,
-            "refund_status": refund.status,
-            "refund_amount": refund.amount
-        }
+        refund = stripe.Refund.create(charge=state.get("charge_id"))
+        
+        transparency.flag(action_type="financial_refund", tool_name=tool_name, affected_description="Customer", run_id=state.get("run_id"))
+        
+        state.set("refund_id", refund.id)
+        state.set("refund_status", refund.status)
+        state.set("refund_amount", refund.amount)
+        
     except stripe.error.StripeError as e:
-        return {"error": f"Stripe Error: {e.user_message}"}
+        state.set("last_error", f"Stripe Error: {e.user_message}")
     except Exception as e:
-        return {"error": f"Unknown Error: {str(e)}"}
+        state.set("last_error", f"Unknown Error: {str(e)}")
+
+stripe_refund_node = FunctionalNode(func=stripe_refund_action, next_node=None)
 ```
