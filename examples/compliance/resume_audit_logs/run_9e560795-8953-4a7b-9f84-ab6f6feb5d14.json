@@ -1,0 +1,49 @@
+{
+  "run_id": "9e560795-8953-4a7b-9f84-ab6f6feb5d14",
+  "user_id": null,
+  "timestamp": "2026-05-24T20:10:48.220195",
+  "steps": [
+    {
+      "step": 0,
+      "node": "FunctionalNode",
+      "state_before": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "FunctionalNode": 1
+        },
+        "__last_prompt": null,
+        "ai_recommendation": "The patient's presentation suggests poorly controlled hypertension or a hypertensive crisis, likely exacerbated by an underlying condition such as secondary hypertension or cardiac stress, given their age and elevated heart rate despite a past history of hypertension. \n\nFor further management, immediate assessment including blood pressure measurement, evaluation for end-organ damage (e.g., renal function tests, ECG, fundoscopic exam), and consideration of potential causes like medication non-compliance, lifestyle factors, or secondary conditions is recommended, along with adjusting antihypertensive therapy as appropriate. Monitoring and follow-up to assess treatment efficacy and patient adherence are crucial for long-term management.\n\nPlease consult a healthcare professional for personalized diagnosis and treatment options.",
+        "__last_run_metadata": null,
+        "__cli_decision__": "approve"
+      },
+      "state_diff": {
+        "added": {},
+        "removed": {
+          "__last_prompt": null,
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "error",
+      "error": "AuthorityLedger.record() got an unexpected keyword argument 'risk_score_at_decision'",
+      "prompt": null,
+      "state_after": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "FunctionalNode": 1
+        },
+        "ai_recommendation": "The patient's presentation suggests poorly controlled hypertension or a hypertensive crisis, likely exacerbated by an underlying condition such as secondary hypertension or cardiac stress, given their age and elevated heart rate despite a past history of hypertension. \n\nFor further management, immediate assessment including blood pressure measurement, evaluation for end-organ damage (e.g., renal function tests, ECG, fundoscopic exam), and consideration of potential causes like medication non-compliance, lifestyle factors, or secondary conditions is recommended, along with adjusting antihypertensive therapy as appropriate. Monitoring and follow-up to assess treatment efficacy and patient adherence are crucial for long-term management.\n\nPlease consult a healthcare professional for personalized diagnosis and treatment options.",
+        "__cli_decision__": "approve"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 1,
+    "total_prompt_tokens": 0,
+    "total_completion_tokens": 0,
+    "total_tokens": 0,
+    "tokens_by_model": {}
+  },
+  "signature": "834e0e980e19546fe794367a2fe84a3935abd458c2180f20879919343922d009"
+}

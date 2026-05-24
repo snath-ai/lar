@@ -1,0 +1,49 @@
+{
+  "run_id": "0f54dc41-c9c4-4917-adcb-4c857e497f1a",
+  "user_id": null,
+  "timestamp": "2026-05-24T20:11:22.760212",
+  "steps": [
+    {
+      "step": 0,
+      "node": "LLMNode",
+      "state_before": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "LLMNode": 1
+        }
+      },
+      "state_diff": {
+        "added": {
+          "ai_recommendation": "The patient is experiencing elevated blood pressure likely exacerbated by their underlying hypertensive condition and increased heart rate at age 45, indicating a potential need for immediate evaluation and adjustment of current management strategies."
+        },
+        "removed": {},
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 45,
+        "output_tokens": 39,
+        "total_tokens": 84,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "prompt": "Patient presents with high BP. Analyze: Age 45, Heart rate 110bpm. Past history of hypertension.. Keep it to 1 sentence.",
+      "state_after": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "LLMNode": 1
+        },
+        "ai_recommendation": "The patient is experiencing elevated blood pressure likely exacerbated by their underlying hypertensive condition and increased heart rate at age 45, indicating a potential need for immediate evaluation and adjustment of current management strategies."
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 1,
+    "total_prompt_tokens": 45,
+    "total_completion_tokens": 39,
+    "total_tokens": 84,
+    "tokens_by_model": {
+      "ollama/phi4:latest": 84
+    }
+  },
+  "signature": "13282b123fa6378a9820eb9f7cc27efbbd30df57327f333058215e1b4b6fe505"
+}

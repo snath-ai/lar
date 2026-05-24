@@ -1,0 +1,49 @@
+{
+  "run_id": "86ab73c2-6f3e-497d-a7e9-1f3860be6aa7",
+  "user_id": null,
+  "timestamp": "2026-05-24T20:11:24.706133",
+  "steps": [
+    {
+      "step": 0,
+      "node": "FunctionalNode",
+      "state_before": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "FunctionalNode": 1
+        },
+        "__last_prompt": null,
+        "ai_recommendation": "The patient is experiencing elevated blood pressure likely exacerbated by their underlying hypertensive condition and increased heart rate at age 45, indicating a potential need for immediate evaluation and adjustment of current management strategies.",
+        "__last_run_metadata": null,
+        "__cli_decision__": "approve"
+      },
+      "state_diff": {
+        "added": {},
+        "removed": {
+          "__last_prompt": null,
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "error",
+      "error": "AuthorityLedger.record() missing 1 required positional argument: 'action_description'",
+      "prompt": null,
+      "state_after": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "FunctionalNode": 1
+        },
+        "ai_recommendation": "The patient is experiencing elevated blood pressure likely exacerbated by their underlying hypertensive condition and increased heart rate at age 45, indicating a potential need for immediate evaluation and adjustment of current management strategies.",
+        "__cli_decision__": "approve"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 1,
+    "total_prompt_tokens": 0,
+    "total_completion_tokens": 0,
+    "total_tokens": 0,
+    "tokens_by_model": {}
+  },
+  "signature": "390129a807592bdce766a0e7f8f793493173d61ac206a714e61d4e1ed5cda760"
+}

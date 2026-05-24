@@ -1,0 +1,49 @@
+{
+  "run_id": "4f2d3207-e6b6-4bd2-b08b-9d9b9fdfcab5",
+  "user_id": null,
+  "timestamp": "2026-05-24T20:11:46.199862",
+  "steps": [
+    {
+      "step": 0,
+      "node": "LLMNode",
+      "state_before": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "LLMNode": 1
+        }
+      },
+      "state_diff": {
+        "added": {
+          "ai_recommendation": "The patient, a 45-year-old with a past history of hypertension and currently presenting with tachycardia (heart rate 110 bpm), likely has uncontrolled or exacerbated high blood pressure requiring immediate evaluation and management adjustment."
+        },
+        "removed": {},
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 45,
+        "output_tokens": 47,
+        "total_tokens": 92,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "prompt": "Patient presents with high BP. Analyze: Age 45, Heart rate 110bpm. Past history of hypertension.. Keep it to 1 sentence.",
+      "state_after": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "LLMNode": 1
+        },
+        "ai_recommendation": "The patient, a 45-year-old with a past history of hypertension and currently presenting with tachycardia (heart rate 110 bpm), likely has uncontrolled or exacerbated high blood pressure requiring immediate evaluation and management adjustment."
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 1,
+    "total_prompt_tokens": 45,
+    "total_completion_tokens": 47,
+    "total_tokens": 92,
+    "tokens_by_model": {
+      "ollama/phi4:latest": 92
+    }
+  },
+  "signature": "43d6c9ac7b1dddeaea97ff468f53705966a5cb893e79d9689c87ca039e708234"
+}
