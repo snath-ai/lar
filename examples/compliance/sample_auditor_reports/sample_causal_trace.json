@@ -1,0 +1,1090 @@
+{
+  "run_id": "4cbe4f39-53d4-4d86-aff0-bdf684348c30",
+  "user_id": null,
+  "timestamp": "2026-05-24T20:37:45.062621",
+  "steps": [
+    {
+      "step": 0,
+      "node": "HumanJuryNode",
+      "state_before": {
+        "case_summary": "Loan application for John Doe (john@doe.com). Risk profile high.",
+        "name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "action_type": "credit_analysis",
+        "tool_catalogue": [
+          "llm",
+          "db_write"
+        ],
+        "__node_counts": {
+          "HumanJuryNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T19:37:07.890889Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "Ultimate Finance Agent",
+          "conformity_id": "CA-FIN-2026",
+          "intended_purpose": "High-risk credit decision support",
+          "known_limitations": [],
+          "human_oversight_requirements": [
+            "PRE_EXECUTION approval required."
+          ],
+          "prohibited_uses": [],
+          "data_governance_notes": "PII stripped via GDPR Art 17."
+        },
+        "__last_run_metadata": null,
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "Ultimate Finance Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Finance Div",
+            "purpose": "Internal compliance agent",
+            "conformity_id": "CA-FIN-2026",
+            "recorded_at": "2026-05-24T19:37:07.890946Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "jit_token_present": true,
+        "__last_prompt": null,
+        "ai_output": "To analyze the credit risk based on the provided structure, I'll need a brief case summary to assess. Once you provide that information, I can generate an appropriate response in JSON format following your requirements.\n\nPlease include key details such as:\n\n- Borrower's financial history\n- Current income and expenses\n- Employment stability\n- Debt-to-income ratio\n- Any existing delinquencies or defaults\n\nWith these details, I'll be able to craft a more accurate assessment.",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "HIGH",
+        "recommendation": "Deny Loan",
+        "model_confidence": 0.92,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T19:37:42.701036Z",
+          "value": 0.92,
+          "baseline_mean": 0.8766666666666667,
+          "baseline_stdev": 0.025166114784235853,
+          "relative_deviation": 0.0494,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9200 within envelope (4.9% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION"
+      },
+      "state_diff": {
+        "added": {
+          "jury_decision": "approve"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Loan application for John Doe (john@doe.com). Risk profile high.",
+        "name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "action_type": "credit_analysis",
+        "tool_catalogue": [
+          "llm",
+          "db_write"
+        ],
+        "__node_counts": {
+          "HumanJuryNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T19:37:07.890889Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "Ultimate Finance Agent",
+          "conformity_id": "CA-FIN-2026",
+          "intended_purpose": "High-risk credit decision support",
+          "known_limitations": [],
+          "human_oversight_requirements": [
+            "PRE_EXECUTION approval required."
+          ],
+          "prohibited_uses": [],
+          "data_governance_notes": "PII stripped via GDPR Art 17."
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "Ultimate Finance Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Finance Div",
+            "purpose": "Internal compliance agent",
+            "conformity_id": "CA-FIN-2026",
+            "recorded_at": "2026-05-24T19:37:07.890946Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "jit_token_present": true,
+        "ai_output": "To analyze the credit risk based on the provided structure, I'll need a brief case summary to assess. Once you provide that information, I can generate an appropriate response in JSON format following your requirements.\n\nPlease include key details such as:\n\n- Borrower's financial history\n- Current income and expenses\n- Employment stability\n- Debt-to-income ratio\n- Any existing delinquencies or defaults\n\nWith these details, I'll be able to craft a more accurate assessment.",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "HIGH",
+        "recommendation": "Deny Loan",
+        "model_confidence": 0.92,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T19:37:42.701036Z",
+          "value": 0.92,
+          "baseline_mean": 0.8766666666666667,
+          "baseline_stdev": 0.025166114784235853,
+          "relative_deviation": 0.0494,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9200 within envelope (4.9% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      }
+    },
+    {
+      "step": 1,
+      "node": "DynamicToolDiscoveryMonitor",
+      "state_before": {
+        "case_summary": "Loan application for John Doe (john@doe.com). Risk profile high.",
+        "name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "action_type": "credit_analysis",
+        "tool_catalogue": [
+          "llm",
+          "db_write"
+        ],
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T19:37:07.890889Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "Ultimate Finance Agent",
+          "conformity_id": "CA-FIN-2026",
+          "intended_purpose": "High-risk credit decision support",
+          "known_limitations": [],
+          "human_oversight_requirements": [
+            "PRE_EXECUTION approval required."
+          ],
+          "prohibited_uses": [],
+          "data_governance_notes": "PII stripped via GDPR Art 17."
+        },
+        "__last_run_metadata": null,
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "Ultimate Finance Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Finance Div",
+            "purpose": "Internal compliance agent",
+            "conformity_id": "CA-FIN-2026",
+            "recorded_at": "2026-05-24T19:37:07.890946Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "jit_token_present": true,
+        "__last_prompt": null,
+        "ai_output": "To analyze the credit risk based on the provided structure, I'll need a brief case summary to assess. Once you provide that information, I can generate an appropriate response in JSON format following your requirements.\n\nPlease include key details such as:\n\n- Borrower's financial history\n- Current income and expenses\n- Employment stability\n- Debt-to-income ratio\n- Any existing delinquencies or defaults\n\nWith these details, I'll be able to craft a more accurate assessment.",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "HIGH",
+        "recommendation": "Deny Loan",
+        "model_confidence": 0.92,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T19:37:42.701036Z",
+          "value": 0.92,
+          "baseline_mean": 0.8766666666666667,
+          "baseline_stdev": 0.025166114784235853,
+          "relative_deviation": 0.0494,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9200 within envelope (4.9% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      },
+      "state_diff": {
+        "added": {
+          "tool_discovery_report": {
+            "checked_at": "2026-05-24T19:37:45.061929Z",
+            "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+            "baseline_count": 2,
+            "current_count": 2,
+            "new_tools": [],
+            "removed_tools": [],
+            "substantial_modification_flag": false
+          }
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Loan application for John Doe (john@doe.com). Risk profile high.",
+        "name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "action_type": "credit_analysis",
+        "tool_catalogue": [
+          "llm",
+          "db_write"
+        ],
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T19:37:07.890889Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "Ultimate Finance Agent",
+          "conformity_id": "CA-FIN-2026",
+          "intended_purpose": "High-risk credit decision support",
+          "known_limitations": [],
+          "human_oversight_requirements": [
+            "PRE_EXECUTION approval required."
+          ],
+          "prohibited_uses": [],
+          "data_governance_notes": "PII stripped via GDPR Art 17."
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "Ultimate Finance Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Finance Div",
+            "purpose": "Internal compliance agent",
+            "conformity_id": "CA-FIN-2026",
+            "recorded_at": "2026-05-24T19:37:07.890946Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "jit_token_present": true,
+        "ai_output": "To analyze the credit risk based on the provided structure, I'll need a brief case summary to assess. Once you provide that information, I can generate an appropriate response in JSON format following your requirements.\n\nPlease include key details such as:\n\n- Borrower's financial history\n- Current income and expenses\n- Employment stability\n- Debt-to-income ratio\n- Any existing delinquencies or defaults\n\nWith these details, I'll be able to craft a more accurate assessment.",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "HIGH",
+        "recommendation": "Deny Loan",
+        "model_confidence": 0.92,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T19:37:42.701036Z",
+          "value": 0.92,
+          "baseline_mean": 0.8766666666666667,
+          "baseline_stdev": 0.025166114784235853,
+          "relative_deviation": 0.0494,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9200 within envelope (4.9% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T19:37:45.061929Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 2,
+          "current_count": 2,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        }
+      }
+    },
+    {
+      "step": 2,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Loan application for John Doe (john@doe.com). Risk profile high.",
+        "name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "action_type": "credit_analysis",
+        "tool_catalogue": [
+          "llm",
+          "db_write"
+        ],
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "FunctionalNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T19:37:07.890889Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "Ultimate Finance Agent",
+          "conformity_id": "CA-FIN-2026",
+          "intended_purpose": "High-risk credit decision support",
+          "known_limitations": [],
+          "human_oversight_requirements": [
+            "PRE_EXECUTION approval required."
+          ],
+          "prohibited_uses": [],
+          "data_governance_notes": "PII stripped via GDPR Art 17."
+        },
+        "__last_run_metadata": null,
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "Ultimate Finance Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Finance Div",
+            "purpose": "Internal compliance agent",
+            "conformity_id": "CA-FIN-2026",
+            "recorded_at": "2026-05-24T19:37:07.890946Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "jit_token_present": true,
+        "__last_prompt": null,
+        "ai_output": "To analyze the credit risk based on the provided structure, I'll need a brief case summary to assess. Once you provide that information, I can generate an appropriate response in JSON format following your requirements.\n\nPlease include key details such as:\n\n- Borrower's financial history\n- Current income and expenses\n- Employment stability\n- Debt-to-income ratio\n- Any existing delinquencies or defaults\n\nWith these details, I'll be able to craft a more accurate assessment.",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "HIGH",
+        "recommendation": "Deny Loan",
+        "model_confidence": 0.92,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T19:37:42.701036Z",
+          "value": 0.92,
+          "baseline_mean": 0.8766666666666667,
+          "baseline_stdev": 0.025166114784235853,
+          "relative_deviation": 0.0494,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9200 within envelope (4.9% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T19:37:45.061929Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 2,
+          "current_count": 2,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        }
+      },
+      "state_diff": {
+        "added": {
+          "_trifecta_check": {
+            "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+            "timestamp": "2026-05-24T19:37:45.062037Z",
+            "action": "external_db",
+            "leg1_untrusted_input": true,
+            "leg2_sensitive_data": true,
+            "leg3_autonomous_action": true,
+            "all_three_active": true,
+            "human_prior_approval": true,
+            "violation": false,
+            "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+          }
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Loan application for John Doe (john@doe.com). Risk profile high.",
+        "name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "action_type": "credit_analysis",
+        "tool_catalogue": [
+          "llm",
+          "db_write"
+        ],
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "FunctionalNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T19:37:07.890889Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "Ultimate Finance Agent",
+          "conformity_id": "CA-FIN-2026",
+          "intended_purpose": "High-risk credit decision support",
+          "known_limitations": [],
+          "human_oversight_requirements": [
+            "PRE_EXECUTION approval required."
+          ],
+          "prohibited_uses": [],
+          "data_governance_notes": "PII stripped via GDPR Art 17."
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "Ultimate Finance Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Finance Div",
+            "purpose": "Internal compliance agent",
+            "conformity_id": "CA-FIN-2026",
+            "recorded_at": "2026-05-24T19:37:07.890946Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "jit_token_present": true,
+        "ai_output": "To analyze the credit risk based on the provided structure, I'll need a brief case summary to assess. Once you provide that information, I can generate an appropriate response in JSON format following your requirements.\n\nPlease include key details such as:\n\n- Borrower's financial history\n- Current income and expenses\n- Employment stability\n- Debt-to-income ratio\n- Any existing delinquencies or defaults\n\nWith these details, I'll be able to craft a more accurate assessment.",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "HIGH",
+        "recommendation": "Deny Loan",
+        "model_confidence": 0.92,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T19:37:42.701036Z",
+          "value": 0.92,
+          "baseline_mean": 0.8766666666666667,
+          "baseline_stdev": 0.025166114784235853,
+          "relative_deviation": 0.0494,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9200 within envelope (4.9% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T19:37:45.061929Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 2,
+          "current_count": 2,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T19:37:45.062037Z",
+          "action": "external_db",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      }
+    },
+    {
+      "step": 3,
+      "node": "ProhibitedPracticeGuard",
+      "state_before": {
+        "case_summary": "Loan application for John Doe (john@doe.com). Risk profile high.",
+        "name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "action_type": "credit_analysis",
+        "tool_catalogue": [
+          "llm",
+          "db_write"
+        ],
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "FunctionalNode": 1,
+          "ProhibitedPracticeGuard": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T19:37:07.890889Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "Ultimate Finance Agent",
+          "conformity_id": "CA-FIN-2026",
+          "intended_purpose": "High-risk credit decision support",
+          "known_limitations": [],
+          "human_oversight_requirements": [
+            "PRE_EXECUTION approval required."
+          ],
+          "prohibited_uses": [],
+          "data_governance_notes": "PII stripped via GDPR Art 17."
+        },
+        "__last_run_metadata": null,
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "Ultimate Finance Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Finance Div",
+            "purpose": "Internal compliance agent",
+            "conformity_id": "CA-FIN-2026",
+            "recorded_at": "2026-05-24T19:37:07.890946Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "jit_token_present": true,
+        "__last_prompt": null,
+        "ai_output": "To analyze the credit risk based on the provided structure, I'll need a brief case summary to assess. Once you provide that information, I can generate an appropriate response in JSON format following your requirements.\n\nPlease include key details such as:\n\n- Borrower's financial history\n- Current income and expenses\n- Employment stability\n- Debt-to-income ratio\n- Any existing delinquencies or defaults\n\nWith these details, I'll be able to craft a more accurate assessment.",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "HIGH",
+        "recommendation": "Deny Loan",
+        "model_confidence": 0.92,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T19:37:42.701036Z",
+          "value": 0.92,
+          "baseline_mean": 0.8766666666666667,
+          "baseline_stdev": 0.025166114784235853,
+          "relative_deviation": 0.0494,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9200 within envelope (4.9% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T19:37:45.061929Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 2,
+          "current_count": 2,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T19:37:45.062037Z",
+          "action": "external_db",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      },
+      "state_diff": {
+        "added": {},
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Loan application for John Doe (john@doe.com). Risk profile high.",
+        "name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "action_type": "credit_analysis",
+        "tool_catalogue": [
+          "llm",
+          "db_write"
+        ],
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "FunctionalNode": 1,
+          "ProhibitedPracticeGuard": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T19:37:07.890889Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "Ultimate Finance Agent",
+          "conformity_id": "CA-FIN-2026",
+          "intended_purpose": "High-risk credit decision support",
+          "known_limitations": [],
+          "human_oversight_requirements": [
+            "PRE_EXECUTION approval required."
+          ],
+          "prohibited_uses": [],
+          "data_governance_notes": "PII stripped via GDPR Art 17."
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "Ultimate Finance Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Finance Div",
+            "purpose": "Internal compliance agent",
+            "conformity_id": "CA-FIN-2026",
+            "recorded_at": "2026-05-24T19:37:07.890946Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "jit_token_present": true,
+        "ai_output": "To analyze the credit risk based on the provided structure, I'll need a brief case summary to assess. Once you provide that information, I can generate an appropriate response in JSON format following your requirements.\n\nPlease include key details such as:\n\n- Borrower's financial history\n- Current income and expenses\n- Employment stability\n- Debt-to-income ratio\n- Any existing delinquencies or defaults\n\nWith these details, I'll be able to craft a more accurate assessment.",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "HIGH",
+        "recommendation": "Deny Loan",
+        "model_confidence": 0.92,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T19:37:42.701036Z",
+          "value": 0.92,
+          "baseline_mean": 0.8766666666666667,
+          "baseline_stdev": 0.025166114784235853,
+          "relative_deviation": 0.0494,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9200 within envelope (4.9% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T19:37:45.061929Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 2,
+          "current_count": 2,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T19:37:45.062037Z",
+          "action": "external_db",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      }
+    },
+    {
+      "step": 4,
+      "node": "SyntheticMarkerNode",
+      "state_before": {
+        "case_summary": "Loan application for John Doe (john@doe.com). Risk profile high.",
+        "name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "action_type": "credit_analysis",
+        "tool_catalogue": [
+          "llm",
+          "db_write"
+        ],
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "FunctionalNode": 1,
+          "ProhibitedPracticeGuard": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T19:37:07.890889Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "Ultimate Finance Agent",
+          "conformity_id": "CA-FIN-2026",
+          "intended_purpose": "High-risk credit decision support",
+          "known_limitations": [],
+          "human_oversight_requirements": [
+            "PRE_EXECUTION approval required."
+          ],
+          "prohibited_uses": [],
+          "data_governance_notes": "PII stripped via GDPR Art 17."
+        },
+        "__last_run_metadata": null,
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "Ultimate Finance Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Finance Div",
+            "purpose": "Internal compliance agent",
+            "conformity_id": "CA-FIN-2026",
+            "recorded_at": "2026-05-24T19:37:07.890946Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "jit_token_present": true,
+        "__last_prompt": null,
+        "ai_output": "To analyze the credit risk based on the provided structure, I'll need a brief case summary to assess. Once you provide that information, I can generate an appropriate response in JSON format following your requirements.\n\nPlease include key details such as:\n\n- Borrower's financial history\n- Current income and expenses\n- Employment stability\n- Debt-to-income ratio\n- Any existing delinquencies or defaults\n\nWith these details, I'll be able to craft a more accurate assessment.",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "HIGH",
+        "recommendation": "Deny Loan",
+        "model_confidence": 0.92,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T19:37:42.701036Z",
+          "value": 0.92,
+          "baseline_mean": 0.8766666666666667,
+          "baseline_stdev": 0.025166114784235853,
+          "relative_deviation": 0.0494,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9200 within envelope (4.9% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T19:37:45.061929Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 2,
+          "current_count": 2,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T19:37:45.062037Z",
+          "action": "external_db",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "final_output": "Deny Loan\n\n[Disclaimer: This content was generated by an AI system on 2026-05-24T19:37:45.062257.]"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Loan application for John Doe (john@doe.com). Risk profile high.",
+        "name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "action_type": "credit_analysis",
+        "tool_catalogue": [
+          "llm",
+          "db_write"
+        ],
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "FunctionalNode": 1,
+          "ProhibitedPracticeGuard": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T19:37:07.890889Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "Ultimate Finance Agent",
+          "conformity_id": "CA-FIN-2026",
+          "intended_purpose": "High-risk credit decision support",
+          "known_limitations": [],
+          "human_oversight_requirements": [
+            "PRE_EXECUTION approval required."
+          ],
+          "prohibited_uses": [],
+          "data_governance_notes": "PII stripped via GDPR Art 17."
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "Ultimate Finance Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Finance Div",
+            "purpose": "Internal compliance agent",
+            "conformity_id": "CA-FIN-2026",
+            "recorded_at": "2026-05-24T19:37:07.890946Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "jit_token_present": true,
+        "ai_output": "To analyze the credit risk based on the provided structure, I'll need a brief case summary to assess. Once you provide that information, I can generate an appropriate response in JSON format following your requirements.\n\nPlease include key details such as:\n\n- Borrower's financial history\n- Current income and expenses\n- Employment stability\n- Debt-to-income ratio\n- Any existing delinquencies or defaults\n\nWith these details, I'll be able to craft a more accurate assessment.",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "HIGH",
+        "recommendation": "Deny Loan",
+        "model_confidence": 0.92,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T19:37:42.701036Z",
+          "value": 0.92,
+          "baseline_mean": 0.8766666666666667,
+          "baseline_stdev": 0.025166114784235853,
+          "relative_deviation": 0.0494,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9200 within envelope (4.9% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T19:37:45.061929Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 2,
+          "current_count": 2,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T19:37:45.062037Z",
+          "action": "external_db",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "Deny Loan\n\n[Disclaimer: This content was generated by an AI system on 2026-05-24T19:37:45.062257.]"
+      }
+    },
+    {
+      "step": 5,
+      "node": "SessionMemoryNode",
+      "state_before": {
+        "case_summary": "Loan application for John Doe (john@doe.com). Risk profile high.",
+        "name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "action_type": "credit_analysis",
+        "tool_catalogue": [
+          "llm",
+          "db_write"
+        ],
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "FunctionalNode": 1,
+          "ProhibitedPracticeGuard": 1,
+          "SyntheticMarkerNode": 1,
+          "SessionMemoryNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T19:37:07.890889Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "Ultimate Finance Agent",
+          "conformity_id": "CA-FIN-2026",
+          "intended_purpose": "High-risk credit decision support",
+          "known_limitations": [],
+          "human_oversight_requirements": [
+            "PRE_EXECUTION approval required."
+          ],
+          "prohibited_uses": [],
+          "data_governance_notes": "PII stripped via GDPR Art 17."
+        },
+        "__last_run_metadata": null,
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "Ultimate Finance Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Finance Div",
+            "purpose": "Internal compliance agent",
+            "conformity_id": "CA-FIN-2026",
+            "recorded_at": "2026-05-24T19:37:07.890946Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "jit_token_present": true,
+        "__last_prompt": null,
+        "ai_output": "To analyze the credit risk based on the provided structure, I'll need a brief case summary to assess. Once you provide that information, I can generate an appropriate response in JSON format following your requirements.\n\nPlease include key details such as:\n\n- Borrower's financial history\n- Current income and expenses\n- Employment stability\n- Debt-to-income ratio\n- Any existing delinquencies or defaults\n\nWith these details, I'll be able to craft a more accurate assessment.",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "HIGH",
+        "recommendation": "Deny Loan",
+        "model_confidence": 0.92,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T19:37:42.701036Z",
+          "value": 0.92,
+          "baseline_mean": 0.8766666666666667,
+          "baseline_stdev": 0.025166114784235853,
+          "relative_deviation": 0.0494,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9200 within envelope (4.9% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T19:37:45.061929Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 2,
+          "current_count": 2,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T19:37:45.062037Z",
+          "action": "external_db",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "Deny Loan\n\n[Disclaimer: This content was generated by an AI system on 2026-05-24T19:37:45.062257.]"
+      },
+      "state_diff": {
+        "added": {
+          "memory_erased_subject": "john@doe.com",
+          "memory_erased": true
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Loan application for John Doe (john@doe.com). Risk profile high.",
+        "name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "action_type": "credit_analysis",
+        "tool_catalogue": [
+          "llm",
+          "db_write"
+        ],
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "FunctionalNode": 1,
+          "ProhibitedPracticeGuard": 1,
+          "SyntheticMarkerNode": 1,
+          "SessionMemoryNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T19:37:07.890889Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "Ultimate Finance Agent",
+          "conformity_id": "CA-FIN-2026",
+          "intended_purpose": "High-risk credit decision support",
+          "known_limitations": [],
+          "human_oversight_requirements": [
+            "PRE_EXECUTION approval required."
+          ],
+          "prohibited_uses": [],
+          "data_governance_notes": "PII stripped via GDPR Art 17."
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "Ultimate Finance Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Finance Div",
+            "purpose": "Internal compliance agent",
+            "conformity_id": "CA-FIN-2026",
+            "recorded_at": "2026-05-24T19:37:07.890946Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "jit_token_present": true,
+        "ai_output": "To analyze the credit risk based on the provided structure, I'll need a brief case summary to assess. Once you provide that information, I can generate an appropriate response in JSON format following your requirements.\n\nPlease include key details such as:\n\n- Borrower's financial history\n- Current income and expenses\n- Employment stability\n- Debt-to-income ratio\n- Any existing delinquencies or defaults\n\nWith these details, I'll be able to craft a more accurate assessment.",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "HIGH",
+        "recommendation": "Deny Loan",
+        "model_confidence": 0.92,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T19:37:42.701036Z",
+          "value": 0.92,
+          "baseline_mean": 0.8766666666666667,
+          "baseline_stdev": 0.025166114784235853,
+          "relative_deviation": 0.0494,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9200 within envelope (4.9% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T19:37:45.061929Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 2,
+          "current_count": 2,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T19:37:45.062037Z",
+          "action": "external_db",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "Deny Loan\n\n[Disclaimer: This content was generated by an AI system on 2026-05-24T19:37:45.062257.]",
+        "memory_erased": true,
+        "memory_erased_subject": "john@doe.com"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 6,
+    "total_prompt_tokens": 0,
+    "total_completion_tokens": 0,
+    "total_tokens": 0,
+    "tokens_by_model": {}
+  },
+  "signature": "e4a59319ec740e77b552de3359cb83d3d3e8973c7decf9dac4aeb4c569f157a9"
+}
