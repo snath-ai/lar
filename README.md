@@ -454,6 +454,7 @@ Compliance pattern library:
 | **23** | **[`23_fractal_compliance_showcase.py`](examples/compliance/23_fractal_compliance_showcase.py)** | Parallel Risk Triaging & Fractal Branches |
 | **24** | **[`24_ultimate_enterprise_agent.py`](examples/compliance/24_ultimate_enterprise_agent.py)** | 23-Primitive Enterprise Backbone (CyberSec) |
 | **25** | **[`26_resumable_compliance.py`](examples/compliance/26_resumable_compliance.py)** | Secure HMAC Resumable Graph (Asynchronous Human-in-the-loop) |
+| **26** | **[`27_ultimate_resumable_enterprise.py`](examples/compliance/27_ultimate_resumable_enterprise.py)** | Ultimate 23-Primitive Resumable Gauntlet (Asynchronous) |
 
 #### 5. High Scale & Advanced (`examples/scale/`, `examples/advanced/`)
 | # | Pattern | Concept |

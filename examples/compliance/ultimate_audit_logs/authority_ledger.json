@@ -1,0 +1,22 @@
+{
+  "ledger_type": "AUTHORITY_EXERCISE_LEDGER",
+  "eu_ai_act_reference": "Articles 12\u201314: Human Oversight Evidence Chain",
+  "total_records": 1,
+  "records": [
+    {
+      "record_type": "AUTHORITY_EXERCISE",
+      "eu_ai_act_article": "Art. 12, 14",
+      "timestamp": "2026-05-24T19:37:45.061824Z",
+      "action_description": "Execution of AI credit denial.",
+      "stakeholder_id": "vp@bank.com",
+      "stakeholder_role": "VP of Risk",
+      "decision": "approve",
+      "rationale": "Auto-selected in non-interactive environment.",
+      "risk_score_at_decision": 0.92,
+      "context_snapshot_keys": [
+        "recommendation"
+      ]
+    }
+  ],
+  "signature": "fb7f0478f665b5c99a4b90b39448008f5671215a329bb7c1d047ee489e2c9aa5"
+}
