@@ -6,7 +6,7 @@
     {
       "record_type": "AUTHORITY_EXERCISE",
       "eu_ai_act_article": "Art. 12, 14",
-      "timestamp": "2026-05-24T19:24:10.145275Z",
+      "timestamp": "2026-05-24T19:25:25.266967Z",
       "action_description": "Execution of AI-recommended medical treatment plan.",
       "stakeholder_id": "cmo@hospital.com",
       "stakeholder_role": "Chief Medical Officer",
@@ -18,5 +18,5 @@
       ]
     }
   ],
-  "signature": "0152293b1ac13c92dc991d0973fb0bbb9419076432fdd85cacdd86bf6d1e542d"
+  "signature": "807dc3e2b03cc25facd9f2573fec938d8645d81d8c1c924909fc817630ad8d63"
 }

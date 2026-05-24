@@ -1,0 +1,84 @@
+{
+  "run_id": "ac2de290-c08f-4ff8-8312-03e4f587ae65",
+  "user_id": null,
+  "timestamp": "2026-05-24T20:25:25.267021",
+  "steps": [
+    {
+      "step": 0,
+      "node": "HumanJuryNode",
+      "state_before": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "HumanJuryNode": 1
+        },
+        "__last_prompt": null,
+        "ai_recommendation": "The patient's elevated blood pressure and heart rate may be indicative of poorly controlled hypertension or a hypertensive crisis, especially given their past medical history.",
+        "__last_run_metadata": null
+      },
+      "state_diff": {
+        "added": {
+          "jury_decision": "approve"
+        },
+        "removed": {
+          "__last_prompt": null,
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "HumanJuryNode": 1
+        },
+        "ai_recommendation": "The patient's elevated blood pressure and heart rate may be indicative of poorly controlled hypertension or a hypertensive crisis, especially given their past medical history.",
+        "jury_decision": "approve"
+      }
+    },
+    {
+      "step": 1,
+      "node": "FunctionalNode",
+      "state_before": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "FunctionalNode": 1
+        },
+        "__last_prompt": null,
+        "ai_recommendation": "The patient's elevated blood pressure and heart rate may be indicative of poorly controlled hypertension or a hypertensive crisis, especially given their past medical history.",
+        "__last_run_metadata": null,
+        "jury_decision": "approve"
+      },
+      "state_diff": {
+        "added": {},
+        "removed": {
+          "__last_prompt": null,
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "patient_data": "Age 45, Heart rate 110bpm. Past history of hypertension.",
+        "__node_counts": {
+          "HumanJuryNode": 1,
+          "FunctionalNode": 1
+        },
+        "ai_recommendation": "The patient's elevated blood pressure and heart rate may be indicative of poorly controlled hypertension or a hypertensive crisis, especially given their past medical history.",
+        "jury_decision": "approve"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 2,
+    "total_prompt_tokens": 0,
+    "total_completion_tokens": 0,
+    "total_tokens": 0,
+    "tokens_by_model": {}
+  },
+  "signature": "39554cb1bae196c5eadd7ea06f62d29a2377b4d5f6c2c1e25a4e5d85689143c3"
+}
