@@ -1,0 +1,24 @@
+{
+  "ledger_type": "AUTHORITY_EXERCISE_LEDGER",
+  "eu_ai_act_reference": "Articles 12\u201314: Human Oversight Evidence Chain",
+  "total_records": 1,
+  "records": [
+    {
+      "record_type": "AUTHORITY_EXERCISE",
+      "eu_ai_act_article": "Art. 12, 14",
+      "timestamp": "2026-05-24T18:47:50.279627Z",
+      "action_description": "CYBERSECURITY AI case analysis \u2014 external action pending",
+      "stakeholder_id": "reviewer@enterprise.org",
+      "stakeholder_role": "CISO / SOC Director",
+      "decision": "approve",
+      "rationale": "Auto-selected in non-interactive environment.",
+      "risk_score_at_decision": 0.95,
+      "context_snapshot_keys": [
+        "risk_level",
+        "recommendation",
+        "model_confidence"
+      ]
+    }
+  ],
+  "signature": "a178b90696ca8ed95cc0d961a7ae1d9f11af2b54a66641ebe71c8e8eb0316352"
+}

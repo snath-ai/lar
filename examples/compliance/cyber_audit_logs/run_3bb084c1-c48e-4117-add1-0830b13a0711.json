@@ -1,0 +1,3303 @@
+{
+  "run_id": "3bb084c1-c48e-4117-add1-0830b13a0711",
+  "user_id": null,
+  "timestamp": "2026-05-24T19:47:50.281596",
+  "steps": [
+    {
+      "step": 0,
+      "node": "DeployerTransparencyNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1
+        }
+      },
+      "state_diff": {
+        "added": {
+          "deployer_instructions": {
+            "schema": "lar-art13-instructions-for-use-v1",
+            "generated_at": "2026-05-24T18:47:32.832047Z",
+            "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+            "system_name": "CyberSec Autonomous Containment Agent",
+            "conformity_id": "CA-CYBER-2026",
+            "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+            "known_limitations": [
+              "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+              "English-language case summaries only in v2.2.0.",
+              "Domain-specific bias terms are configurable but not exhaustive."
+            ],
+            "human_oversight_requirements": [
+              "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+              "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+              "Stakeholder must review AI recommendation and rationale before approving."
+            ],
+            "prohibited_uses": [
+              "Fully autonomous decision-making without human approval gate.",
+              "Processing outside the declared domain without re-conformity assessment.",
+              "Use as sole decision basis without contextual human judgment."
+            ],
+            "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+          }
+        },
+        "removed": {},
+        "updated": {}
+      },
+      "run_metadata": {},
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        }
+      }
+    },
+    {
+      "step": 1,
+      "node": "MultiAgentBoundaryNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "multi_agent_boundaries": [
+            {
+              "agent_name": "CyberSec Autonomous Containment Agent",
+              "placement": "INTERNAL",
+              "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+              "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+              "conformity_id": "CA-CYBER-2026",
+              "recorded_at": "2026-05-24T18:47:32.832168Z",
+              "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+              "requires_separate_conformity": false
+            }
+          ]
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ]
+      }
+    },
+    {
+      "step": 2,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ]
+      },
+      "state_diff": {
+        "added": {
+          "supplier_agreements_verified": true,
+          "jit_token_present": true,
+          "credential_audit_trail": [
+            {
+              "type": "NHI_CREDENTIAL_ACCESS",
+              "tool_name": "llm_gateway",
+              "scope": "read:cases",
+              "credential_key": "ENTERPRISE_API_KEY",
+              "outcome": "GRANTED",
+              "trust_level": "HIGH",
+              "timestamp": "2026-05-24T19:47:32.832258",
+              "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+            }
+          ]
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ]
+      }
+    },
+    {
+      "step": 3,
+      "node": "LLMNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ]
+      },
+      "state_diff": {
+        "added": {
+          "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```"
+        },
+        "removed": {
+          "__last_run_metadata": null
+        },
+        "updated": {}
+      },
+      "run_metadata": {
+        "prompt_tokens": 110,
+        "output_tokens": 67,
+        "total_tokens": 177,
+        "model": "ollama/phi4:latest"
+      },
+      "outcome": "success",
+      "prompt": "You are an elite SOC Threat Analyst. Analyze the following SIEM alert.\nAlert Payload: Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.\n\nReply with ONLY a single JSON object: risk_level (LOW/MEDIUM/HIGH/CRITICAL), recommendation (max 2 sentences), confidence (float 0.0-1.0). No prose.",
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 1,
+          "LLMNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```"
+      }
+    },
+    {
+      "step": 4,
+      "node": "FundamentalRightsImpactNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 1,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```"
+      },
+      "state_diff": {
+        "added": {
+          "fria_findings": [],
+          "fria_passed": true
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 1,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true
+      }
+    },
+    {
+      "step": 5,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true
+      },
+      "state_diff": {
+        "added": {
+          "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+          "model_confidence": 0.95,
+          "risk_level": "CRITICAL",
+          "envelope_report": {
+            "metric_key": "model_confidence",
+            "observed_at": "2026-05-24T18:47:50.277467Z",
+            "value": 0.95,
+            "baseline_mean": 0.885,
+            "baseline_stdev": 0.024494897427831803,
+            "relative_deviation": 0.0734,
+            "threshold": 0.2,
+            "deviation_exceeded": false,
+            "severity": "LOW",
+            "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+            "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+          }
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        }
+      }
+    },
+    {
+      "step": 6,
+      "node": "SessionMemoryNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        }
+      },
+      "state_diff": {
+        "added": {},
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        }
+      }
+    },
+    {
+      "step": 7,
+      "node": "BiasFilterNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        }
+      },
+      "state_diff": {
+        "added": {
+          "bias_detected": false
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false
+      }
+    },
+    {
+      "step": 8,
+      "node": "RiskScorerNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false
+      },
+      "state_diff": {
+        "added": {
+          "computed_oversight_level": "PRE_EXECUTION"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION"
+      }
+    },
+    {
+      "step": 9,
+      "node": "HumanJuryNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION"
+      },
+      "state_diff": {
+        "added": {
+          "jury_decision": "approve"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      }
+    },
+    {
+      "step": 10,
+      "node": "DynamicToolDiscoveryMonitor",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve"
+      },
+      "state_diff": {
+        "added": {
+          "tool_discovery_report": {
+            "checked_at": "2026-05-24T18:47:50.279850Z",
+            "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+            "baseline_count": 5,
+            "current_count": 5,
+            "new_tools": [],
+            "removed_tools": [],
+            "substantial_modification_flag": false
+          }
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 2,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T18:47:50.279850Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 5,
+          "current_count": 5,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        }
+      }
+    },
+    {
+      "type": "PLAN_SWITCH",
+      "step": null,
+      "node": "compliance_checks",
+      "from_branch": "autonomous_execution",
+      "to_branch": "jury_approved_execution",
+      "reason": "RiskScorerNode escalated to HumanJuryNode (oversight_level=PRE_EXECUTION, risk_tier=CRITICAL). Jury decision: approve.",
+      "timestamp": "2026-05-24T19:47:50.280109",
+      "eu_reference": "Art. 12 EU AI Act \u2014 Causal Audit Trail (plan-switch event)"
+    },
+    {
+      "step": 11,
+      "node": "FunctionalNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "policy_bindings",
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T18:47:50.279850Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 5,
+          "current_count": 5,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        }
+      },
+      "state_diff": {
+        "added": {
+          "_trifecta_check": {
+            "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+            "timestamp": "2026-05-24T18:47:50.280148Z",
+            "action": "external_write",
+            "leg1_untrusted_input": true,
+            "leg2_sensitive_data": true,
+            "leg3_autonomous_action": true,
+            "all_three_active": true,
+            "human_prior_approval": true,
+            "violation": false,
+            "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+          }
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {
+          "drift_report": {
+            "drift_detected": true,
+            "changed_keys": [
+              "state_schema_keys"
+            ],
+            "severity": "MEDIUM"
+          }
+        }
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T18:47:50.279850Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 5,
+          "current_count": 5,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T18:47:50.280148Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      }
+    },
+    {
+      "step": 12,
+      "node": "ProhibitedPracticeGuard",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "ProhibitedPracticeGuard": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T18:47:50.279850Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 5,
+          "current_count": 5,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T18:47:50.280148Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      },
+      "state_diff": {
+        "added": {},
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "ProhibitedPracticeGuard": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T18:47:50.279850Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 5,
+          "current_count": 5,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T18:47:50.280148Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      }
+    },
+    {
+      "step": 13,
+      "node": "SyntheticMarkerNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "ProhibitedPracticeGuard": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T18:47:50.279850Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 5,
+          "current_count": 5,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T18:47:50.280148Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        }
+      },
+      "state_diff": {
+        "added": {
+          "final_output": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-24T18:47:50.280693.]"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 1,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "ProhibitedPracticeGuard": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T18:47:50.279850Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 5,
+          "current_count": 5,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T18:47:50.280148Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-24T18:47:50.280693.]"
+      }
+    },
+    {
+      "step": 14,
+      "node": "SessionMemoryNode",
+      "state_before": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 2,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "ProhibitedPracticeGuard": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "__last_run_metadata": null,
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "__last_prompt": null,
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T18:47:50.279850Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 5,
+          "current_count": 5,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T18:47:50.280148Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-24T18:47:50.280693.]"
+      },
+      "state_diff": {
+        "added": {
+          "memory_erased": true,
+          "memory_erased_subject": "anonymous"
+        },
+        "removed": {
+          "__last_run_metadata": null,
+          "__last_prompt": null
+        },
+        "updated": {}
+      },
+      "run_metadata": null,
+      "outcome": "success",
+      "prompt": null,
+      "state_after": {
+        "case_summary": "Multiple rapid failed authentications followed by successful login from unrecognized geography. Process 'powershell.exe' spawned with encoded command string. Outbound C2 traffic detected on port 443.",
+        "employee_id": "[REDACTED]",
+        "ip_address": "[REDACTED]",
+        "user_email": "[REDACTED]",
+        "action_type": "case_analysis",
+        "tool_catalogue": [
+          "llm_analysis",
+          "trifecta_check",
+          "bias_filter",
+          "synthetic_marker",
+          "external_write"
+        ],
+        "applicant_id": "anonymous",
+        "__node_counts": {
+          "DeployerTransparencyNode": 1,
+          "MultiAgentBoundaryNode": 1,
+          "FunctionalNode": 3,
+          "LLMNode": 1,
+          "FundamentalRightsImpactNode": 1,
+          "SessionMemoryNode": 2,
+          "BiasFilterNode": 1,
+          "RiskScorerNode": 1,
+          "HumanJuryNode": 1,
+          "DynamicToolDiscoveryMonitor": 1,
+          "ProhibitedPracticeGuard": 1,
+          "SyntheticMarkerNode": 1
+        },
+        "deployer_instructions": {
+          "schema": "lar-art13-instructions-for-use-v1",
+          "generated_at": "2026-05-24T18:47:32.832047Z",
+          "eu_reference": "Art. 13 EU AI Act \u2014 Transparency and Provision of Information to Deployers; Annex IV (Technical Documentation)",
+          "system_name": "CyberSec Autonomous Containment Agent",
+          "conformity_id": "CA-CYBER-2026",
+          "intended_purpose": "High-risk AI decision support for CYBERSECURITY domain \u2014 Annex III classification per EU AI Act.",
+          "known_limitations": [
+            "Confidence scores are probabilistic \u2014 not deterministic guarantees.",
+            "English-language case summaries only in v2.2.0.",
+            "Domain-specific bias terms are configurable but not exhaustive."
+          ],
+          "human_oversight_requirements": [
+            "All PRE_EXECUTION risk actions require CISO / SOC Director approval.",
+            "CRITICAL and HIGH risk decisions must be recorded in AuthorityLedger.",
+            "Stakeholder must review AI recommendation and rationale before approving."
+          ],
+          "prohibited_uses": [
+            "Fully autonomous decision-making without human approval gate.",
+            "Processing outside the declared domain without re-conformity assessment.",
+            "Use as sole decision basis without contextual human judgment."
+          ],
+          "data_governance_notes": "PII fields ['employee_id', 'ip_address', 'workstation_name', 'user_email'] are stripped before HMAC signing (GDPR Art. 17). Per-subject session memory is erasable on request."
+        },
+        "drift_flag": true,
+        "drift_report": {
+          "drift_detected": true,
+          "changed_keys": [
+            "state_schema_keys"
+          ],
+          "severity": "MEDIUM"
+        },
+        "multi_agent_boundaries": [
+          {
+            "agent_name": "CyberSec Autonomous Containment Agent",
+            "placement": "INTERNAL",
+            "provider_entity": "L\u00e1r Enterprise Backbone v2.2.0",
+            "purpose": "Internal CYBERSECURITY compliance agent \u2014 covered by parent CE conformity assessment CA-CYBER-2026.",
+            "conformity_id": "CA-CYBER-2026",
+            "recorded_at": "2026-05-24T18:47:32.832168Z",
+            "eu_reference": "Art. 3(1) EU AI Act \u2014 Definition of AI System; Recital 12 \u2014 Multi-actor AI System Chains; Art. 25 \u2014 Responsibilities Along the AI Value Chain",
+            "requires_separate_conformity": false
+          }
+        ],
+        "supplier_agreements_verified": true,
+        "jit_token_present": true,
+        "credential_audit_trail": [
+          {
+            "type": "NHI_CREDENTIAL_ACCESS",
+            "tool_name": "llm_gateway",
+            "scope": "read:cases",
+            "credential_key": "ENTERPRISE_API_KEY",
+            "outcome": "GRANTED",
+            "trust_level": "HIGH",
+            "timestamp": "2026-05-24T19:47:32.832258",
+            "eu_reference": "Art. 15(4) EU AI Act \u2014 Cybersecurity; NHI Governance / Least Privilege"
+          }
+        ],
+        "ai_output": "```json\n{\n    \"risk_level\": \"CRITICAL\",\n    \"recommendation\": \"Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\",\n    \"confidence\": 0.95\n}\n```",
+        "fria_findings": [],
+        "fria_passed": true,
+        "risk_level": "CRITICAL",
+        "recommendation": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.",
+        "model_confidence": 0.95,
+        "envelope_report": {
+          "metric_key": "model_confidence",
+          "observed_at": "2026-05-24T18:47:50.277467Z",
+          "value": 0.95,
+          "baseline_mean": 0.885,
+          "baseline_stdev": 0.024494897427831803,
+          "relative_deviation": 0.0734,
+          "threshold": 0.2,
+          "deviation_exceeded": false,
+          "severity": "LOW",
+          "eu_reference": "Art. 9 EU AI Act \u2014 Risk Management (performance monitoring); prEN 18229-1 \u2014 Trustworthiness; Art. 3(23) \u2014 Substantial Modification",
+          "message": "  [BehavioralEnvelopeMonitor] 'model_confidence'=0.9500 within envelope (7.3% deviation)."
+        },
+        "bias_detected": false,
+        "computed_oversight_level": "PRE_EXECUTION",
+        "jury_decision": "approve",
+        "tool_discovery_report": {
+          "checked_at": "2026-05-24T18:47:50.279850Z",
+          "eu_reference": "Art. 3(23) EU AI Act \u2014 Substantial Modification; Art. 9 \u2014 Post-Market Monitoring Plan",
+          "baseline_count": 5,
+          "current_count": 5,
+          "new_tools": [],
+          "removed_tools": [],
+          "substantial_modification_flag": false
+        },
+        "_trifecta_check": {
+          "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",
+          "timestamp": "2026-05-24T18:47:50.280148Z",
+          "action": "external_write",
+          "leg1_untrusted_input": true,
+          "leg2_sensitive_data": true,
+          "leg3_autonomous_action": true,
+          "all_three_active": true,
+          "human_prior_approval": true,
+          "violation": false,
+          "eu_reference": "AEPD Guidance Feb 2026, GDPR Art. 5 / EU AI Act Art. 14"
+        },
+        "final_output": "Immediately isolate the affected system from the network to prevent further compromise and potential data exfiltration. Initiate a detailed forensic analysis to identify any additional compromised systems or indicators of compromise.\n\n[Disclaimer: This content was generated by an AI system on 2026-05-24T18:47:50.280693.]",
+        "memory_erased": true,
+        "memory_erased_subject": "anonymous"
+      }
+    }
+  ],
+  "summary": {
+    "total_steps": 15,
+    "total_prompt_tokens": 110,
+    "total_completion_tokens": 67,
+    "total_tokens": 177,
+    "tokens_by_model": {
+      "ollama/phi4:latest": 177
+    }
+  },
+  "signature": "e4a867b4f5257d830959a3a662a7725f85abed84fa2618e6db7592b9f0fc4cef"
+}

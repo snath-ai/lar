@@ -450,8 +450,9 @@ Compliance pattern library:
 | **20** | **[`19_runtime_bias_detection.py`](examples/compliance/19_runtime_bias_detection.py)** | Bias Detection (prEN 18283) |
 | **21** | **[`20_compliance_manifest.py`](examples/compliance/20_compliance_manifest.py)** | Compliance Manifest (Step 9) |
 | **22** | **[`21_authority_and_trifecta.py`](examples/compliance/21_authority_and_trifecta.py)** | Rule of 2 Trifecta Guard |
-| **23** | **[`22_eu_ai_act_finance_showcase.py`](examples/compliance/22_eu_ai_act_finance_showcase.py)** | **Full EU AI Act Pipeline Proof** |
-| **24** | **[`23_fractal_compliance_showcase.py`](examples/compliance/23_fractal_compliance_showcase.py)** | **Fractal Agent — BatchNode + AdaptiveNode + Art. 14 Early-Exit HITL** |
+| **22** | **[`22_eu_ai_act_finance_showcase.py`](examples/compliance/22_eu_ai_act_finance_showcase.py)** | Financial Credit Risk Assessment |
+| **23** | **[`23_fractal_compliance_showcase.py`](examples/compliance/23_fractal_compliance_showcase.py)** | Parallel Risk Triaging & Fractal Branches |
+| **24** | **[`24_ultimate_enterprise_agent.py`](examples/compliance/24_ultimate_enterprise_agent.py)** | 23-Primitive Enterprise Backbone (CyberSec) |
 
 #### 5. High Scale & Advanced (`examples/scale/`, `examples/advanced/`)
 | # | Pattern | Concept |
