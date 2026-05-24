@@ -465,6 +465,7 @@ Compliance pattern library:
 | **7** | **[`13_world_model_jepa.py`](examples/advanced/13_world_model_jepa.py)** | Predictive World Models |
 | **8** | **[`fractal_finance_agent.py`](examples/advanced/fractal_finance_agent.py)** | Parallel Multi-Dimensional Finance Compliance |
 | **9** | **[`extreme_stress_test.py`](examples/advanced/extreme_stress_test.py)** | Extreme 191-Node Parallel Swarm Stress Test |
+| **10** | **[`omni_pipeline_stress_test.py`](examples/advanced/omni_pipeline_stress_test.py)** | 9-Primitive Omni-Architecture Test (Dynamic Graphs + Triage) |
 
 #### 6. Adaptive Execution (`examples/adaptive/`)
 See the **[Adaptive Graphs Docs →](https://docs.snath.ai/core-concepts/9-adaptive-graphs)**
