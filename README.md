@@ -34,11 +34,11 @@ Lár is the execution spine of a three-part system. Each repo is independent and
 
 | Repository | Role |
 | :--- | :--- |
-| **[Lár](https://github.com/snath-ai/lar)** ← you are here | The execution spine — deterministic graph engine, 13 EU AI Act compliance primitives, HMAC audit trail |
-| **[Lár DMN](https://github.com/snath-ai/DMN)** | The memory layer — solves catastrophic forgetting via sleep/dream consolidation into tiered ChromaDB vector store |
-| **[Lár-JEPA](https://github.com/snath-ai/Lar-JEPA)** | The world model — routes LLMs, JEPAs, diffusion models, and any future architecture as first-class nodes in the same deterministic graph |
+| **[Lár](https://github.com/snath-ai/lar)** ← you are here | The execution spine — deterministic graph engine, 20 EU AI Act compliance primitives, HMAC audit trail |
+| **[Lár-JEPA](https://github.com/snath-ai/Lar-JEPA)** | The world model — 10 ABCs spanning the full inference-time contract (divergence routing, modal encoding, fault localisation, adapter routing) |
+| **[Lár DMN](https://github.com/snath-ai/DMN)** | The memory blueprint — `AbstractDMN` + `AbstractAdapterRouter`; domain implementations own storage and LoRA fitting; zero runtime dependencies |
 
-The three repos share a single engine version (`lar-engine 2.2.0`). A JEPA node predicts a trajectory, routes through an `EntropicRouter`, writes the committed heuristic to DMN's Hippocampus, and recalls it on the next planning cycle — all through the same `GraphExecutor` causal trace.
+The industry is building the Brain (LLMs, JEPAs). We are building the Nervous System.
 
 ---
 
@@ -494,8 +494,8 @@ See the **[Adaptive Graphs Docs →](https://docs.snath.ai/core-concepts/9-adapt
 
 ## Showcase Projects
 
-- **[snath-ai/DMN](https://github.com/snath-ai/DMN)** — A complete cognitive architecture built on Lár: bicameral mind (Fast/Slow), sleep cycles, episodic memory, catastrophic forgetting solved architecturally.
-- **[snath-ai/Lar-JEPA](https://github.com/snath-ai/Lar-JEPA)** — Universal model routing: LLMs, JEPA world models, diffusion models as first-class routable nodes in the same graph.
+- **[snath-ai/DMN](https://github.com/snath-ai/DMN)** — The memory blueprint: `AbstractDMN` + `AbstractAdapterRouter`. Domain implementations (Robotics, Aviation, Basis, Research) extend these to build continual learning memory with HMAC-signed centroid adapters and LoRA correction.
+- **[snath-ai/Lar-JEPA](https://github.com/snath-ai/Lar-JEPA)** — The world model layer: 10 ABCs covering the full inference-time contract from divergence detection to adapter routing, proved domain-agnostic across 7 verticals.
 - **[snath-ai/rag-demo](https://github.com/snath-ai/rag-demo)** — Self-correcting RAG agent with a local vector database.
 
 ---
