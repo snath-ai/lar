@@ -1,6 +1,6 @@
 # Defensive Constraints (v1.6.0)
 
-As agents become more autonomous (like the `DynamicNode` introduced in v1.5), they run the risk of two major problems:
+As agents become more autonomous (like the `DynamicNode` introduced in v1.5 — now `AdaptiveNode`), they run the risk of two major problems:
 1. **Context Bloat:** Parallel workers returning huge documents that overwhelm the downstream context window (The "Black Hole").
 2. **Infinite Loops:** An agent getting stuck in a self-correction loop and burning through API credits.
 

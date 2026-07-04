@@ -97,7 +97,7 @@ Lár's `PIIRedactionEngine` acts as a middleware layer *inside* the `AuditLogger
 *   Before the state payload is serialized and signed via HMAC-SHA256, the redactor recursively cleans specified sensitive keys (e.g., `email`, `ssn`, `health_data`). 
 *   The log is then cryptographically signed *after* redaction. This ensures complete audit integrity while maintaining 100% GDPR compliance.
 
-## 7. Systemic Risks in Complex Topologies (`BatchNode` & `DynamicNode`)
+## 7. Systemic Risks in Complex Topologies (`BatchNode` & `AdaptiveNode`)
 
 **The Problem:**
 The paper identifies two specific failure modes in complex agentic topologies that no current framework handles:
@@ -204,7 +204,7 @@ adaptive_step = AdaptiveNode(
 ```
 The proposed topology is permanently embedded in the causal trace before it executes. Regulators can verify the agent never operated outside its declared legal envelope.
 
-> **`ComplianceManifestGenerator` note:** Static pre-execution traversal flags every `DynamicNode` with a `HIGH` severity warning — reminding providers that this node requires explicit CE-marking documentation before deployment in a high-risk system.
+> **`ComplianceManifestGenerator` note:** Static pre-execution traversal flags every `AdaptiveNode` with a `HIGH` severity warning — reminding providers that this node requires explicit CE-marking documentation before deployment in a high-risk system.
 
 
 ---
@@ -241,8 +241,8 @@ The generator statically traverses the entire graph and produces a structured re
 *   **Every `LLMNode`**: model name, prompt template preview, fallback configuration.
 *   **Every `RouterNode`**: branching logic and routes, flagging if none lead to a `HumanJuryNode`.
 *   **Every `BatchNode`**: number of parallel branches and their types.
-*   **Every `DynamicNode`**: flagged as a potential Art. 3(23) substantial modification risk.
-*   **Automated Risk Flags**: HIGH/MEDIUM severity flags for missing `CredentialVault`s, unguarded `DynamicNode`s, and unacknowledged Art. 50 third-party obligations.
+*   **Every `AdaptiveNode`**: flagged as a potential Art. 3(23) substantial modification risk.
+*   **Automated Risk Flags**: HIGH/MEDIUM severity flags for missing `CredentialVault`s, unguarded `AdaptiveNode`s, and unacknowledged Art. 50 third-party obligations.
 
 **See the full example:** `examples/compliance/20_compliance_manifest.py`
 

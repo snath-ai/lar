@@ -20,7 +20,7 @@
 - **EU AI Act High-Risk Category:** [e.g., Annex III, Section 5(b) - Evaluating creditworthiness]
 
 ### 1.3 Architecture and Logic (Lár Framework)
-This system is orchestrated using the **Lár Framework v2.1.0**. It operates as a deterministic Directed Acyclic Graph (DAG) rather than an unconstrained autonomous loop.
+This system is orchestrated using the **Lár Framework v2.2.0**. It operates as a deterministic Directed Acyclic Graph (DAG) rather than an unconstrained autonomous loop.
 
 - **System Topology:** [Provide a high-level flowchart or Mermaid diagram of your Lár graph]
 - **Pre-trained Models Used:** [e.g., OpenAI `gpt-4o`, Anthropic `claude-3-opus`, Meta `Llama-3`]

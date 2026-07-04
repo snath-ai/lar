@@ -238,7 +238,7 @@ for step in executor.run_step_by_step(post_jury_node, state):
 > At 10,000 runs/day: **$9.48/day saved.** More importantly, no PII from early steps is re-transmitted on retry — a GDPR data minimisation benefit too.
 
 
-### 4. Systemic Risks in Complex Topologies (`BatchNode` & `DynamicNode`)
+### 4. Systemic Risks in Complex Topologies (`BatchNode` & `AdaptiveNode`)
 
 #### `BatchNode` — Compliant Parallel Execution
 
