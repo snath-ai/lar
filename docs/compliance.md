@@ -36,7 +36,7 @@ Lár handles the **mechanical infrastructure** of compliance. It provides the ar
 In short: Lár provides the "flight recorder" and "emergency brakes." The organization must bring the safe model, the responsible human operators, and the governance policies.
 *   **Lár (The Framework):** Lár acts as a component supplier. We provide the architectural primitives (nodes, executor, loggers) that generate the forensic *evidence* you need to pass a conformity assessment. 
 
-Lár implements a complete **"Fourth Tier"** compliance architecture natively, providing 13 production-ready primitives that seamlessly integrate into the execution graph:
+Lár implements a complete **"Fourth Tier"** compliance architecture natively, providing 20 production-ready primitives that seamlessly integrate into the execution graph:
 
 | Primitive | EU AI Act / Regulatory Match | Description |
 | :--- | :--- | :--- |
@@ -53,6 +53,13 @@ Lár implements a complete **"Fourth Tier"** compliance architecture natively, p
 | **`ComplianceManifestGenerator`** | Step 9, All | Statically walks the graph and auto-generates the exhaustive regulatory action inventory for auditors. |
 | **`LethalTrifectaGuard`** | GDPR Art. 5, Art. 14 | Runtime pre-execution guard enforcing the AEPD "Rule of 2" — blocks any action that combines untrusted input + sensitive data + autonomous effect without prior human approval. |
 | **`AuthorityLedger`** | Art. 12, 14 | The "Fourth Tier" — captures who exercised authority, their role, rationale, and risk score into a tamper-evident, HMAC-signed oversight record on every `HumanJuryNode` decision. |
+| **`FundamentalRightsImpactNode`** | Art. 9 FRIA; EU Charter Arts. 1, 7/8, 11, 21, 47 | Runtime FRIA gate: scans text outputs across six EU Charter dimensions (dignity, privacy, non-discrimination, expression, justice, data protection) before proceeding. |
+| **`ProhibitedPracticeGuard`** | Art. 5 | Detects prohibited AI practices at runtime: social scoring, subliminal manipulation, and exploitation of vulnerable groups. Raises `ProhibitedPracticeError` on a match. |
+| **`IncidentReporter` + `IncidentReporterNode`** | Art. 72–74; ISO 9001 Cl. 9 | Real-time incident detection and structured JSONL logging with EU-mandated reporting deadlines (CRITICAL/HIGH: 24 h). `IncidentReporter` generates Post-Market Monitoring Markdown reports from audit logs. |
+| **`MultiAgentBoundaryNode`** | Art. 3(1), Recital 12, Art. 25 | Records Art. 25 boundary classification (INTERNAL / EXTERNAL_MARKET) for every sub-agent call; warns when an external agent lacks a conformity ID. |
+| **`SupplierAgreementRegistry`** | Art. 25(4) | Maintains signed written agreements with tool suppliers. `assert_agreement()` blocks execution if an agreement is missing or expired. Exports a Markdown table for the compliance manifest. |
+| **`DynamicToolDiscoveryMonitor`** | Art. 3(23), Art. 9 | Compares the live tool catalogue against the conformity-assessed baseline. Sets `substantial_modification_flag` and optionally raises `UndisclosedToolError` when new tools appear. |
+| **`DeployerTransparencyNode`** | Art. 13, Annex IV | Generates a machine-readable Art. 13 instructions-for-use disclosure (intended purpose, known limitations, human oversight requirements, prohibited uses) per session. |
 
 ---
 
@@ -383,6 +390,172 @@ jury_node = HumanJuryNode(
 
 ---
 
+## 6. Article 5: Prohibited AI Practices
+**Requirement**: Art. 5 bans AI systems that use subliminal techniques, exploit vulnerabilities, or perform social scoring.
+
+**Lár Solution**: `ProhibitedPracticeGuard`
+
+A final-stage belt-and-suspenders guard that scans any state key against three regex heuristic categories before output:
+
+- **SOCIAL_SCORING** — phrases such as "social credit", "trustworthiness score"
+- **MANIPULATION** — phrases such as "must act now or", "secretly track", "subliminal", "coerce"
+- **VULNERABILITY_EXPLOIT** — phrases such as "target elderly", "target minors", "leverage desperation"
+
+On a match, flagged categories are written to `state["_prohibited_practice_flag"]`. With `block_on_violation=True` (default), `ProhibitedPracticeError` is raised and caught by `IncidentReporterNode` as a CRITICAL event.
+
+```python
+from lar.compliance import ProhibitedPracticeGuard
+
+guard = ProhibitedPracticeGuard(input_key="final_output", next_node=output_node)
+```
+
+---
+
+## 7. Art. 9 FRIA: Fundamental Rights Impact Assessment
+**Requirement**: Art. 9 requires providers to assess the impact of high-risk AI systems on fundamental rights as part of the risk management system.
+
+**Lár Solution**: `FundamentalRightsImpactNode`
+
+A runtime FRIA gate that scans text outputs across **six EU Charter dimensions** using configurable regex heuristics:
+
+| Dimension | EU Charter Article |
+|:---|:---|
+| DIGNITY | Art. 1 |
+| PRIVACY | Arts. 7–8 |
+| NON_DISCRIMINATION | Art. 21 |
+| EXPRESSION | Art. 11 |
+| JUSTICE | Art. 47 |
+| DATA_PROTECTION | Art. 8 |
+
+Findings are written to `state["fria_findings"]` and `state["fria_passed"]`. With `block_on_violation=True` (default), `FRIAViolation` is raised — classified CRITICAL by `IncidentReporterNode`. Custom patterns can extend the six built-in dimensions for domain-specific obligations.
+
+```python
+from lar.compliance import FundamentalRightsImpactNode
+
+fria = FundamentalRightsImpactNode(
+    input_key="recommendation",
+    next_node=output_node,
+    block_on_violation=True,
+)
+# Wire after every LLMNode or ToolNode that produces text touching a person.
+```
+
+---
+
+## 8. Art. 72–74: Serious Incident Reporting
+**Requirement**: Art. 73–74 require providers to report serious incidents to national authorities within defined deadlines (typically 24 hours for life/safety risks).
+
+**Lár Solution**: `IncidentReporterNode` + `IncidentReporter`
+
+**`IncidentReporterNode`** operates in two modes:
+
+1. **Graph node** — scans the live `GraphState` for harm signal keys (`_prohibited_practice_flag`, `_trifecta_check`, `fria_findings`, `bias_detected`, `last_error`) and writes structured incident records.
+2. **Executor hook** — `report_runtime_error()` is called by `GraphExecutor` on unhandled exceptions; classifies and records automatically.
+
+Every record written to `.jsonl` includes the EU article reference, severity, and a `reporting_deadline_hours` field:
+
+| Severity | Trigger | Deadline |
+|:---|:---|:---|
+| CRITICAL | `ProhibitedPracticeError`, `LethalTrifectaError`, `FRIAViolation` | 24 h |
+| HIGH | `SecurityError`, `AgreementNotFoundError`, `UndisclosedToolError` | 24 h |
+| MEDIUM | State contains trifecta/prohibited flags | 72 h |
+
+**`IncidentReporter`** aggregates run logs and the `AuthorityLedger` post-execution to generate a Post-Market Monitoring (PMM) Markdown report (Art. 72 / ISO 9001 Cl. 9), including rejection rate alerts and drift severity summaries.
+
+---
+
+## 9. Art. 25: Multi-Agent Value Chain Responsibilities
+**Requirement**: Art. 25 assigns distinct compliance obligations depending on whether a sub-agent is an internal component or an independently placed AI system on the market.
+
+**Lár Solution**: `MultiAgentBoundaryNode` + `SupplierAgreementRegistry`
+
+**`MultiAgentBoundaryNode`** records a boundary classification for every sub-agent call:
+
+```python
+from lar.compliance import MultiAgentBoundaryNode
+
+# Internal branch — covered by parent CE marking
+boundary_internal = MultiAgentBoundaryNode(
+    agent_name="CreditScorerAgent",
+    placement="INTERNAL",
+    provider_entity="Acme Bank AI Team",
+    purpose="Runs credit scoring sub-graph as an internal branch.",
+    next_node=batch_entry_node,
+)
+
+# External call — separate conformity obligations
+boundary_external = MultiAgentBoundaryNode(
+    agent_name="SupplierKYCAgent",
+    placement="EXTERNAL_MARKET",
+    provider_entity="KYC-as-a-Service GmbH",
+    purpose="Verifies supplier identity via external API.",
+    conformity_id="CE-KYC-2026-007",
+    next_node=kyc_tool_node,
+)
+```
+
+**`SupplierAgreementRegistry`** enforces Art. 25(4) written agreements with tool suppliers. `assert_agreement()` blocks any `ToolNode` call if the agreement is missing or expired:
+
+```python
+from lar.compliance import SupplierAgreementRegistry
+
+registry = SupplierAgreementRegistry(registry_path="agreements.json")
+registry.register(
+    tool_name="send_email",
+    supplier_name="Acme Email SaaS Ltd",
+    agreement_id="AGR-2026-001",
+    signed_date="2026-01-15",
+    expiry_date="2027-01-15",
+)
+registry.assert_agreement("send_email")  # raises AgreementNotFoundError if missing/expired
+```
+
+---
+
+## 10. Art. 3(23) Extended: Dynamic Tool Discovery
+**Requirement**: Art. 3(23) defines a "substantial modification" as any change that affects the system's intended purpose or risk profile — which includes adding undisclosed tools post-conformity assessment.
+
+**Lár Solution**: `DynamicToolDiscoveryMonitor`
+
+Compares the live tool catalogue against the conformity-assessed baseline. Sets `substantial_modification_flag = True` and writes a structured report to state when new tools appear. With `block_on_undisclosed=True`, raises `UndisclosedToolError` (classified HIGH by `IncidentReporterNode`).
+
+```python
+from lar.compliance import DynamicToolDiscoveryMonitor
+
+monitor = DynamicToolDiscoveryMonitor(
+    baseline_tools=["send_email", "query_crm", "generate_pdf"],
+    block_on_undisclosed=True,
+    next_node=proceed_node,
+)
+# state["tool_catalogue"] is set by the executor to the current tool list;
+# the monitor checks it on every pass.
+```
+
+---
+
+## 11. Art. 13: Deployer Instructions for Use
+**Requirement**: Art. 13 requires that high-risk AI systems be sufficiently transparent to enable deployers to interpret outputs and fulfil their Art. 26 obligations.
+
+**Lár Solution**: `DeployerTransparencyNode`
+
+Generates a machine-readable Art. 13 disclosure document per session — distinct from the Art. 50 end-user disclosure handled by `TransparencyEngine`. The node writes a structured dict (schema: `lar-art13-instructions-for-use-v1`) to state, and `as_markdown()` renders it as a human-readable document for deployer handover.
+
+```python
+from lar.compliance import DeployerTransparencyNode
+
+art13 = DeployerTransparencyNode(
+    system_name="Credit Decision Agent v2.2",
+    intended_purpose="Creditworthiness assessment for retail banking (Annex III §5b)",
+    known_limitations=["English-language inputs only", "Max income €500k"],
+    human_oversight_requirements=["All CRITICAL risk decisions require CFO approval"],
+    prohibited_uses=["Consumer profiling", "Insurance scoring"],
+    conformity_id="CE-FINANCE-2026-001",
+    next_node=audit_node,
+)
+```
+
+---
+
 ## Summary for Auditors
 
 | Feature | Lár Implementation | Compliance Value |
@@ -393,3 +566,10 @@ jury_node = HumanJuryNode(
 | **Privacy** | Local/Air-Gapped Capable | Meets GDPR / Data Sovereignty. |
 | **Trifecta Guard** | Runtime AEPD enforcement | Meets GDPR Art. 5, Art. 14 (AEPD Rule of 2). |
 | **Authority Records** | `AuthorityLedger` | Closes the "Fourth Tier" gap — Art. 12/14 action-level evidence chain. |
+| **Prohibited Practices** | `ProhibitedPracticeGuard` | Meets Art. 5 — blocks social scoring, manipulation, vulnerability exploitation at runtime. |
+| **Fundamental Rights** | `FundamentalRightsImpactNode` | Meets Art. 9 FRIA — six EU Charter dimensions scanned per output. |
+| **Incident Reporting** | `IncidentReporterNode` + `IncidentReporter` | Meets Art. 72–74 — structured JSONL with 24 h deadline flags; PMM Markdown reports. |
+| **Multi-Agent Boundaries** | `MultiAgentBoundaryNode` | Meets Art. 25 — INTERNAL/EXTERNAL_MARKET classification per sub-agent call. |
+| **Supplier Agreements** | `SupplierAgreementRegistry` | Meets Art. 25(4) — written agreement enforcement; blocks on missing/expired. |
+| **Tool Discovery** | `DynamicToolDiscoveryMonitor` | Meets Art. 3(23) — flags substantial modification when undisclosed tools appear. |
+| **Deployer Disclosure** | `DeployerTransparencyNode` | Meets Art. 13 — machine-readable instructions-for-use per session. |
