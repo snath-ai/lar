@@ -49,6 +49,7 @@ Lár implements a complete **"Fourth Tier"** compliance architecture natively, p
 | **`AuditLogger` (Causal Trace)** | Art. 12 | Immutable State-Diff logs capturing explicit model reasoning traces. |
 | **`SyntheticMarkerNode`** | Art. 50(2) | Injects visible disclaimers or C2PA metadata into generated content. |
 | **`BiasFilterNode`** | prEN 18283 | Evaluates state variables for bias heuristics before final output. |
+| **`PromptInjectionGuard`** | Art. 15(5) | Detects and blocks inputs designed to cause adversarial model failure. |
 | **`BranchTriageNode`** | Art. 14 (fractal) | Post-`BatchNode` primitive for parallel agents. Preserves per-dimension branch evidence before `ReduceNode` compression, ensuring the human jury sees individual branch findings — not only the consolidated score. Sets `branch_critical` for early-exit HITL routing. |
 | **`ComplianceManifestGenerator`** | Step 9, All | Statically walks the graph and auto-generates the exhaustive regulatory action inventory for auditors. |
 | **`LethalTrifectaGuard`** | GDPR Art. 5, Art. 14 | Runtime pre-execution guard enforcing the AEPD "Rule of 2" — blocks any action that combines untrusted input + sensitive data + autonomous effect without prior human approval. |

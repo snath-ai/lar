@@ -19,6 +19,7 @@ from .session_memory_node import SessionMemoryNode
 from .supplier_agreement_registry import SupplierAgreementRegistry, AgreementNotFoundError
 from .deployer_transparency_node import DeployerTransparencyNode
 from .dynamic_tool_discovery_monitor import DynamicToolDiscoveryMonitor, UndisclosedToolError
+from .prompt_injection_guard import PromptInjectionGuard, PromptInjectionError
 from .multi_agent_boundary_node import MultiAgentBoundaryNode
 
 __all__ = [
@@ -45,6 +46,6 @@ __all__ = [
     "SupplierAgreementRegistry", "AgreementNotFoundError",
     "DeployerTransparencyNode",
     "DynamicToolDiscoveryMonitor", "UndisclosedToolError",
+    "PromptInjectionGuard", "PromptInjectionError",
     "MultiAgentBoundaryNode",
 ]
-
