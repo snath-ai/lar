@@ -574,3 +574,27 @@ art13 = DeployerTransparencyNode(
 | **Supplier Agreements** | `SupplierAgreementRegistry` | Meets Art. 25(4) — written agreement enforcement; blocks on missing/expired. |
 | **Tool Discovery** | `DynamicToolDiscoveryMonitor` | Meets Art. 3(23) — flags substantial modification when undisclosed tools appear. |
 | **Deployer Disclosure** | `DeployerTransparencyNode` | Meets Art. 13 — machine-readable instructions-for-use per session. |
+
+---
+
+## Complete EU AI Act Mapping (Regulation 2024/1689)
+
+Lár's primitives natively satisfy the technical infrastructure obligations required by the EU AI Act for High-Risk AI Systems. 
+
+### Chapter II: Prohibited Practices
+- **Article 5 (Prohibited AI Practices)**: Lár intercepts and blocks generation of prohibited content (social scoring, subliminal manipulation, vulnerability exploitation) using the `ProhibitedPracticeGuard`.
+
+### Chapter III: Requirements for High-Risk AI Systems
+- **Article 9 (Risk Management System)**: The `RiskScorerNode` and `PolicyRegistry` evaluate runtime state to flag risks and trigger mitigation thresholds automatically.
+- **Article 10 (Data Governance)**: Bias detection is handled by the `BiasFilterNode`, and privacy is preserved by the `PIIRedactionEngine`.
+- **Article 11 (Technical Documentation)**: The `ComplianceManifestGenerator` statically parses the graph to auto-generate the architectural inventory required for compliance documentation.
+- **Article 12 (Record-Keeping)**: Lár's `GraphExecutor` computes an exact `state_diff` after every node execution, secured by the `AuditLogger` which creates an HMAC-SHA256 cryptographically signed causal trace.
+- **Article 13 (Transparency to Deployers)**: The `DeployerTransparencyNode` generates structured instructions-for-use documents per session.
+- **Article 14 (Human Oversight)**: Implemented through the `BranchTriageNode`, `LethalTrifectaGuard`, and `AuthorityLedger` (which cryptographically records human approvals/rejections with justification).
+- **Article 15 (Cybersecurity & Robustness)**: The `BehavioralEnvelopeMonitor` checks for conceptual output drift, while the `PromptInjectionGuard` detects and blocks inputs designed to cause adversarial model failure.
+
+### Chapter IV: Transparency Obligations
+- **Article 50 (Transparency for AI Content)**: Lár uses the `TransparencyEngine` to flag AI involvement to third parties and the `SyntheticMarkerNode` to inject visible or metadata (C2PA) markers into artificially generated content.
+
+### Chapter IX: Post-Market Monitoring
+- **Article 72 & 73 (Post-Market Monitoring & Incident Reporting)**: The `IncidentReporterNode` conducts real-time scanning for harm signals (like FRIA violations or bias), and the `IncidentReporter` aggregates logs into complete PMM Markdown reports.
