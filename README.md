@@ -42,9 +42,9 @@ The industry is building the Brain (LLMs, JEPAs). We are building the Nervous Sy
 
 ---
 
-## The 20 EU AI Act Compliance Primitives (v2.2.0)
+## The 21 EU AI Act Compliance Primitives (v2.2.0)
 
-Lár ships a complete **Enterprise Compliance Backbone** — 20 primitives covering all 23 requirements mapped by Nannini et al. (2026), the definitive compliance architecture paper for AI agents under EU law. Validated live against `ollama/phi4:latest`:
+Lár ships a complete **Enterprise Compliance Backbone** — 21 primitives covering all requirements mapped by Nannini et al. (2026), the definitive compliance architecture paper for AI agents under EU law. Validated live against `ollama/phi4:latest` and `ollama/llama3.2:latest`:
 
 **Core primitives (v2.1.x)**
 
@@ -75,8 +75,9 @@ Lár ships a complete **Enterprise Compliance Backbone** — 20 primitives cover
 | **Art. 3** | Sub-agent boundary classification | `MultiAgentBoundaryNode` |
 | **Art. 73–74** | Real-time incident detection + reporting deadlines | `IncidentReporterNode` (executor hook — fires automatically) |
 | **Art. 5** | Prohibited practice guard | `ProhibitedPracticeGuard` (executor hook — fires automatically) |
+| **Art. 15(5)** | Cybersecurity & prompt injection guard | `PromptInjectionGuard` (adversarial input interception) |
 
-**[Read the EU AI Act Deep Dive →](https://docs.snath.ai/compliance/eu-ai-act-deep-dive/)** | **[Nannini et al. (2026) Full Mapping →](https://docs.snath.ai/compliance/paper-compliance-mapping/)**
+**[Read the EU AI Act Deep Dive →](https://docs.snath.ai/compliance/eu-ai-act-deep-dive/)** | **[Nannini et al. (2026) Full Mapping →](https://docs.snath.ai/compliance/paper-compliance-mapping/)** | **[Framework Comparison Benchmark →](examples/comparisons/autogen_langchain_crewai_vs_lar.py)**
 
 ---
 

@@ -46,7 +46,8 @@ class PromptInjectionGuard(BaseNode):
             block_on_detection: If True, raises PromptInjectionError. If False, flags the state.
             next_node: The next node to execute.
         """
-        super().__init__(next_node=next_node)
+        self.next_node = next_node
+        self._validate_next_node(next_node)
         self.input_keys = input_keys
         self.heuristics = heuristics or self.DEFAULT_HEURISTICS
         self.block_on_detection = block_on_detection
