@@ -107,6 +107,26 @@ Every step produces a real Article 12 causal trace, a real Article 14 AuthorityL
 
 > **Open-source vs. enterprise:** All 20 compliance primitives (`FundamentalRightsImpactNode`, `IncidentReporterNode`, `BehavioralEnvelopeMonitor`, `SessionMemoryNode`, `BranchTriageNode`, `CredentialVault`, etc.) are in `lar.compliance` and fully open-source under Apache 2.0. The finance showcase uses `build_and_run` from `lar.enterprise`, a convenience wrapper in the enterprise tier. Open-source users assemble the same pipeline from primitives — the step-by-step guide walks you through it: **[Build a Compliant Agent from Scratch →](https://docs.snath.ai/guides/build-compliant-agent/)**
 
+### The High-Stakes Loan Underwriter (Compliance-by-Design vs Probabilistic)
+
+If you are switching from LangChain, CrewAI, or AutoGen, this example demonstrates the fundamental difference between "LLM-as-a-judge" prompting and **structural compliance**. 
+
+In probabilistic frameworks, compliance is merely a prompt (`"Do not exploit vulnerabilities"`). In Lár, compliance is a physical boundary in the execution graph.
+
+Run the new v2.2.0 showcase to see Lár deterministically intercept and block adversarial prompt injections, fundamental rights violations (EU Charter), and Article 5 prohibited practices:
+
+```bash
+python examples/compliance/28_eu_ai_act_loan_underwriter.py
+```
+
+*What happens in the script?*
+1. **Clean Application:** Successfully processes a compliant loan, producing Art 13 Instructions for Use and Art 12 HMAC-signed logs.
+2. **Prompt Injection:** A malicious applicant tries to override system instructions. `PromptInjectionGuard` topologically blocks the execution.
+3. **Political Bias:** The LLM hallucinates and denies a loan based on political expression. The `FundamentalRightsImpactNode` (FRIA) halts the graph.
+4. **Vulnerability Exploitation:** The LLM attempts to exploit an applicant's age. `ProhibitedPracticeGuard` triggers an unrecoverable structural block.
+
+**[View the High-Stakes Loan Underwriter Code →](examples/compliance/28_eu_ai_act_loan_underwriter.py)**
+
 ---
 
 ## How It Works: The "Glass Box"

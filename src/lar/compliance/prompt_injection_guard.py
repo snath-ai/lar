@@ -74,4 +74,4 @@ class PromptInjectionGuard(BaseNode):
                 logger.warning(f"Adversarial prompt injection detected: {detected_patterns}")
                 state.set("_adversarial_flag", True)
 
-        return state
+        return self.next_node
