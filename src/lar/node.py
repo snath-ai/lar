@@ -1,17 +1,35 @@
 import sys
+import re
 import time
 import copy
 import json
 import concurrent.futures
 from abc import ABC, abstractmethod
-from typing import Callable, Dict, List, Optional, Any 
- 
+from typing import Callable, Dict, List, Optional, Any
+
 # --- Multi-Provider Imports ---
 from litellm import completion, ModelResponse, utils
 from litellm.exceptions import APIError
 # ------------------------------
 from .state import GraphState
 from .utils import truncate_for_log
+
+# Matches a doubled-brace placeholder that looks like an actual variable name,
+# e.g. {{customer_name}} -> {customer_name}. Anything else double-braced (JSON/code
+# examples like {{"action": "REFUND"}}) is left alone and handled by Python's own
+# str.format() escaping, which treats "{{" as a literal "{" without parsing its contents.
+_JINJA_STYLE_VAR = re.compile(r"\{\{(\s*[A-Za-z_][A-Za-z0-9_]*\s*)\}\}")
+
+
+class _SafeFormatDict(dict):
+    """
+    dict subclass for str.format_map() that echoes back an unresolved {key} as
+    literal text instead of raising KeyError. Without this, a single missing or
+    unparseable placeholder anywhere in a template discards every other valid
+    substitution in the same prompt (see CHANGELOG 2.2.1).
+    """
+    def __missing__(self, key):
+        return "{" + key + "}"
 
 # --- The Core API "Contract" ---
 class BaseNode(ABC):
@@ -189,14 +207,22 @@ class LLMNode(BaseNode):
             return None # Stop executing or rely on error_node if implemented in future
 
         # 1. Build the prompt (the "contents")
-        # Support both {var} and {{var}} syntax by normalizing double braces to single braces
-        # This is user-friendly for those used to Jinja2/Mustache
-        template = self.prompt_template.replace("{{", "{").replace("}}", "}")
+        # Support both {var} and {{var}} (Jinja2/Mustache-style) placeholders. Only
+        # {{identifier}} pairs that look like a real variable name are collapsed to
+        # {identifier} for substitution — any other doubled braces (e.g. a literal
+        # JSON/code example like {{"action": "REFUND"}}) are left untouched and
+        # rendered as a literal single brace by str.format()'s own native escaping.
+        template = _JINJA_STYLE_VAR.sub(r"{\1}", self.prompt_template)
         try:
-            prompt = template.format(**state.get_all())
-        except KeyError as e:
-            # Fallback: If a key is missing, don't crash, just leave it as is or warn
-            print(f"  [LLMNode] WARN: Missing key {e} for prompt template. Using raw template.")
+            # format_map + _SafeFormatDict: an unresolvable {key} is echoed back
+            # literally instead of raising, so one missing/malformed placeholder no
+            # longer discards every other valid substitution in the same template.
+            prompt = template.format_map(_SafeFormatDict(state.get_all()))
+        except (ValueError, IndexError) as e:
+            # format_map can still raise on genuinely malformed format-spec syntax
+            # (e.g. an unmatched single brace). Fall back to the raw template rather
+            # than crashing the node.
+            print(f"  [LLMNode] WARN: Could not fully render prompt template ({e}). Using raw template.")
             prompt = template
 
         print(f"  [LLMNode]: Sending prompt to {self.model_identifier}: {truncate_for_log(prompt)}")
@@ -332,7 +358,6 @@ class LLMNode(BaseNode):
                     # 2. Robust Regex Fallback (Handling malformed tags)
                     clean_answer = llm_response_text.strip() # Initialize with full text
                     if not reasoning: # Only attempt regex if not already found via standard API
-                        import re
                         # Case A: Standard <think> content </think>
                         match = re.search(r"<think>(.*?)</think>", llm_response_text, flags=re.DOTALL)
                         if match:

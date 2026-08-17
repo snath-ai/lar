@@ -195,14 +195,17 @@ class AdaptiveNode(BaseNode):
 
         # 1. Run LLM to get GraphSpec
         # We manually inject instructions into the prompt about the expected JSON format
+        # Braces are doubled ({{ }}) because this text is appended to an LLMNode
+        # prompt_template, which runs through str.format_map() — a literal single
+        # brace here would otherwise be parsed as a (missing) substitution field.
         schema_instruction = (
             "\n\nOutput a JSON object with this structure:\n"
-            "{\n"
+            "{{\n"
             '  "nodes": [\n'
-            '    {"id": "unique_id", "type": "LLMNode", "prompt": "...", "output_key": "result", "next": null}\n'
+            '    {{"id": "unique_id", "type": "LLMNode", "prompt": "...", "output_key": "result", "next": null}}\n'
             '  ],\n'
             '  "entry_point": "unique_id"\n'
-            "}\n"
+            "}}\n"
             "Supported node types and their required fields:\n"
             "- LLMNode: 'prompt', 'output_key', 'next'\n"
             "- ToolNode: 'tool_name', 'input_keys' (array), 'output_key', 'next'\n"

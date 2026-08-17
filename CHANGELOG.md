@@ -2,6 +2,38 @@
 
 All notable changes to Lár are documented here.
 
+## [2.2.1] — 2026-08-17
+
+### Fixed
+
+- **`LLMNode` prompt template rendering could silently discard all substitutions.**
+  `prompt_template.format(**state.get_all())` is all-or-nothing: a single unresolvable
+  `{...}` anywhere in the template (e.g. a literal JSON/code example meant to show the
+  model an output schema) raised `KeyError` and caused the *entire* prompt — including
+  every otherwise-valid `{var}` substitution — to fall back to the raw, unfilled
+  template. This failed silently (a `print()` warning, not an exception) and could
+  produce plausible-looking but fabricated LLM output when real state values (customer
+  data, request text, etc.) never reached the model.
+  - Root cause: the prior `{{` → `{` normalization ran *before* `.format()`, defeating
+    Python's own native double-brace escaping for literal braces.
+  - Fix: only `{{identifier}}` pairs that look like an actual variable name are now
+    collapsed for substitution; any other doubled braces are left to `str.format()`'s
+    native literal-brace escaping. Rendering now uses `format_map()` with a dict that
+    echoes back an unresolved `{key}` as literal text instead of raising — so one
+    missing/malformed placeholder no longer discards every other valid substitution
+    in the same template.
+  - `AdaptiveNode`'s own internal `schema_instruction` (the JSON-schema example it
+    appends to the graph-design prompt) was hitting this exact bug — its literal
+    braces are now correctly doubled to render as intended.
+  - No API changes. Existing well-formed templates render identically; malformed ones
+    now degrade gracefully instead of discarding valid substitutions.
+
+### Test suite
+
+165 tests, 0 failures.
+
+---
+
 ## [2.1.0] — 2026-05-10
 
 ### Added
