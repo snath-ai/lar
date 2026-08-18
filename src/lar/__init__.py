@@ -4,7 +4,7 @@ Lár: A "Define-by-Run" Agentic Framework.
 This file makes the core classes and utilities available for easy import
 by any developer who runs `pip install lar-engine`.
 """
-__version__ = "2.2.3"
+__version__ = "2.3.0"
 
 # Import the core classes to the top level of the package
 from .state import GraphState
@@ -39,6 +39,7 @@ from .logger import AuditLogger
 from .tracker import TokenTracker
 from .utils import compute_state_diff, apply_diff
 from .formatter import build_log_table, summarize_diff
+from .checkpoint import Checkpoint, FileCheckpointStore, resume_human_decision
 
 
 
@@ -77,6 +78,9 @@ __all__ = [
     "MultiAgentBoundaryNode",
     "IncidentReporterNode",
     "BehavioralEnvelopeMonitor",
+    "Checkpoint",
+    "FileCheckpointStore",
+    "resume_human_decision",
     "__version__",
     
     # Utility Functions

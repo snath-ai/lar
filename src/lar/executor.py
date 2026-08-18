@@ -277,3 +277,32 @@ class GraphExecutor:
             # Only save if we actually ran something
             if step_index >= 0:
                 self.logger.save_to_file(run_id, user_id=self.user_id, summary=summary)
+
+    def resume_step_by_step(self, checkpoint, node_registry: dict, max_steps: int = 100):
+        """
+        Resumes a previously-paused run from a ``Checkpoint`` (see
+        ``lar.checkpoint``), continuing via the same ``run_step_by_step``
+        generator so resumed execution is logged, fatigue-tracked, and
+        compliance-hooked identically to a first run — no separate resume
+        code path to drift out of sync with normal execution.
+
+        Args:
+            checkpoint (Checkpoint): A loaded checkpoint (state + resume position).
+            node_registry (dict): Maps every resumable node's ``_node_id`` to
+                its live instance from the same graph definition used
+                originally. Required because a checkpoint stores graph
+                *position*, not graph *topology* — the node objects
+                themselves are not reconstructed from the checkpoint.
+            max_steps (int, optional): Forwarded to ``run_step_by_step``.
+
+        Yields:
+            dict: The same per-step log entries as ``run_step_by_step``.
+        """
+        if checkpoint.resume_node_id not in node_registry:
+            raise KeyError(
+                f"resume_node_id={checkpoint.resume_node_id!r} not found in node_registry. "
+                f"node_registry must map every resumable node's _node_id to its live "
+                f"instance from the same graph definition used to create the checkpoint."
+            )
+        resume_node = node_registry[checkpoint.resume_node_id]
+        yield from self.run_step_by_step(resume_node, checkpoint.state, max_steps=max_steps)

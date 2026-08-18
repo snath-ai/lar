@@ -13,6 +13,7 @@ from litellm.exceptions import APIError
 # ------------------------------
 from .state import GraphState
 from .utils import truncate_for_log
+from .checkpoint import Checkpoint
 
 # Template substitution for LLMNode prompts, deliberately NOT using str.format()/
 # format_map(). Python's format mini-language treats ":" inside braces as a format
@@ -832,7 +833,10 @@ class HumanJuryNode(BaseNode):
                  risk_score_key: str = None,
                  # --- Art. 14 Automation Boundary (v2.2.0) ---
                  decision_type: Optional[str] = None,
-                 automation_boundary: Optional[Dict[str, str]] = None):
+                 automation_boundary: Optional[Dict[str, str]] = None,
+                 # --- Durable pause/resume (v2.3.0) ---
+                 checkpoint_store: Optional[Any] = None,
+                 case_id_key: Optional[str] = None):
         """
         Args:
             prompt: The question to ask the human stakeholder.
@@ -862,6 +866,20 @@ class HumanJuryNode(BaseNode):
                         "CREDIT_DECISION": "always_human",
                         "ALERT_REVIEW": "auto_if_low_risk",
                     }
+            checkpoint_store: If provided, the pause is written durably (via
+                ``checkpoint_store.save()``) BEFORE this node blocks on
+                ``input()`` or applies an automation_boundary policy — so the
+                pause survives this process dying while waiting, not just a
+                clean resume within the same run. Requires ``case_id_key``,
+                and requires ``next_node._node_id`` to be set (the checkpoint
+                records *where* to resume; see ``lar.checkpoint``). A decision
+                arriving in-process (interactive or auto-fallback) resolves
+                and deletes the checkpoint itself; a decision arriving from a
+                different process later calls
+                ``lar.checkpoint.resume_human_decision`` instead, which never
+                re-executes this node.
+            case_id_key: State key holding the case/thread identifier used to
+                name the checkpoint. Required if checkpoint_store is set.
         """
         # Validation
         if not isinstance(prompt, str) or not prompt:
@@ -891,6 +909,11 @@ class HumanJuryNode(BaseNode):
         # Automation boundary (Art. 14)
         self.decision_type = decision_type
         self.automation_boundary: Dict[str, str] = automation_boundary or {}
+        # Durable pause/resume (v2.3.0)
+        if checkpoint_store is not None and not case_id_key:
+            raise ValueError("case_id_key is required when checkpoint_store is provided")
+        self.checkpoint_store = checkpoint_store
+        self.case_id_key = case_id_key
 
     def execute(self, state: GraphState):
         print("\n" + "="*60)
@@ -910,7 +933,39 @@ class HumanJuryNode(BaseNode):
                     val_str = str(val)
                 print(f"  - {key}: {val_str}")
             print("-" * 60)
-            
+
+        # 1b. Durable checkpoint — written BEFORE any blocking call, so the
+        # pause survives this process dying while waiting on a decision.
+        if self.checkpoint_store is not None:
+            resume_node_id = getattr(self.next_node, '_node_id', None) if self.next_node else None
+            if not resume_node_id:
+                raise RuntimeError(
+                    f"[HumanJuryNode] checkpoint_store is set but next_node has no "
+                    f"_node_id assigned. Set next_node._node_id = '<stable-id>' so a "
+                    f"resumed run can find it again after this checkpoint."
+                )
+            case_id = state.get(self.case_id_key)
+            if not case_id:
+                raise RuntimeError(
+                    f"[HumanJuryNode] checkpoint_store is set but state['{self.case_id_key}'] "
+                    f"is empty — cannot durably checkpoint a pause without a case identifier."
+                )
+            checkpoint = Checkpoint(
+                case_id=case_id,
+                resume_node_id=resume_node_id,
+                state=state.get_all(),
+                reason=f"awaiting_human_decision:{self.decision_type or 'UNSPECIFIED'}",
+                metadata={
+                    "output_key": self.output_key,
+                    "action_description": self.action_description,
+                    "context_keys": self.context_keys,
+                    "risk_score_key": self.risk_score_key,
+                },
+            )
+            self.checkpoint_store.save(checkpoint)
+            print(f"  [HumanJuryNode]: Checkpoint saved for case_id='{case_id}' — "
+                  f"this pause now survives a process restart.")
+
         # 2. Loop until valid input — with automation_boundary policy for non-interactive envs
         rationale = ""
         if not sys.stdin.isatty():
@@ -973,7 +1028,18 @@ class HumanJuryNode(BaseNode):
                 context_snapshot={k: state.get(k) for k in self.context_keys},
                 risk_score=risk_score,
             )
-                
+
+        # Decision resolved in-process (interactive or auto-fallback) — the
+        # durable checkpoint is no longer pending, so remove it. An external,
+        # out-of-process resume never reaches this line at all: it goes
+        # through lar.checkpoint.resume_human_decision(), which deletes the
+        # checkpoint itself and resumes at next_node directly, skipping this
+        # node entirely.
+        if self.checkpoint_store is not None:
+            case_id = state.get(self.case_id_key)
+            if case_id:
+                self.checkpoint_store.delete(case_id)
+
         print("="*60 + "\n")
         return self.next_node
 

@@ -2,6 +2,45 @@
 
 All notable changes to Lár are documented here.
 
+## [2.3.0] — 2026-08-18
+
+### Added
+
+- **Durable pause/resume for `HumanJuryNode`, via a new `lar.checkpoint` module.** Previously,
+  "resumable graphs" meant a developer hand-serializing `GraphState` to disk and hardcoding which
+  node to resume at (see the correction note in `examples/patterns/10_resumable_cost_demo.py`), and
+  `HumanJuryNode`'s pause was a same-process, same-thread `input()` call — if that process died while
+  waiting, the pause was gone with it; nothing durable had been written.
+  - `Checkpoint` — a serializable snapshot of a paused run: the state dict, which node to resume at
+    (by `_node_id`, the same identity convention `GraphExecutor` already uses for fatigue-log
+    labelling), and metadata needed to resolve a pending human decision.
+  - `FileCheckpointStore` — default store, one JSON file per `case_id`. Any object exposing the same
+    `save`/`load`/`delete`/`exists` methods works — swap in a database-backed store for multi-instance
+    deployments.
+  - `GraphExecutor.resume_step_by_step(checkpoint, node_registry)` — resolves `checkpoint.resume_node_id`
+    against a developer-supplied `node_registry` (the same live node objects used originally — a
+    checkpoint records graph *position*, not graph *topology*) and continues via the same
+    `run_step_by_step` generator, so a resumed run is logged, fatigue-tracked, and compliance-hooked
+    identically to a first run.
+  - `resume_human_decision(...)` — resolves a checkpoint from a *different process* than the one that
+    created it (a decision submitted via a web form, API call, or Slack action, arbitrarily long after
+    the pause). Writes the decision to state, records an Art. 12/14 authority record if a ledger is
+    attached (identical audit trail whether the decision was resolved in-process or out-of-process),
+    deletes the resolved checkpoint, and resumes at `next_node` — the paused `HumanJuryNode` itself is
+    never re-executed, so nothing here can be recomputed from state that drifted after the checkpoint
+    was written.
+  - `HumanJuryNode` gains optional `checkpoint_store` / `case_id_key` constructor args. When set, the
+    checkpoint is written *before* the node blocks on `input()` or applies an `automation_boundary`
+    policy — so the pause is durable from the moment it starts, not from whenever a decision happens
+    to arrive. Both args default to `None`; every existing `HumanJuryNode` call site is unaffected.
+  - Verified with a real two-process test (`examples/patterns/11_durable_checkpoint.py`): process 1
+    pauses and exits with nothing held in memory; process 2, a fresh `python` invocation with no shared
+    state, loads the checkpoint from disk and resumes correctly at `next_node`, skipping the paused
+    node entirely.
+  - No breaking changes. 165 tests, 0 failures.
+
+---
+
 ## [2.2.3] — 2026-08-18
 
 ### Fixed
