@@ -36,6 +36,12 @@ mkdocs = "^1.5.3"
 mkdocs-material = "^9.5.15" 
 pymdown-extensions = "^11.0.1"
 
+
+[tool.poetry.group.comparison.dependencies]
+langgraph = "^1.2"
+langchain-core = "^1.5"
+langchain-ollama = "^1.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
