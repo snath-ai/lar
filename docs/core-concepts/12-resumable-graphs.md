@@ -1,22 +1,20 @@
 # Resumable Graphs
 
-Most agent frameworks cannot reliably resume a crashed execution. This is not a missing feature — it is a structural consequence of how they work. When a probabilistic framework retries from a checkpoint, the LLM router may make a different decision with the same input. The graph takes a different path. The "resume" is actually a new run wearing a checkpoint's clothes.
+**Correction (this page was substantially rewritten after an independent verification pass — see CHANGELOG.md [2.2.3]):** an earlier version of this page claimed "most agent frameworks cannot reliably resume a crashed execution" as a structural limitation of probabilistic routing. That's not accurate. LangGraph ships a real, automatic checkpointer: state is persisted after every step, keyed by `thread_id`, and a resumed run continues from the last successful checkpoint — it does not re-execute already-completed routing decisions, so the "probabilistic router branches differently on resume" scenario described below doesn't actually apply once a real checkpointer is in use. That's currently *more* automatic than Lár's own resumability pattern, which requires the developer to manually track and hardcode which node to resume at (see `examples/patterns/9_resumable_graph.py`, which says so directly in its own comments).
 
-Lár is different by construction.
-
-Every router in Lár is a pure Python function. Same state in, same decision out — deterministically. This means resumption is not an approximation. When Lár resumes at Step 47, it will take exactly the same path Step 47 would have taken if the crash never happened. The graph is reproducible. The resumption is exact.
+What's genuinely true and worth keeping: every `RouterNode` in Lár is a pure Python function — same state in, same decision out, deterministically, every time it's called. That's a real property of Lár's routing design. It's a different claim from "resumption works here and can't work elsewhere," though, and this page previously conflated the two.
 
 ---
 
-## Why This Is Hard Everywhere Else
+## What Actually Makes Resume Cheap
 
-When a 50-step pipeline crashes at Step 48 in a standard framework:
+Whether you're using Lár's manual state-serialization or a framework with an automatic checkpointer, the actual cost saving comes from the same place: **not re-running steps that already completed successfully.** The alternative — no persistence at all, so a crash means starting over from step 0 — is what actually wastes tokens:
 
 1. All in-memory context is lost
-2. The framework re-sends the entire conversation history to the LLM on retry — paying for Steps 0–47 again
-3. The LLM router, being probabilistic, may branch differently — making the "resumed" run a different execution, not a continuation of the original
+2. Every step, including previously-completed LLM calls, gets re-run from scratch
+3. If those re-run steps involve an LLM call, you pay for them again
 
-You don't get resumption. You get an expensive retry that happens to start with the same input.
+Lár's `GraphState` being a plain, JSON-serializable dict makes it simple to build your own save/restore around this. It just isn't automatic yet the way a real checkpointer is.
 
 ---
 
@@ -29,20 +27,22 @@ The causal trace — the HMAC-signed flight recorder written on every run — is
 **Resuming a crashed execution:**
 
 ```python
-from lar import GraphExecutor, GraphState
+from lar import GraphExecutor
 import json
 
 # Load the state saved at the last successful step
 with open("checkpoint.json", "r") as f:
     recovered_state = json.load(f)
 
-# Re-instantiate state and resume from the failed node
+# run_step_by_step takes a plain dict and wraps it in GraphState internally --
+# pass the loaded dict directly, not a pre-built GraphState instance.
 executor = GraphExecutor()
-resumed_state = GraphState(initial_state=recovered_state)
 
-for step in executor.run_step_by_step(start_node=failed_node, initial_state=resumed_state):
+for step in executor.run_step_by_step(start_node=failed_node, initial_state=recovered_state):
     print(f"Resumed at: {step['node']}")
 ```
+
+Note: `failed_node` is the node you resume at. As of this writing, Lár does not automatically track and persist which node to resume at — you have to know and hardcode it yourself (see the caveat in `examples/patterns/9_resumable_graph.py`).
 
 **Saving a checkpoint on failure:**
 
@@ -66,14 +66,14 @@ Reference implementations:
 
 ## The Cost Reality
 
-Every other framework re-sends the full conversation history on retry. When a 10-step pipeline crashes at Step 8, you pay for Steps 0–7 again. Lár resumes from the exact step that failed — no redundant token spend.
+If you have no persistence at all, a crash means re-running every step from scratch — including previously-completed LLM calls. Lár resumes from the saved step (once you've built the save/restore, and correctly track the resume node) — no redundant token spend. A framework with an automatic checkpointer gets the same saving without the manual tracking.
 
 | Run | Steps Executed | Tokens Sent | Cost (GPT-4o) |
 |:---|:---|:---|:---|
-| **Lár — Resume** | Step 3 only | **302 tokens** | **$0.0006** |
-| **Competitor — Retry** | Steps 0+1+3 | ~776 tokens | $0.0016 |
+| **Resumed from saved state** | Step 3 only | **302 tokens** | **$0.0006** |
+| **No persistence — full retry** | Steps 0+1+3 | ~776 tokens | $0.0016 |
 
-> At 10,000 runs/day with a 40% transient failure rate → **$9.48/day saved.**
+> At 10,000 runs/day with a 40% transient failure rate → **$9.48/day saved vs. having no persistence at all.**
 
 ---
 

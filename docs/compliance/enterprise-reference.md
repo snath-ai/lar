@@ -280,7 +280,7 @@ Throughout (in AuditLogger):
 | **Legal** | EU AI Act + DSA + UPL | HIGH | 0.90 | Supervising Attorney |
 | **HR** | EU AI Act + GDPR + Equality Act | MEDIUM | 0.80 | HR Director |
 
-All 5 domains pass all 13 compliance primitive checks. All 3 audit artefacts are HMAC-signed and PII-stripped.
+All 5 domains pass their compliance primitive checks. All 3 audit artefacts are HMAC-signed and PII-stripped.
 
 ---
 

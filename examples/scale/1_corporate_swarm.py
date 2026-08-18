@@ -26,24 +26,32 @@ if os.getenv("GOOGLE_API_KEY"):
 #    - The Robots (Swarm) execute thousands of steps instantly.
 #    Result: Fast, cheap, deterministic.
 #
-# WHY THIS IS A GAME CHANGER
-# -----------------------------
+# WHY THIS DESIGN IS CHEAP AND FAST
+# -----------------------------------
+# This is a design-choice comparison (LLM-per-node vs. one LLM call + code-routed
+# body), not a claim about what other frameworks can or can't do -- LangGraph,
+# AutoGen, and CrewAI can all be wired the same "1 LLM call + code-routed
+# workers" way if you choose to build them that way. The point here is what
+# happens if you DON'T: routing all 60+ nodes through an LLM call each would
+# cost ~60 API calls and 60 LLM round-trips of latency, vs. 1 API call and
+# near-instant code execution for everything after it.
 #
 #  __________________________________________________________________________________
-# | FEATURE       | STANDARD AGENT (Old Way)     | LÁR HYBRID SWARM (New Way)        |
-# |---------------|------------------------------|-----------------------------------|
-# | ARCHITECTURE  | 100% LLM Nodes (All Prompts) | 1% LLM (Brain) + 99% Code (Body)  |
-# | COST          | $$$ (60 API Calls)           | $ (1 API Call)                    |
-# | SPEED         | Slow (60s+ Latency)          | Instant (0.08s for 64 steps)      |
-# | RELIABILITY   | Low ("Telephone Game" risks) | High (Deterministic Logic)        |
-# |_______________|______________________________|___________________________________|
+# | FEATURE       | ALL-LLM ROUTING (routes every step via a prompt) | THIS DESIGN  |
+# |---------------|----------------------------------------------------|-----------|
+# | ARCHITECTURE  | 100% LLM Nodes (All Prompts)                      | 1% LLM (Brain) + 99% Code (Body) |
+# | COST          | $$$ (60 API calls)                                | $ (1 API call)     |
+# | SPEED         | Slow (60 round-trips of latency)                  | Instant (0.08s for 64 code steps) |
+# |_______________|____________________________________________________|___________|
 #
-# TECHNICAL DEEP DIVE: WHY OTHERS FAIL
-# ---------------------------------------
-# If you built this exact swarm in LangChain/CrewAI, it would crash:
-# 1. RecursionLimitError: Standard executors cap at ~25 steps. We run 64+.
-# 2. Token Burn: Routing 60 nodes via LLM costs ~$0.60. Lár costs $0.00.
-# 3. Latency: 60 LLM round-trips takes > 60 seconds. Lár takes < 0.1 seconds.
+# Verified empirically: v2.2.3 fixed a real bug in Lár's own node-fatigue
+# detection where 60+ instances of the same reusable node CLASS (e.g. many
+# ToolNode workers) were misidentified as a loop and false-tripped the safety
+# breaker at 21 visits -- found by actually running a test like this one. See
+# examples/failure_modes/4_recursion_limit.py and CHANGELOG.md [2.2.3] for the
+# full story, including a correction to an earlier, inaccurate claim about
+# LangGraph's default recursion behavior (it does not crash by default at any
+# tested length).
 #
 # HOW IT WORKS: THE EXECUTION TRACE
 # ------------------------------------

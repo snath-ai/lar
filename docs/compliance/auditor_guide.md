@@ -11,7 +11,7 @@ Lár is a "Glass Box" agent execution engine. Every agent is a deterministic gra
 
 **No external tooling required.** No LangSmith account. No vendor access. The artefacts are plain JSON files, signed with a key your organisation controls.
 
-For the canonical reference implementation showing all 13 compliance primitives firing in sequence, see: **[EU AI Act Finance Showcase →](https://docs.snath.ai/compliance/finance-showcase/)**
+For the canonical reference implementation showing the compliance primitives firing in sequence, see: **[EU AI Act Finance Showcase →](https://docs.snath.ai/compliance/finance-showcase/)**
 
 ---
 

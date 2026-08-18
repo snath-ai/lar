@@ -4,7 +4,7 @@
 ## Build a Production-Ready "Master Planner" in 3 Minutes
 
 This quick-start guide will help you build your first **Auditable Agent**. Unlike a chatbot, this agent is a **Deterministic Workflow**: it accepts a task, evaluates it, and routes it to an exact specialist.
-Because it's built on Lár, it produces a **cryptographically signed causal trace** by default. Lár is also the only framework that ships with a complete **EU AI Act Deployment Package**, providing out-of-the-box primitives for Art. 14 Human Oversight, GDPR Art. 17 right-to-erasure, and Art. 72 Post-Market Monitoring. (See the [Enterprise Compliance Reference](compliance/enterprise-reference.md) for advanced use cases).
+Because it's built on Lár, it produces a **cryptographically signed causal trace** by default. Lár ships a complete **EU AI Act Deployment Package** — out-of-the-box primitives for Art. 14 Human Oversight, GDPR Art. 17 right-to-erasure, and Art. 72 Post-Market Monitoring. (Not independently verified against every other framework's compliance tooling, so stated here as what Lár ships, not as an "only framework" claim.) (See the [Enterprise Compliance Reference](compliance/enterprise-reference.md) for advanced use cases).
 
 !!! warning "Legal Disclaimer"
     Lár is open-source software infrastructure, not legal or compliance advice. Using Lár does not automatically guarantee compliance with the EU AI Act, GDPR, HIPAA, or any other regulation. Organizations are solely responsible for ensuring their AI systems undergo proper legal review and conformity assessments.

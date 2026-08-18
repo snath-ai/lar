@@ -11,7 +11,7 @@ Every design decision — deterministic graphs, step-level state diffs, cryptogr
 
 ## Compliance by Design
 
-Lár is the first agentic framework to ship with a complete, production-ready **Enterprise Compliance Backbone** — all 13 primitives required for EU AI Act conformity assessment:
+Lár ships a complete, production-ready **Enterprise Compliance Backbone** — 20 compliance primitives in `lar.compliance` (verified by direct count during this session's independent audit; corrected from an earlier "13," and the "first agentic framework" claim removed as not independently verifiable):
 
 | Primitive | EU AI Act Article |
 |---|---|
@@ -58,7 +58,7 @@ Lár supports **DeepSeek R1**, **OpenAI o1**, and **Liquid Thinking** out of the
 
 ## EU AI Act Ready (August 2026 Enforcement)
 
-Lár is the first agentic framework to ship with a complete, production-ready **Compliance Backbone**. It provides all 13 primitives required to pass an EU AI Act conformity assessment out of the box, including:
+Lár ships a complete, production-ready **Compliance Backbone** — 20 primitives in `lar.compliance`, including:
 
 *   **Immutable Audit Trails (Art. 12)**: Cryptographically signed causal traces.
 *   **Action-Level Authority Ledger (Art. 14)**: The "Fourth Tier" of human oversight tracking.

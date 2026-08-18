@@ -4,7 +4,7 @@
 
 As the industry moves away from purely autoregressive models (like GPT-4) toward **Predictive World Models** (like Yann LeCun's JEPA architecture), researchers face a massive bottleneck: **How do you orchestrate and test a model that outputs abstract mathematical tensors instead of English text?**
 
-Most orchestration frameworks (LangChain, AutoGPT) assume the agent's mind is a sequence of conversational text. They crash if you hand them a 768-dimensional NumPy array representing a "collision state."
+Most orchestration frameworks (LangChain, AutoGPT) are built and documented around the agent's mind being a sequence of conversational text. (Correction: an earlier version of this claimed these frameworks "crash" on a raw tensor state — verified directly and that's not true; LangGraph's state is an arbitrary typed dict and passes a 768-dimensional NumPy array through without issue. The real distinction isn't "crashes vs. doesn't" — it's that their tooling, docs, and idioms are built around text messages, so routing on latent tensors is possible but goes against the grain rather than being a first-class case the way it is here.)
 
 **This is why we built [Lar-JEPA](https://github.com/snath-ai/Lar-JEPA): a dedicated testbed and pattern library for World Model orchestration.**
 

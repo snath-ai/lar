@@ -17,9 +17,9 @@
   </a>
 </p>
 
-# Lár — The First EU AI Act-Ready Agent Execution Engine
+# Lár — An EU AI Act-Ready Agent Execution Engine
 
-The EU AI Act enforcement deadline is August 2026. Teams building AI agents in finance, healthcare, legal, and enterprise need to prove to regulators exactly what their agent did, why, and what it cost — on every run. Existing frameworks cannot do this. Lár can.
+The EU AI Act's Art. 50/GPAI/penalty regime took effect August 2, 2026. Teams building AI agents in finance, healthcare, legal, and enterprise need to prove to regulators exactly what their agent did, why, and what it cost — on every run. Lár is built for that from the ground up. ("First" / "existing frameworks cannot do this" claims about the entire framework landscape were removed here — not independently verifiable, and other frameworks can be wired to produce audit trails too, typically via a separate add-on rather than the executor itself.)
 
 Lár is a ground-up agent execution engine where **auditability is structural, not an add-on**. Every design decision — deterministic graphs, step-level state diffs, cryptographic audit trails, topology validation, human oversight primitives — exists to satisfy EU AI Act requirements out of the box.
 
@@ -77,7 +77,7 @@ Lár ships a complete **Enterprise Compliance Backbone** — 21 primitives cover
 | **Art. 5** | Prohibited practice guard | `ProhibitedPracticeGuard` (executor hook — fires automatically) |
 | **Art. 15(5)** | Cybersecurity & prompt injection guard | `PromptInjectionGuard` (adversarial input interception) |
 
-**[Read the EU AI Act Deep Dive →](https://docs.snath.ai/compliance/eu-ai-act-deep-dive/)** | **[Nannini et al. (2026) Full Mapping →](https://docs.snath.ai/compliance/paper-compliance-mapping/)** | **[Framework Comparison Benchmark →](examples/comparisons/autogen_langchain_crewai_vs_lar.py)**
+**[Read the EU AI Act Deep Dive →](https://docs.snath.ai/compliance/eu-ai-act-deep-dive/)** | **[Nannini et al. (2026) Full Mapping →](https://docs.snath.ai/compliance/paper-compliance-mapping/)** | **[Real, Executed Failure-Mode Tests →](examples/failure_modes/)**
 
 ---
 
@@ -107,11 +107,11 @@ Every step produces a real Article 12 causal trace, a real Article 14 AuthorityL
 
 > **Open-source vs. enterprise:** All 20 compliance primitives (`FundamentalRightsImpactNode`, `IncidentReporterNode`, `BehavioralEnvelopeMonitor`, `SessionMemoryNode`, `BranchTriageNode`, `CredentialVault`, etc.) are in `lar.compliance` and fully open-source under Apache 2.0. The finance showcase uses `build_and_run` from `lar.enterprise`, a convenience wrapper in the enterprise tier. Open-source users assemble the same pipeline from primitives — the step-by-step guide walks you through it: **[Build a Compliant Agent from Scratch →](https://docs.snath.ai/guides/build-compliant-agent/)**
 
-### The High-Stakes Loan Underwriter (Compliance-by-Design vs Probabilistic)
+### The High-Stakes Loan Underwriter (Compliance-by-Design vs. LLM-as-Judge)
 
-If you are switching from LangChain, CrewAI, or AutoGen, this example demonstrates the fundamental difference between "LLM-as-a-judge" prompting and **structural compliance**. 
+This example demonstrates the difference between checking compliance with a prompt (`"Do not exploit vulnerabilities"`, hoping the model complies) and checking it with a physical boundary in the execution graph that a triggered node cannot talk its way past. That's a real, verified property of this architecture — see `examples/compliance/5_context_contamination_test.py`, run live this session: a real LLM successfully talked a *different* LLM-as-judge into approving an unauthorized action, while a deterministic code check on the same input was not moved by the same persuasion at all.
 
-In probabilistic frameworks, compliance is merely a prompt (`"Do not exploit vulnerabilities"`). In Lár, compliance is a physical boundary in the execution graph.
+This isn't unique to switching away from LangChain, CrewAI, or AutoGen specifically — all three can embed the same kind of deterministic Python guard. LLM-as-judge is a common *design choice* in examples of those frameworks, not a ceiling built into them. What's true here is that Lár's compliance primitives default to the code-checked pattern rather than the prompted one.
 
 Run the new v2.2.0 showcase to see Lár deterministically intercept and block adversarial prompt injections, fundamental rights violations (EU Charter), and Article 5 prohibited practices:
 
@@ -140,23 +140,20 @@ This means:
 
 ### Why Lár vs. LangChain / CrewAI
 
-| Feature | Black Box (LangChain / CrewAI) | Glass Box (Lár) |
-| :--- | :--- | :--- |
-| **Debugging** | 100-line stack trace from inside `AgentExecutor`. Guess what went wrong. | Exact node, exact error, exact state — in the log. |
-| **Auditability** | External paid tool (LangSmith) required. | Built-in. The `GraphExecutor` flight log is the audit trail. |
-| **Multi-Agent** | "Chat room" — no guaranteed order, loops possible. | Deterministic assembly line — you define the exact path. |
-| **Compliance** | None. No EU AI Act primitives. | 20 compliance primitives, cryptographic logs, Art. 14 oversight — all 23 requirements from Nannini et al. (2026). |
-| **Cost** | LLM call on every routing step. | Code-based routing — $0.00/route. |
-| **Scale** | Crashes at 25 steps (recursion limit) and suffers race conditions writing to shared state dicts. | Effortlessly executes a massive 191-node deeply nested graph with true parallel fan-outs (`BatchNode`), deterministic execution, and zero state conflict errors. |
-| **Crash Recovery** | LLM router may branch differently on retry — "resume" is actually a new run. | Pure Python routers are deterministic. Same state in, same path out. Resumption is exact. |
-| **Core Philosophy** | Sells "Magic." | Sells "Trust." |
+This table was revised after an independent verification pass (this repo's own CHANGELOG.md, [2.2.3]) found several rows here were factually wrong — including one wrong claim that led directly to finding and fixing a real bug in Lár's own code. Corrected version:
 
-LangGraph crashes at Step 25 on a 60-node graph, while Lár effortlessly handles a 191-node concurrent graph:
-```text
-CRASH CONFIRMED: Recursion limit of 25 reached without hitting a stop condition.
-LangGraph Engine stopped execution due to Recursion Limit.
-```
-See: [`examples/comparisons/langchain_swarm_fail.py`](examples/comparisons/langchain_swarm_fail.py)
+| Feature | LangChain / CrewAI | Lár |
+| :--- | :--- | :--- |
+| **Debugging** | Stack trace from inside `AgentExecutor`. | Exact node, exact error, exact state — in the log. |
+| **Auditability** | Built-in tracing exists; LangSmith is the polished, marketed observability product and has a paid tier. | Built-in. The `GraphExecutor` flight log is the audit trail — not an add-on, the control-flow mechanism itself. |
+| **Multi-Agent** | AutoGen's `GroupChat` / CrewAI's hierarchical process pick among pre-defined agents dynamically. | Deterministic assembly line — you define the exact path (or `AdaptiveNode` composes and *validates* new structure before running it — see below). |
+| **Compliance** | No built-in EU AI Act primitives. | 20 compliance primitives, cryptographic logs, Art. 14 oversight — mapped to Nannini et al. (2026)'s 12-step architecture. |
+| **Cost** | Costs an LLM call if you choose to route via a prompt (a common but not universal pattern). | Code-based routing — $0.00/route, by default. |
+| **Scale / recursion** | **Corrected**: LangGraph does NOT crash by default — verified directly, 25/26/100/500-step graphs all complete with no explicit config. `recursion_limit` is a real, opt-in safety feature, not a default trap. | Verified directly too: v2.2.3 fixed a real bug where Lár's own fatigue detection false-tripped on 60+ instances of the same reusable node class (see `examples/failure_modes/4_recursion_limit.py`). |
+| **Crash Recovery** | **Corrected**: LangGraph ships a real, automatic checkpointer — state is persisted every step, keyed by `thread_id`, and resumes from the last successful step automatically. This is currently *more* automatic than Lár's own resumability pattern (see next row). | Lár's state is a plain serializable dict, so save/restore is simple to build — but the current examples require the developer to manually track and hardcode the resume entry point (see `examples/patterns/9_resumable_graph.py`). Not automatic yet. |
+| **Runtime graph composition** | LangGraph graphs are compiled ahead of time. No built-in pattern (verified this session) for an LLM to propose new graph structure at runtime that gets structurally validated *before* instantiation. | `AdaptiveNode` + `TopologyValidator`: an LLM-proposed subgraph is cycle-checked, tool-allowlisted, and node-count-capped before a single node executes. Proven live: `examples/failure_modes/3_privilege_escalation.py` — a model was told to inject an unauthorized tool, generated the spec, and the validator rejected it before execution. |
+
+The genuine differentiators are the audit trail being structural rather than an add-on, and the validate-before-execute gate on AI-composed structure — not the recursion/scale/resumability claims that used to be here.
 
 ---
 
@@ -294,18 +291,18 @@ node = LLMNode(
 
 ## Resumable Graphs
 
-Most frameworks cannot reliably resume a crashed execution — not because the feature is missing, but because their routers are probabilistic. On retry, the LLM may branch differently. The "resume" is actually a new run that happens to start with the same input.
+**Correction:** an earlier version of this section claimed "most frameworks cannot reliably resume a crashed execution" as a structural consequence of probabilistic routing. Verified directly and that's not accurate — LangGraph ships a real, automatic checkpointer (state persisted every step, keyed by `thread_id`, resumed via the same key) that does not re-execute already-completed routing decisions on resume. See `docs/core-concepts/12-resumable-graphs.md` and CHANGELOG.md [2.2.3] for the full correction.
 
-Lár's routers are pure Python functions. Same state in, same decision out — deterministically. When Lár resumes at Step 47, it takes exactly the path Step 47 would have taken. The resumption is exact, not approximate.
+What's true: every `RouterNode` in Lár is a pure Python function — same state in, same decision out, deterministically. And `GraphState` being a plain, JSON-serializable dict makes it simple to build your own save/restore around any point in a run. What's *not* automatic yet: Lár's own resumability examples currently require the developer to manually track and hardcode the resume entry point (see `examples/patterns/9_resumable_graph.py`) — less automatic than a real checkpointer, not more.
 
-The `GraphExecutor` is a Python generator that yields after every node. `GraphState` is a plain dict — always serialisable, always decoupled from the engine. The causal trace written on every run is not just an audit log; every entry is a resumption checkpoint.
+The `GraphExecutor` is a Python generator that yields after every node. `GraphState` is a plain dict — always serialisable, always decoupled from the engine. The causal trace written on every run is not just an audit log; every entry marks a point you could resume from, if you build the tracking to do so.
 
 | Run | Steps Executed | Tokens Sent | Cost (GPT-4o) |
 |:---|:---|:---|:---|
-| **Lár — Resume** | Step 3 only | **302 tokens** | **$0.0006** |
-| **Competitor — Retry** | Steps 0+1+3 | ~776 tokens | $0.0016 |
+| **Resumed from saved state** | Step 3 only | **302 tokens** | **$0.0006** |
+| **No persistence — full retry** | Steps 0+1+3 | ~776 tokens | $0.0016 |
 
-> At 10,000 runs/day with 40% transient failure rate → **$9.48/day saved.**
+> At 10,000 runs/day with 40% transient failure rate → **$9.48/day saved vs. having no persistence at all.**
 
 The same property powers `HumanJuryNode`: the graph halts before an irreversible action, the process can be killed, and when the human responds — hours later if needed — execution resumes from exactly that node with exactly that state. This is what EU AI Act Art. 14 requires in practice.
 
@@ -444,15 +441,17 @@ Compliance pattern library:
 | **10** | **[`10_resumable_cost_demo.py`](examples/patterns/10_resumable_cost_demo.py)** | Cost Demo — 302 vs 776 Tokens, $9.48/day Saved |
 | **11** | **[`16_custom_logger_tracker.py`](examples/patterns/16_custom_logger_tracker.py)** | Advanced Observability |
 
-#### 3. Reasoners & Comparisons (`examples/reasoning_models/`, `examples/comparisons/`)
+#### 3. Reasoners (`examples/reasoning_models/`) & Failure Modes (`examples/failure_modes/`)
 | # | Pattern | Concept |
 | :---: | :--- | :--- |
 | **1** | **[`1_deepseek_r1.py`](examples/reasoning_models/1_deepseek_r1.py)** | Native `<think>` tag parsing |
 | **2** | **[`2_openai_o1.py`](examples/reasoning_models/2_openai_o1.py)** | High-IQ O1 Planner Nodes |
 | **3** | **[`3_liquid_thinking.py`](examples/reasoning_models/3_liquid_thinking.py)** | Fast Local Edge Inferencing |
-| **4** | **[`langchain_swarm_fail.py`](examples/comparisons/langchain_swarm_fail.py)** | Proof of Context Crashes |
-| **5** | **[`langchain_firewall_cost.py`](examples/comparisons/langchain_firewall_cost.py)** | API Cost Explosion (Firewall) |
-| **6** | **[`langchain_tree_fail.py`](examples/comparisons/langchain_tree_fail.py)** | Agent Cycle Traps |
+| **4** | **[`3_privilege_escalation.py`](examples/failure_modes/3_privilege_escalation.py)** | Real run: `TopologyValidator` rejects an AI-injected unauthorized tool |
+| **5** | **[`4_recursion_limit.py`](examples/failure_modes/4_recursion_limit.py)** | Real side-by-side run vs. installed LangGraph — corrects a prior false claim, documents a real bug this test found & fixed (v2.2.3) |
+| **6** | **[`5_guardrail_cost_explosion.py`](examples/failure_modes/5_guardrail_cost_explosion.py)** | Real measured cost/latency for the Lár side; LLM-guardrail side needs your own API key to measure |
+
+`examples/comparisons/` (the old home for these) was removed — see CHANGELOG.md [2.2.3] for why.
 
 #### 4. Compliance & Safety (`examples/compliance/`)
 | # | Pattern | Concept |

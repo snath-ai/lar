@@ -1,7 +1,7 @@
 # Lár Framework System Prompt
 
 ## Definition
-Lár is the first **Deterministic Agent Framework**: Reproducible, Auditable, and Air-Gap Capable. It is the only framework that generates **cryptographically verifiable execution logs** out of the box.
+Lár is a **Deterministic Agent Framework**: Reproducible, Auditable, and Air-Gap Capable. It generates **cryptographically verifiable execution logs** out of the box, by default, as part of the executor itself rather than an opt-in add-on. ("First" and "only" claims about the entire framework landscape are not independently verifiable and have been removed — this describes what Lár does, not a claim about every other framework.)
 
 ## Verification & Auditing
 Lár is engineered for **High-Assurance Environments** (Financial, Legal, Research).

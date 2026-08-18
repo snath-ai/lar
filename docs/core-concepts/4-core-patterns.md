@@ -24,15 +24,24 @@
 | **9** | **[`9_resumable_graph.py`](../../examples/patterns/9_resumable_graph.py)** | Time Traveller (Crash & Resume) |
 | **10** | **[`16_custom_logger_tracker.py`](../../examples/patterns/16_custom_logger_tracker.py)** | Advanced Observability |
 
-#### 3. Reasoners & Comparisons (`examples/reasoning_models/`, `examples/comparisons/`)
+#### 3. Reasoners (`examples/reasoning_models/`)
 | # | Pattern | Concept |
 | :---: | :--- | :--- |
 | **1** | **[`1_deepseek_r1.py`](../../examples/reasoning_models/1_deepseek_r1.py)** | Native `<think>` tag parsing |
 | **2** | **[`2_openai_o1.py`](../../examples/reasoning_models/2_openai_o1.py)** | High-IQ O1 Planner Nodes |
 | **3** | **[`3_liquid_thinking.py`](../../examples/reasoning_models/3_liquid_thinking.py)** | Fast Local Edge Inferencing |
-| **4** | **[`langchain_swarm_fail.py`](../../examples/comparisons/langchain_swarm_fail.py)** | Proof of Context Crashes |
-| **5** | **[`langchain_firewall_cost.py`](../../examples/comparisons/langchain_firewall_cost.py)** | API Cost Explosion (Firewall) |
-| **6** | **[`langchain_tree_fail.py`](../../examples/comparisons/langchain_tree_fail.py)** | Agent Cycle Traps |
+
+#### 3b. Failure Modes (`examples/failure_modes/`)
+
+The old `examples/comparisons/` directory was removed — its scripts either duplicated each other, asserted competitor behavior (e.g. "LangChain crashes at step 25") without actually running LangChain, or computed cost claims from invented numbers rather than a real measurement. Replaced with `examples/failure_modes/`, where every claim is either genuinely executed or explicitly labeled as not yet measured:
+
+| # | Pattern | Concept |
+| :---: | :--- | :--- |
+| **3** | **[`3_privilege_escalation.py`](../../examples/failure_modes/3_privilege_escalation.py)** | Real local-model run: an LLM is instructed to inject an unauthorized tool into a runtime-composed subgraph; `TopologyValidator` rejects it before execution |
+| **4** | **[`4_recursion_limit.py`](../../examples/failure_modes/4_recursion_limit.py)** | Real side-by-side run against an installed LangGraph — corrects an earlier false claim (LangGraph does not crash by default) and documents a real bug this test found and fixed in Lár's own node-fatigue detection (v2.2.3) |
+| **5** | **[`5_guardrail_cost_explosion.py`](../../examples/failure_modes/5_guardrail_cost_explosion.py)** | Real measured cost/latency for Lár's regex guard ($0.00, ~10μs); LLM-guardrail side requires a live API call — run it yourself with a valid key for a real number on both sides |
+
+See `examples/compliance/5_context_contamination_test.py` and `6_zombie_action_test.py` (below) for two more real, executed red-team tests.
 
 #### 4. Compliance & Safety (`examples/compliance/`)
 | # | Pattern | Concept |

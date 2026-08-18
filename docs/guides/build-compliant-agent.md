@@ -510,7 +510,7 @@ python examples/compliance/23_fractal_compliance_showcase.py
 
 ## See Also
 
-- [Finance Showcase — live run through all 13 primitives →](https://docs.snath.ai/compliance/finance-showcase/)
+- [Finance Showcase — live run through the compliance backbone →](https://docs.snath.ai/compliance/finance-showcase/)
 - [Fractal Compliance Showcase — BatchNode + AdaptiveNode + BranchTriageNode →](../../examples/compliance/23_fractal_compliance_showcase.py)
 - [Fractal Agency — Art. 14 in parallel agents →](../core-concepts/11-fractal-agency.md)
 - [Auditor's Guide — how to inspect the artefacts →](../compliance/auditor_guide.md)

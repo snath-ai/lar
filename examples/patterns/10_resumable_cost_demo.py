@@ -1,28 +1,34 @@
 """
-Resumable Graphs: The Cost-Saving Killer Feature
-=================================================
+Resumable Graphs: Zero Wasted Tokens on Retry
+==============================================
 
-THE PROBLEM with every other framework:
-    A 5-step LLM pipeline crashes on Step 4.
-    When you retry, they replay Steps 0-3 from scratch —
-    sending the same prompt + history to the LLM AGAIN.
-    In a 10-step pipeline with 500 tokens per step, that's
-    4,500 wasted tokens. At scale, that's real money.
+Correction: an earlier version of this docstring claimed "every other
+framework" replays a crashed pipeline from scratch on retry. That isn't
+accurate -- LangGraph, for one, ships a real, automatic checkpointer that
+persists state after every step and resumes a failed run from the last
+successful step via the same thread_id, with no manual re-run of earlier
+steps required. That's a genuine, well-documented feature, not a gap.
 
-THE LAR SOLUTION:
-    Lár runs step-by-step via a Python generator.
-    You can serialize the GraphState to disk at ANY point,
-    kill the process, and resume exactly where you left off —
-    sending only the remaining steps to the LLM.
+WHAT LÁR ACTUALLY DOES HERE, verified against its own code (not a
+competitor comparison): Lár runs step-by-step via a Python generator. You
+can serialize the GraphState to disk at ANY point, kill the process, and
+resume from that state -- but this repo's own resumability is currently
+MANUAL: the developer has to know and hardcode which node to resume at
+(see the comment in examples/patterns/9_resumable_graph.py: "In a real
+'resumer', the serialization would include the 'next_step' pointer. Here
+we manually know it's `final_step_llm`"). LangGraph's checkpointer tracks
+the resume position automatically; Lár's current pattern does not.
 
 This demo simulates a 4-step legal document analysis pipeline:
     Step 0: Extract key clauses (LLM — expensive)
     Step 1: Identify risk factors (LLM — expensive)
     Step 2: ← SIMULATED CRASH HERE (e.g. rate limit, OOM, deploy)
-    Step 3: Draft executive summary (LLM — only step on resume)
+    Step 3: Draft executive summary (LLM — only step on resume, IF you
+            correctly hardcode the resume entry point yourself)
 
-WITHOUT Lár: Steps 0+1 would be re-run on retry = wasted tokens.
-WITH Lár:    Resume starts at Step 2 — zero wasted tokens.
+What IS true and demonstrated below: because Lár's state is a plain,
+JSON-serializable dict at every step, saving/restoring it yourself is
+simple to do -- it's just not automatic the way a checkpointer is.
 """
 
 import os, sys, json, time
@@ -149,7 +155,9 @@ def run_pipeline():
                 print(f"     {k}: {preview}")
 
         print(f"\n  ▶  Resuming at Step 3 (executive_summary) — skipping Steps 0, 1 entirely")
-        print(f"  💰 Competitor frameworks would re-send Steps 0+1 to the LLM here.\n")
+        print(f"  💰 A naive retry with no persistence at all would re-send Steps 0+1 to the LLM here.")
+        print(f"     (LangGraph's own checkpointer would also skip them automatically — this demo")
+        print(f"      shows Lár CAN skip them too, via manual state persistence, not that others can't.)\n")
 
         for step in executor.run_step_by_step(summary_node, restored):
             node = step["node"]
@@ -168,10 +176,12 @@ def run_pipeline():
             print(f"  {line}")
         pre_crash = restored.get("_tokens_spent", 474)
         print(f"\n  📊 Cost comparison:")
-        print(f"     Lár (resume):     ~{token_total} tokens  ← only Step 3")
-        print(f"     Competitors:      ~{pre_crash + token_total} tokens  ← full pipeline re-run")
-        print(f"     💰 Savings:       ~{pre_crash} tokens ({pre_crash * 0.000002:.4f} USD at $0.002/1K)")
-        print(f"     At 10,000 runs/day that's ${pre_crash * 0.000002 * 10000:.2f}/day saved.\n")
+        print(f"     Lár (resumed via saved state):  ~{token_total} tokens  ← only Step 3")
+        print(f"     Naive no-persistence retry:      ~{pre_crash + token_total} tokens  ← full pipeline re-run")
+        print(f"     💰 Savings vs. no persistence:   ~{pre_crash} tokens ({pre_crash * 0.000002:.4f} USD at $0.002/1K)")
+        print(f"     At 10,000 runs/day that's ${pre_crash * 0.000002 * 10000:.2f}/day saved — IF you had no")
+        print(f"     persistence at all. A framework with automatic checkpointing (e.g. LangGraph)")
+        print(f"     would show the same savings without the manual resume-point tracking.\n")
 
         os.remove(CHECKPOINT_FILE)
         print(f"  🧹 Checkpoint cleaned up.\n")

@@ -13,20 +13,29 @@ from lar.compliance import AuthorityLedger
 # This script executes EVERY Lár node primitive (except ClearErrorNode) in a
 # single, unbroken pipeline.
 #
-# 🚨 WHY LANGCHAIN & CREWAI CANNOT DO THIS:
-# 1. Dynamic Graph Topologies (AdaptiveNode): LangGraph requires static, pre-compiled
-#    graphs. You cannot ask an LLM to generate a brand new subgraph as JSON mid-flight,
-#    validate it for infinite loops mathematically, and inject it as a parallel thread.
-# 2. Mathematical Triage (BranchTriageNode): CrewAI treats parallel tasks as asynchronous
-#    black boxes. Lár can intercept threads *during* their merge phase, evaluate a 
-#    mathematical threshold across them, and instantly hijack the execution flow out of 
-#    the BatchNode if a breach occurs, all without race conditions.
-# 3. Compliance Blocking (HumanJuryNode): LangChain requires webhooks or external servers
-#    for Human-in-the-Loop. Lár enforces blocking I/O directly in the node layer and
-#    cryptographically signs the human's decision into an immutable Authority Ledger.
-# 4. Explicit Memory Compression (ReduceNode): LangChain's context window grows until it 
-#    OOMs. Lár explicitly deletes raw nested JSON arrays from the GraphState after map-reducing,
-#    maintaining O(1) memory overhead across infinite loops.
+# WHAT THIS PIPELINE ACTUALLY DEMONSTRATES (claims below verified or corrected
+# this session -- see CHANGELOG.md and examples/failure_modes/):
+# 1. Dynamic Graph Topologies (AdaptiveNode): LangGraph graphs are compiled ahead
+#    of time from Python-defined nodes/edges. Asking an LLM to generate a brand
+#    new subgraph as JSON at runtime, structurally validating it (cycle detection,
+#    tool allowlist) BEFORE instantiation, and injecting it live is not a built-in
+#    LangGraph/CrewAI/AutoGen primitive as far as this session verified. This one
+#    holds up -- proven live in examples/failure_modes/3_privilege_escalation.py.
+# 2. Mathematical Triage (BranchTriageNode): this node lets Lár inspect BatchNode's
+#    parallel branch outputs against a threshold before consolidation. The specific
+#    claim about CrewAI's internal merge-phase mechanics is NOT independently
+#    verified this session -- treat it as our own node's behavior, not a confirmed
+#    statement about what CrewAI can't do.
+# 3. Compliance Blocking (HumanJuryNode): CORRECTED -- LangGraph has a native
+#    interrupt() function for human-in-the-loop that needs a checkpointer, not
+#    webhooks or an external server. Lár's HumanJuryNode blocks directly in the
+#    node layer and signs the decision into an Authority Ledger, which is a real,
+#    distinct design -- but "LangChain requires webhooks" was wrong and is removed.
+# 4. Explicit Memory Compression (ReduceNode): LangChain/LangGraph do have their
+#    own memory-management options (summarization nodes, trimming utilities) --
+#    "grows until it OOMs" overstated the absence of any mitigation. What's real:
+#    ReduceNode explicitly deletes the raw pre-compression keys from GraphState,
+#    which is a specific, verifiable behavior of this node (see node.py).
 # ==============================================================================
 
 print("Building Omni-Pipeline...")

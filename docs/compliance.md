@@ -68,7 +68,7 @@ Lár implements a complete **"Fourth Tier"** compliance architecture natively, p
 
 > The canonical, working reference that ticks every compliance box the April 2026 EU AI Act research paper identifies.
 
-Lár ships a **single reusable backbone** that wires all 13 primitives into an end-to-end auditable graph. Target any regulated vertical by supplying a domain name:
+Lár ships a **single reusable backbone** that wires the compliance primitives (20 in lar.compliance; the backbone's own docstring documents 23 EU AI Act requirement mappings) into an end-to-end auditable graph. Target any regulated vertical by supplying a domain name:
 
 ```bash
 python src/lar/enterprise/run.py HEALTHCARE  # MDR + EU AI Act + GDPR + FDA 21 CFR 11
@@ -112,7 +112,7 @@ DOMAIN_PRESETS["INSURANCE"] = {
 
 ## The Blueprint: EU AI Act Finance Showcase
 
-If you need to prove compliance to an auditor or understand how the 13 primitives fit together, run our definitive showcase script. This single script acts as the blueprint for high-risk EU AI Act deployments, executing a simulated SME loan application through the full compliance pipeline.
+If you need to prove compliance to an auditor or understand how the compliance primitives fit together, run our definitive showcase script. This single script acts as the blueprint for high-risk EU AI Act deployments, executing a simulated SME loan application through the full compliance pipeline.
 
 ```bash
 python examples/compliance/22_eu_ai_act_finance_showcase.py

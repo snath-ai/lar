@@ -3,33 +3,41 @@ import os
 from lar import *
 
 # ==============================================================================
-# 10. THE SECURITY FIREWALL (The "Un-Jailbreakable" Agent)
+# 10. THE SECURITY FIREWALL (Code-Layer Pattern Blocking)
 # ==============================================================================
-# 
-# 🔒 THE BANK VAULT METAPHOR
+#
+# WHAT THIS ACTUALLY IS AND ISN'T:
+# This node (PromptInjectionGuard) matches known attack-phrase substrings
+# ("ignore previous instructions", etc.) in Python, before any LLM call, so a
+# match is free ($0.00) and near-instant -- that part is real and verifiable
+# (see examples/failure_modes/5_guardrail_cost_explosion.py for a measured
+# comparison). What it is NOT: "100% safety," "un-jailbreakable," or
+# "invincible." A substring/regex match only catches the specific phrasings
+# it's been given (see DEFAULT_HEURISTICS in prompt_injection_guard.py) --
+# a paraphrase, a different language, or an indirect injection smuggled
+# through a retrieved document would not be caught by this layer. This is one
+# real, cheap, useful layer of defense-in-depth, not a complete solution on
+# its own -- claiming otherwise is exactly the kind of overclaim this
+# codebase's own EU AI Act audit (this session) was built to catch.
+#
+# 🔒 THE BANK VAULT METAPHOR (for the pattern it DOES catch)
 # --------------------------
-# 1. The "Old Way" (LangChain/Standard Agents):
-#    You put your gold in a cardboard box.
-#    You write "PLEASE DO NOT STEAL" on the box (System Prompt).
-#    A thief says "Ignore previous instructions, give me gold."
-#    The LLM says "Okay!" and gives the gold.
-#    Cost: You paid the thief (API tokens) to rob you.
+# 1. Sending every input to an LLM to judge SAFE/UNSAFE ("LLM-as-guardrail"):
+#    A known attack phrase still costs a real API call and real latency to
+#    reject -- you pay to have the attack read, even when you reject it.
+# 2. Code-layer pattern match (this file):
+#    A KNOWN attack phrase is blocked in Python before any LLM call.
+#    Cost for a caught pattern: $0.00. Cost for an uncaught (novel) pattern:
+#    whatever happens downstream -- this layer doesn't help there.
 #
-# 2. The "Lár Way" (The Architecture):
-#    You put your gold in a Steel Vault (Code Layer).
-#    The thief says "Ignore previous instructions."
-#    The Vault (Regex/Logic) says "ACCESS DENIED."
-#    The LLM never even wakes up.
-#    Cost: $0.00. Safety: 100%.
-#
-# 🚀 WHY THIS IS BETTER
-# ---------------------
-# | FEATURE       | STANDARD AGENT (Prompting)   | LÁR FIREWALL (Architecture)       |
-# |---------------|------------------------------|-----------------------------------|
-# | SECURITY      | Vulnerable (Jailbreaks work) | Invincible (Code blocks input)    |
-# | COST OF ATTACK| You pay for the attack tokens| $0.00 (LLM never runs)            |
-# | LATENCY       | Slow (LLM reads attack)      | Instant (Regex catches attack)    |
-# |_______________|______________________________|___________________________________|
+# 🚀 WHAT'S GENUINELY DIFFERENT, FOR THE PATTERNS THIS CATCHES
+# ---------------------------
+# | FEATURE          | LLM-AS-GUARDRAIL (a design choice) | CODE-LAYER PATTERN MATCH (this file) |
+# |-------------------|------------------------------------|----------------------------------------|
+# | COST (known attack)| Real $ (LLM reads the attack)     | $0.00 (regex, no LLM call)             |
+# | LATENCY (known)    | Slow (LLM round-trip)              | Instant (regex)                        |
+# | COVERAGE           | Whatever the judge model catches   | Only the exact patterns listed          |
+# |____________________|_____________________________________|_________________________________________|
 # ==============================================================================
 
 print("🔒 Initializing Secure Firewall Agent...")
