@@ -2,6 +2,34 @@
 
 All notable changes to Lár are documented here.
 
+## [2.2.3] — 2026-08-18
+
+### Fixed
+
+- **`GraphExecutor`'s node-fatigue (loop) detection identified nodes by class name, not instance —
+  a real default-active false positive.** `max_node_fatigue` (default 20) counts visits per node
+  identity; absent an explicit `_node_id` (which is not referenced anywhere in the codebase, examples,
+  or docs — nobody could have known to set it), identity fell back to `current_node.__class__.__name__`.
+  A completely ordinary linear pipeline built from many distinct instances of the same reusable node
+  type (e.g. 60 separate `AddValueNode` steps) had all 60 collide under the shared name `"AddValueNode"`,
+  and the breaker fired at the 21st step even though nothing was looping. Found by actually running
+  `examples/failure_modes/4_recursion_limit.py` against a genuine 60-step pipeline.
+  - **Fix:** fatigue is now tracked per node *instance* by default (`id(current_node)`-based, assigned a
+    stable, human-readable `ClassName#N` label for audit-log purposes). A genuine cycle — the same node
+    object actually revisited — is still caught, since the same instance always resolves to the same
+    label. Explicitly setting `_node_id` still works as an opt-in to *share* fatigue identity across
+    multiple instances, for anyone who genuinely wants that.
+  - `log_entry["node"]` (the audit-log display field) is unchanged — this only affects the internal
+    fatigue-counting key, not logged output format.
+  - No API changes. Existing graphs with genuine cycles behave identically; graphs that legitimately
+    reuse the same node type many times no longer false-positive.
+
+### Test suite
+
+165 tests, 0 failures.
+
+---
+
 ## [2.2.2] — 2026-08-17
 
 ### Fixed

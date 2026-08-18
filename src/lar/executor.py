@@ -94,28 +94,52 @@ class GraphExecutor:
 
         step_index = 0
         node_counts = {}
+        # Per-run instance labelling for fatigue tracking only (never affects
+        # log_entry["node"], which stays the plain class name/_node_id as before).
+        fatigue_labels = {}   # id(node) -> stable per-run label
+        fatigue_seq = {}      # class name -> next sequence number
         try:
             while current_node is not None:
                 node_name = getattr(current_node, '_node_id', current_node.__class__.__name__)
-                
+
                 # --- NODE FATIGUE (Economic & Loop Constraint) ---
-                node_counts[node_name] = node_counts.get(node_name, 0) + 1
+                # Tracked per node INSTANCE by default, not by class name. Class-name
+                # tracking meant a legitimate pipeline built from many distinct
+                # instances of the same reusable node type (e.g. 60 AddValueNode
+                # steps) falsely tripped the breaker after max_node_fatigue distinct
+                # steps, despite there being no loop at all -- confirmed empirically
+                # in examples/failure_modes/4_recursion_limit.py. A genuine cycle
+                # (the same node object actually revisited) is still caught, since
+                # the same instance always resolves to the same fatigue key. Set
+                # node._node_id explicitly to opt back into sharing fatigue identity
+                # across multiple instances if that's ever genuinely wanted.
+                if hasattr(current_node, '_node_id'):
+                    fatigue_key = current_node._node_id
+                else:
+                    iid = id(current_node)
+                    if iid not in fatigue_labels:
+                        cls = current_node.__class__.__name__
+                        fatigue_seq[cls] = fatigue_seq.get(cls, 0) + 1
+                        fatigue_labels[iid] = f"{cls}#{fatigue_seq[cls]}"
+                    fatigue_key = fatigue_labels[iid]
+
+                node_counts[fatigue_key] = node_counts.get(fatigue_key, 0) + 1
                 state.set("__node_counts", node_counts)
-                
+
                 state_before = copy.deepcopy(state.get_all())
-                
+
                 log_entry = {
                     # ... (same log structure)
                     "step": step_index,
                     "node": node_name,
                     "state_before": state_before,
                     "state_diff": {},
-                    "run_metadata": {}, 
+                    "run_metadata": {},
                     "outcome": "pending"
                 }
-                
-                if node_counts[node_name] > self.max_node_fatigue:
-                    msg = f"Maximum visits ({self.max_node_fatigue}) exceeded for {node_name}."
+
+                if node_counts[fatigue_key] > self.max_node_fatigue:
+                    msg = f"Maximum visits ({self.max_node_fatigue}) exceeded for {fatigue_key}."
                     print(f"  [GraphExecutor] 🛑 FATIGUE TRIPPED: {msg}")
                     log_entry["outcome"] = "error"
                     log_entry["error"] = msg
