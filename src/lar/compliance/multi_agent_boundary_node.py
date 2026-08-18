@@ -3,11 +3,16 @@ lar.compliance.multi_agent_boundary_node
 ========================================
 MultiAgentBoundaryNode — Art. 3 Sub-Agent System Boundary Marker.
 
-EU AI Act Art. 3(1) defines an "AI system" and Recital 12 clarifies that in
-multi-actor chains each independently-placed-on-market AI system carries its
-own conformity obligations.  Art. 25 assigns responsibilities along the value
-chain — providers and deployers must know which agents are "internal" (covered
-by the parent CE) and which are "external" (independently assessed).
+EU AI Act Art. 3(1) defines an "AI system".  Art. 25 assigns responsibilities
+along the value chain — providers and deployers must know which agents are
+"internal" (covered by the parent CE) and which are "external" (independently
+assessed).  (Recital 12 was previously cited alongside these two articles for
+a "multi-actor AI system chains" framing; verified against the regulation text,
+Recital 12 is in fact about the definition of "AI system" itself — capability
+to infer, machine-basis, autonomy, adaptiveness — and says nothing about
+multi-actor chains or conformity obligations.  That citation has been removed;
+the multi-actor-boundary framing below is this node's own reasonable extension
+of Art. 25's value-chain responsibility structure, not a direct textual claim.)
 
 This node marks and records whether a sub-agent call crosses the Art. 3 boundary.
 Use one ``MultiAgentBoundaryNode`` per sub-agent invocation.  Results accumulate
@@ -58,13 +63,14 @@ class MultiAgentBoundaryNode(BaseNode):
 
     EU References:
       - Art. 3(1) — Definition of AI System
-      - Recital 12 — Multi-actor AI system chains
       - Art. 25 — Responsibilities Along the AI Value Chain
+    (A "Recital 12 — multi-actor chains" citation was previously listed here;
+    Recital 12 is actually about the definition of "AI system" and does not
+    address multi-actor chains — removed. See module docstring.)
     """
 
     EU_REFERENCE = (
         "Art. 3(1) EU AI Act — Definition of AI System; "
-        "Recital 12 — Multi-actor AI System Chains; "
         "Art. 25 — Responsibilities Along the AI Value Chain"
     )
 

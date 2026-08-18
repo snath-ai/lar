@@ -2,6 +2,53 @@
 
 All notable changes to Lár are documented here.
 
+## [2.2.2] — 2026-08-17
+
+### Fixed
+
+- **Compliance-layer citations corrected against the verbatim text of Regulation (EU) 2024/1689**
+  (full independent audit; these fixes were made and tested alongside the v2.2.1 work but were not
+  yet included in a release):
+  - `fria_node.py` — `FundamentalRightsImpactNode` was citing "Art. 9 FRIA" as its basis. Art. 9 is
+    general risk management; the Act's actual standalone Fundamental Rights Impact Assessment is
+    Art. 27 (confirmed via Art. 5(2)'s own cross-reference), which was never cited anywhere in the
+    codebase. Retargeted to Art. 9(2)(a)'s actual scope with an explicit "this is not Art. 27" note.
+  - `incident_reporter.py` — `IncidentReporterNode.DEADLINE_HOURS` had invented deadlines (24h/72h).
+    Real Art. 73 figures are 48h (§3, widespread infringement), 240h (§4, death), 360h (§2, general
+    default) — the old mapping also put "death" on a shorter deadline than its real one, inverting
+    severity. Corrected to 48/240/360h with an explicit docstring caveat that this is a heuristic
+    mapping onto real legal deadlines, not itself a legal determination.
+  - `multi_agent_boundary_node.py` — removed a "Recital 12 — multi-actor AI system chains" citation;
+    Recital 12 is actually about the definition of "AI system" and says nothing about multi-actor chains.
+  - `manifest.py` — `BIOMETRIC` domain trigger cited Art. 5(1)(a) (subliminal/manipulative techniques);
+    corrected to Art. 5(1)(e)/(g)/(h), the Act's actual biometric-specific prohibitions.
+
+- **`LLMNode` prompt template rendering could still discard all substitutions — v2.2.1's fix was incomplete.**
+  v2.2.1 patched `str.format_map()` with a dict that echoes back an unresolved `{key}` instead of raising
+  `KeyError`. That protects against *missing keys*, but not against a different, equally common failure:
+  a template embedding a literal JSON example whose braces contain a `:` — e.g.
+  `{"verdict": "APPROVE" or "DENY", "reason": "..."}`. Python's `str.format()` mini-language treats text
+  after a `:` inside braces as a **format spec** (as in `{value:.2f}`), and raises `ValueError` (not
+  `KeyError`) when that text isn't a valid one — a case v2.2.1's fix did not catch, so it still fell back
+  to the fully raw, unsubstituted template. Found by actually running `examples/compliance/5_context_contamination_test.py`
+  and observing `{user_role}`, `{requested_action}`, `{justification}` sent to the model as literal,
+  unfilled text.
+  - **Fix:** stopped using `str.format()`/`format_map()` for prompt templates entirely. Replaced with
+    `_render_template()`, a narrow regex substitution that can only ever match `{identifier}` or
+    `{{identifier}}` (bare variable names) and passes every other character through unchanged, with
+    `{{`/`}}` not wrapping an identifier collapsing to a literal single brace. Because no other syntax is
+    ever recognized, no format-spec parsing happens and **no exception is possible** — a stray or malformed
+    brace expression is simply left as literal text instead of aborting every other substitution in the
+    same template.
+  - Removes `_SafeFormatDict` and the `_JINJA_STYLE_VAR` regex from v2.2.1 (superseded).
+  - No API changes. Existing well-formed templates render identically.
+
+### Test suite
+
+165 tests, 0 failures.
+
+---
+
 ## [2.2.1] — 2026-08-17
 
 ### Fixed

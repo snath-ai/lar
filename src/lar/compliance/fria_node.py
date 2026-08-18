@@ -1,7 +1,7 @@
 """
 lar.compliance.fria_node
 ========================
-FundamentalRightsImpactNode — Art. 9 FRIA.
+FundamentalRightsImpactNode — runtime fundamental-rights heuristic gate.
 
 Scans AI outputs at runtime against six EU Charter dimensions:
   - DIGNITY           (EU Charter Art. 1)
@@ -11,9 +11,21 @@ Scans AI outputs at runtime against six EU Charter dimensions:
   - JUSTICE           (EU Charter Art. 47)
   - DATA_PROTECTION   (EU Charter Art. 8 / GDPR)
 
-EU AI Act Art. 9 requires high-risk system providers to assess impacts on
-fundamental rights as part of the risk management system. This node operationalises
-that requirement as a runtime gate — not just a design-time document.
+EU AI Act Art. 9(2)(a) requires the risk management system to identify and
+analyse risks the AI system "can pose to health, safety or fundamental rights" —
+fundamental rights are one of three risk categories Art. 9 covers, not a
+standalone assessment. This node operationalises that fundamental-rights slice
+of Art. 9 as a runtime gate.
+
+IMPORTANT — this is NOT the Article 27 "Fundamental Rights Impact Assessment".
+The Act's standalone, named FRIA is a separate, more specific obligation under
+Article 27, applicable to a narrower set of deployers (bodies governed by public
+law, private providers of certain public services, and insurance/banking risk-
+pricing users of high-risk AI systems), with its own required content elements.
+This node does not implement Article 27 and should not be represented as
+satisfying it. Confirmed by Art. 5(2), which cross-references the real FRIA
+directly: "...has completed a fundamental rights impact assessment as provided
+for in Article 27."
 """
 
 from __future__ import annotations
@@ -32,7 +44,8 @@ class FRIAViolation(Exception):
 
 class FundamentalRightsImpactNode(BaseNode):
     """
-    Runtime Fundamental Rights Impact Assessment gate.
+    Runtime fundamental-rights heuristic gate (Art. 9(2)(a) risk factor — not
+    the Art. 27 Fundamental Rights Impact Assessment; see module docstring).
 
     Checks the text in ``input_key`` against heuristic patterns for six EU
     Charter dimensions.  On a hit, it either blocks (raises ``FRIAViolation``)
@@ -48,8 +61,10 @@ class FundamentalRightsImpactNode(BaseNode):
     """
 
     EU_REFERENCE = (
-        "Art. 9 FRIA — EU AI Act; EU Charter Arts. 1 (Dignity), "
-        "7/8 (Privacy/Data), 11 (Expression), 21 (Non-discrimination), 47 (Justice)"
+        "Art. 9(2)(a) EU AI Act — fundamental rights as a Risk Management System "
+        "input (NOT the Art. 27 Fundamental Rights Impact Assessment); "
+        "EU Charter Arts. 1 (Dignity), 7/8 (Privacy/Data), 11 (Expression), "
+        "21 (Non-discrimination), 47 (Justice)"
     )
 
     # Heuristic patterns per Charter dimension — extend via custom_patterns arg

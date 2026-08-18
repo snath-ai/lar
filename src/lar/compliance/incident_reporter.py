@@ -143,21 +143,43 @@ class IncidentReporterNode:
     If a ``webhook_url`` is provided it is stored in each record so the deployer
     can POST to their CSIRT / ENISA pipeline.
 
-    EU Reference: Art. 73–74 EU AI Act — Serious Incident Reporting obligations.
+    EU Reference: Art. 73 EU AI Act — Serious Incident Reporting obligations.
+
+    Art. 73's actual deadlines are keyed by INCIDENT TYPE, not by an abstract
+    severity score:
+      Art. 73(3) — widespread infringement, or a serious incident as defined
+                   in Art. 3, point (49)(b) — "not later than two days" (48 h)
+      Art. 73(4) — an incident involving the death of a person —
+                   "not later than 10 days" (240 h)
+      Art. 73(2) — general default, whenever neither (3) nor (4) applies —
+                   "not later than 15 days" (360 h)
+
+    Lár has no way to automatically determine from a generic harm signal
+    whether an incident is legally "widespread" or involved a death — that is
+    a factual/legal determination, not a severity score.  DEADLINE_HOURS below
+    is therefore a conservative HEURISTIC mapping from Lár's own internal
+    severity tiers onto the real Art. 73 deadlines (fastest deadline for the
+    most severe automated triggers, general 15-day default otherwise) — it is
+    not itself a legal classification.  Confirm the applicable paragraph against
+    the actual incident facts before relying on any deadline_by value produced
+    here.
 
     DEADLINE_HOURS:
-      CRITICAL → 24 h (Art. 73(3) — serious incidents causing death / serious harm)
-      HIGH     → 24 h
-      MEDIUM   → 72 h (Art. 73(4) — serious malfunctions)
-      LOW      → None  (internal log only)
+      CRITICAL → 48 h  (Art. 73(3) deadline, applied as a fail-safe ceiling for
+                         Lár's most severe automated triggers)
+      HIGH     → 240 h (Art. 73(4) deadline)
+      MEDIUM   → 360 h (Art. 73(2) general default)
+      LOW      → None  (below Lár's own reportability threshold — not an
+                         Art. 73 category; not a claim that the Act itself
+                         exempts these from reporting)
     """
 
-    EU_REFERENCE = "Art. 73–74 EU AI Act — Serious Incident Reporting"
+    EU_REFERENCE = "Art. 73 EU AI Act — Serious Incident Reporting (heuristic severity mapping — see class docstring)"
 
     DEADLINE_HOURS: Dict[str, Optional[int]] = {
-        "CRITICAL": 24,
-        "HIGH": 24,
-        "MEDIUM": 72,
+        "CRITICAL": 48,
+        "HIGH": 240,
+        "MEDIUM": 360,
         "LOW": None,
     }
 

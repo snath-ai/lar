@@ -60,7 +60,7 @@ class ComplianceManifestGenerator:
         "TRANSPORT":   ["NIS2 Directive", "CER Directive"],
         "SOCIAL":      ["GDPR Art. 22 (automated decisions)", "DSA (platform obligations)"],
         "EMAIL":       ["ePrivacy Directive", "GDPR (data minimisation)"],
-        "BIOMETRIC":   ["GDPR Art. 9 (special category)", "EU AI Act Art. 5(1)(a) (prohibited)"],
+        "BIOMETRIC":   ["GDPR Art. 9 (special category)", "EU AI Act Art. 5(1)(e)/(g)/(h) (prohibited biometric uses)"],
         "THIRD_PARTY": ["DSA (due diligence)", "Art. 50 EU AI Act (transparency)"],
     }
 
@@ -338,7 +338,7 @@ class ComplianceManifestGenerator:
                 _add("DORA (ICT risk)", f"action_type={at}")
             if "BIOMETRIC" in at:
                 _add("GDPR Art. 9 (special category)", f"action_type={at}")
-                _add("EU AI Act Art. 5(1)(a) (prohibited biometric use)", f"action_type={at}")
+                _add("EU AI Act Art. 5(1)(e)/(g)/(h) (prohibited biometric uses)", f"action_type={at}")
             if "HEALTH" in at or "MEDICAL" in at:
                 _add("MDR 2017/745 (medical device)", f"action_type={at}")
                 _add("GDPR Art. 9 (special category data)", f"action_type={at}")

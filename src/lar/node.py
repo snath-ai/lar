@@ -14,22 +14,40 @@ from litellm.exceptions import APIError
 from .state import GraphState
 from .utils import truncate_for_log
 
-# Matches a doubled-brace placeholder that looks like an actual variable name,
-# e.g. {{customer_name}} -> {customer_name}. Anything else double-braced (JSON/code
-# examples like {{"action": "REFUND"}}) is left alone and handled by Python's own
-# str.format() escaping, which treats "{{" as a literal "{" without parsing its contents.
-_JINJA_STYLE_VAR = re.compile(r"\{\{(\s*[A-Za-z_][A-Za-z0-9_]*\s*)\}\}")
+# Template substitution for LLMNode prompts, deliberately NOT using str.format()/
+# format_map(). Python's format mini-language treats ":" inside braces as a format
+# spec (e.g. {value:.2f}) and raises ValueError on anything else -- fatal for any
+# prompt that embeds a literal JSON example, which almost always contains a ":".
+# (v2.2.1 tried patching format_map() with a safe-missing-key dict; that still
+# raised ValueError -- not KeyError -- on single braces containing a colon, and
+# fell back to the fully raw, unsubstituted template. See CHANGELOG 2.2.2.)
+#
+# Instead: a narrow regex that can only ever match {identifier} or {{identifier}}
+# (bare variable names, nothing else) and passes every other character through
+# unchanged. {{ / }} not wrapping an identifier collapse to a literal single brace,
+# matching str.format()'s native escaping convention. Because only these exact
+# tokens are ever recognized, no format-spec parsing happens and no exception is
+# possible -- an unresolved or non-identifier brace expression (JSON, code, a typo)
+# is simply left as literal text instead of aborting every other substitution in
+# the same template.
+_TEMPLATE_TOKEN = re.compile(
+    r"\{\{(?P<double_id>[A-Za-z_][A-Za-z0-9_]*)\}\}"
+    r"|\{(?P<single_id>[A-Za-z_][A-Za-z0-9_]*)\}"
+    r"|(?P<lbrace>\{\{)"
+    r"|(?P<rbrace>\}\})"
+)
 
 
-class _SafeFormatDict(dict):
-    """
-    dict subclass for str.format_map() that echoes back an unresolved {key} as
-    literal text instead of raising KeyError. Without this, a single missing or
-    unparseable placeholder anywhere in a template discards every other valid
-    substitution in the same prompt (see CHANGELOG 2.2.1).
-    """
-    def __missing__(self, key):
-        return "{" + key + "}"
+def _render_template(template: str, values: Dict[str, Any]) -> str:
+    """Substitute {key}/{{key}} placeholders; leave everything else untouched."""
+    def repl(m: "re.Match") -> str:
+        key = m.group("double_id") or m.group("single_id")
+        if key is not None:
+            return str(values[key]) if key in values else m.group(0)
+        if m.group("lbrace") is not None:
+            return "{"
+        return "}"
+    return _TEMPLATE_TOKEN.sub(repl, template)
 
 # --- The Core API "Contract" ---
 class BaseNode(ABC):
@@ -207,23 +225,12 @@ class LLMNode(BaseNode):
             return None # Stop executing or rely on error_node if implemented in future
 
         # 1. Build the prompt (the "contents")
-        # Support both {var} and {{var}} (Jinja2/Mustache-style) placeholders. Only
-        # {{identifier}} pairs that look like a real variable name are collapsed to
-        # {identifier} for substitution — any other doubled braces (e.g. a literal
-        # JSON/code example like {{"action": "REFUND"}}) are left untouched and
-        # rendered as a literal single brace by str.format()'s own native escaping.
-        template = _JINJA_STYLE_VAR.sub(r"{\1}", self.prompt_template)
-        try:
-            # format_map + _SafeFormatDict: an unresolvable {key} is echoed back
-            # literally instead of raising, so one missing/malformed placeholder no
-            # longer discards every other valid substitution in the same template.
-            prompt = template.format_map(_SafeFormatDict(state.get_all()))
-        except (ValueError, IndexError) as e:
-            # format_map can still raise on genuinely malformed format-spec syntax
-            # (e.g. an unmatched single brace). Fall back to the raw template rather
-            # than crashing the node.
-            print(f"  [LLMNode] WARN: Could not fully render prompt template ({e}). Using raw template.")
-            prompt = template
+        # Support {var} and {{var}} (Jinja2/Mustache-style) placeholders via a
+        # dedicated regex substitution -- not str.format() -- so a literal JSON/code
+        # example anywhere in the template (which almost always contains a ":")
+        # can never abort the substitution of every other valid placeholder.
+        # See _render_template's docstring / CHANGELOG 2.2.2 for why.
+        prompt = _render_template(self.prompt_template, state.get_all())
 
         print(f"  [LLMNode]: Sending prompt to {self.model_identifier}: {truncate_for_log(prompt)}")
 
