@@ -36,7 +36,7 @@ Lár is the execution spine of a three-part system. Each repo is independent and
 
 | Repository | Role |
 | :--- | :--- |
-| **[Lár](https://github.com/snath-ai/lar)** ← you are here | The execution spine — deterministic graph engine, ~24 EU AI Act compliance primitives, HMAC audit trail |
+| **[Lár](https://github.com/snath-ai/lar)** ← you are here | The execution spine — deterministic graph engine, 22 EU AI Act compliance primitives, HMAC audit trail |
 | **[Lár-JEPA](https://github.com/snath-ai/Lar-JEPA)** | The world model — 10 ABCs spanning the full inference-time contract (divergence routing, modal encoding, fault localisation, adapter routing) |
 | **[Lár DMN](https://github.com/snath-ai/DMN)** | The memory blueprint — `AbstractDMN` + `AbstractAdapterRouter`; domain implementations own storage and LoRA fitting; zero runtime dependencies |
 
@@ -108,7 +108,7 @@ Every step produces a real Article 12 causal trace, a real Article 14 AuthorityL
 
 **[Full showcase breakdown — execution trace, real JSON artefacts, 12-step coverage map →](https://docs.snath.ai/compliance/finance-showcase/)**
 
-> **Open-source vs. enterprise:** All ~24 compliance primitives (`FundamentalRightsImpactNode`, `IncidentReporterNode`, `BehavioralEnvelopeMonitor`, `SessionMemoryNode`, `BranchTriageNode`, `CredentialVault`, etc.) are in `lar.compliance` and fully open-source under Apache 2.0. The finance showcase uses `build_and_run` from `lar.enterprise`, a convenience wrapper in the enterprise tier. Open-source users assemble the same pipeline from primitives — the step-by-step guide walks you through it: **[Build a Compliant Agent from Scratch →](https://docs.snath.ai/guides/build-compliant-agent/)**
+> **Open-source vs. enterprise:** All 22 compliance primitives (`FundamentalRightsImpactNode`, `IncidentReporterNode`, `BehavioralEnvelopeMonitor`, `SessionMemoryNode`, `BranchTriageNode`, `CredentialVault`, etc.) are in `lar.compliance` and fully open-source under Apache 2.0. The finance showcase uses `build_and_run` from `lar.enterprise`, a convenience wrapper in the enterprise tier. Open-source users assemble the same pipeline from primitives — the step-by-step guide walks you through it: **[Build a Compliant Agent from Scratch →](https://docs.snath.ai/guides/build-compliant-agent/)**
 
 ### The High-Stakes Loan Underwriter (Compliance-by-Design vs. LLM-as-Judge)
 
@@ -150,7 +150,7 @@ This table was revised after an independent verification pass (this repo's own C
 | **Debugging** | Stack trace from inside `AgentExecutor`. | Exact node, exact error, exact state — in the log. |
 | **Auditability** | Built-in tracing exists; LangSmith is the polished, marketed observability product and has a paid tier. | Built-in. The `GraphExecutor` flight log is the audit trail — not an add-on, the control-flow mechanism itself. |
 | **Multi-Agent** | AutoGen's `GroupChat` / CrewAI's hierarchical process pick among pre-defined agents dynamically. | Deterministic assembly line — you define the exact path (or `AdaptiveNode` composes and *validates* new structure before running it — see below). |
-| **Compliance** | No built-in EU AI Act primitives. | ~24 compliance primitives, cryptographic logs, Art. 14 oversight — mapped to Nannini et al. (2026)'s 12-step architecture. |
+| **Compliance** | No built-in EU AI Act primitives. | 22 compliance primitives, cryptographic logs, Art. 14 oversight — mapped to Nannini et al. (2026)'s 12-step architecture. |
 | **Cost** | Costs an LLM call if you choose to route via a prompt (a common but not universal pattern). | Code-based routing — $0.00/route, by default. |
 | **Scale / recursion** | **Corrected**: LangGraph does NOT crash by default — verified directly, 25/26/100/500-step graphs all complete with no explicit config. `recursion_limit` is a real, opt-in safety feature, not a default trap. | Verified directly too: v2.2.3 fixed a real bug where Lár's own fatigue detection false-tripped on 60+ instances of the same reusable node class (see `examples/failure_modes/4_recursion_limit.py`). |
 | **Crash Recovery** | **Corrected**: LangGraph ships a real, automatic checkpointer — state is persisted every step, keyed by `thread_id`, and resumes from the last successful step automatically. This is currently *more* automatic than Lár's own resumability pattern (see next row). | Lár's state is a plain serializable dict, so save/restore is simple to build — but the current examples require the developer to manually track and hardcode the resume entry point (see `examples/patterns/9_resumable_graph.py`). Not automatic yet. |
