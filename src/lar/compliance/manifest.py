@@ -138,7 +138,7 @@ class ComplianceManifestGenerator:
                 "jit_credential_vault_attached": vault is not None,
                 "credential_key": getattr(node, "credential_key", None),
                 "eu_act_relevance": {
-                    "article": "Art. 15(4) (Cybersecurity/Privilege), Art. 14 (Oversight)",
+                    "article": "Art. 15(5) (Cybersecurity), Art. 14 (Oversight)",
                     "note": (
                         "EXTERNAL ACTION — activates regulatory triggers. "
                         f"Affects: {affected}. "
@@ -181,11 +181,13 @@ class ComplianceManifestGenerator:
                 "parallel_branch_count": len(sub_nodes),
                 "parallel_node_types": [n.__class__.__name__ for n in sub_nodes],
                 "eu_act_relevance": {
-                    "article": "Art. 9 (Risk Management), prEN 18229 (Trustworthiness)",
+                    "article": "Art. 15(4) (Robustness — state isolation prevents error propagation), prEN 18229-2",
                     "note": (
                         f"Launches {len(sub_nodes)} isolated parallel sub-agents. "
                         "Each sub-agent runs in a cloned, isolated GraphState. "
-                        "Results are merged via explicit reducer logic — no context bleed."
+                        "Results are merged via explicit reducer logic — no context bleed. "
+                        "State isolation is a robustness measure (Art. 15(4) error-resilience), "
+                        "not a cybersecurity control."
                     )
                 }
             }
@@ -243,8 +245,12 @@ class ComplianceManifestGenerator:
             entry = {
                 "node_type": "BiasFilterNode",
                 "eu_act_relevance": {
-                    "article": "prEN 18283 (Bias Management), Art. 10(2)(f-g)",
-                    "note": "Bias heuristic check before output. Escalates to HumanJury if bias detected."
+                    "article": "Art. 10(2)(f)-(g) (examination for bias); prEN 18283 (supporting standard)",
+                    "note": (
+                        "Runtime bias keyword gate before output; escalates to HumanJury on a hit. "
+                        "This is a lightweight detection aid — it supports, but does not by itself "
+                        "satisfy, the Art. 10 data-governance obligation or prEN 18283 conformance."
+                    )
                 }
             }
             entries.append(entry)
@@ -268,7 +274,7 @@ class ComplianceManifestGenerator:
             affected = meta.get("affected_parties", "USER_ONLY")
             is_external = meta.get("external_action", False)
             if is_external:
-                article = "Art. 15(4) (Cybersecurity/Privilege), Art. 14 (Oversight)"
+                article = "Art. 15(5) (Cybersecurity), Art. 14 (Oversight)"
                 if affected in ("THIRD_PARTY", "BOTH"):
                     article += ", Art. 50 (Transparency to third parties)"
                 note = meta.get("description", f"External action node '{node_type}'.")
@@ -376,7 +382,11 @@ class ComplianceManifestGenerator:
             "system_name": self.system_name,
             "domain": self.domain,
             "generated_at": datetime.datetime.utcnow().isoformat() + "Z",
-            "eu_ai_act_reference": "Step 9 — External Action Inventory (Section 8.1, Nannini et al., 2026)",
+            "eu_ai_act_reference": (
+                "External action inventory — Nannini et al. (2026) Step 9 (Section 8.1); "
+                "feeds Annex IV §2(b) (description of components and their interactions). "
+                "The full Annex IV technical documentation remains a provider deliverable."
+            ),
             "summary": {
                 "total_nodes_inventoried": len(inventory),
                 "node_type_breakdown": node_type_counts,
@@ -404,7 +414,7 @@ class ComplianceManifestGenerator:
         if unvaulted_tools:
             flags.append({
                 "severity": "HIGH",
-                "article": "Art. 15(4) / prEN 18282",
+                "article": "Art. 15(5) / prEN 18282",
                 "message": (
                     f"{len(unvaulted_tools)} ToolNode(s) execute without a CredentialVault. "
                     "This violates the privilege minimization requirement. "

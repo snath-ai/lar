@@ -10,7 +10,19 @@ _TRUST_LEVELS = {"LOW": 0, "MEDIUM": 1, "HIGH": 2, "CRITICAL": 3}
 class CredentialVault:
     """
     Just-in-Time (JIT) credential provisioning for agent tools.
-    Operationalises EU AI Act Art. 15(4) and GDPR (NHI Governance / Least Privilege).
+
+    Supports EU AI Act **Art. 15(5)** (cybersecurity — resilience against
+    unauthorised third parties exploiting system vulnerabilities) by keeping the
+    generative model out of the credential path: Non-Human Identity (NHI) least
+    privilege is applied as a security measure "appropriate to the relevant
+    circumstances and the risks" (Art. 15(5), first subparagraph).  Note that
+    least privilege is not verbatim Art. 15(5) text — it is a proportionate
+    technical measure that supports the Article, aligned with prEN 18282
+    (AI cybersecurity) and the Cyber Resilience Act's least-privilege principle.
+
+    (Earlier versions cited "Art. 15(4)"; in Regulation (EU) 2024/1689 as
+    enacted, 15(4) is robustness / error-resilience / feedback loops and
+    **15(5)** is cybersecurity.  Corrected repo-wide.)
 
     v2.2.0 additions:
       - ``_audit_trail``: per-action NHI authorisation log (iterable for compliance export)
@@ -19,10 +31,14 @@ class CredentialVault:
         threshold.  Enables deployers to restrict sensitive credentials to high-trust
         execution paths (e.g., only grant payment API key after HumanJuryNode approves).
 
-    EU Reference: Art. 15(4) EU AI Act — Cybersecurity; NHI Governance / Least Privilege
+    EU Reference: Art. 15(5) EU AI Act — Cybersecurity; NHI least privilege
+    (proportionate security measure); prEN 18282.
     """
 
-    EU_REFERENCE = "Art. 15(4) EU AI Act — Cybersecurity; NHI Governance / Least Privilege"
+    EU_REFERENCE = (
+        "Art. 15(5) EU AI Act — Cybersecurity (resilience against unauthorised "
+        "third parties); NHI least privilege as a proportionate security measure; prEN 18282"
+    )
 
     def __init__(self, logger_callback=None):
         self._vault: Dict[str, str] = {}
@@ -105,7 +121,7 @@ class CredentialVault:
             raise PermissionError(
                 f"[CredentialVault] Credential '{credential_key}' requires trust_level "
                 f"'{min_level}' but calling context has '{trust_level}'. "
-                f"Art. 15(4) privilege restriction active."
+                f"Art. 15(5) privilege restriction active."
             )
 
         self._log_access(tool_name, scope, credential_key, "GRANTED", trust_level)

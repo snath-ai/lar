@@ -16,7 +16,7 @@ The EU AI Act (enforced August 2026) requires that high-risk AI systems:
 - Keep records of every decision (Art. 12)
 - Allow humans to override before irreversible actions (Art. 14)
 - Manage risk continuously (Art. 9)
-- Protect against cybersecurity threats including credential abuse (Art. 15(4))
+- Protect against cybersecurity threats including credential abuse (Art. 15(5))
 
 Lár satisfies these requirements at the execution layer — not through documentation written after the fact, but through primitives that fire during the run. Each step in this guide introduces one primitive, explains which regulation it satisfies, and shows you exactly how to wire it in.
 
@@ -72,9 +72,9 @@ case = {
 
 ---
 
-## Step 2 — Credential Vault (Art. 15(4))
+## Step 2 — Credential Vault (Art. 15(5))
 
-**Regulation:** Art. 15(4) requires just-in-time privilege minimisation. The agent must not hold standing credentials.
+**Regulation:** Art. 15(5) requires high-risk systems to be resilient against unauthorised third parties exploiting vulnerabilities. Just-in-time, scope-limited credentials — so the model never holds a standing key — is a proportionate security measure under 15(5) (aligned with prEN 18282 and the CRA's least-privilege principle). Not verbatim 15(5) text, but the measure the Article calls for.
 
 The `CredentialVault` stores credentials and issues scoped, single-use tokens at the moment of the specific action. The agent never holds the raw key.
 

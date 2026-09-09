@@ -1,6 +1,6 @@
 # Enterprise Reference Implementation
 
-> **v2.2.0** — The canonical, working reference that ticks all **23 compliance boxes** from the April 2026 EU AI Act research paper. Validated live with `ollama/phi4:latest` — no API key required.
+> The canonical working reference for the EU AI Act compliance backbone: **26 runtime rows** mapped to Regulation (EU) 2024/1689 (as amended by the Digital Omnibus, Regulation (EU) 2026/1744). Validated live with `ollama/phi4:latest` (override with `LAR_SHOWCASE_MODEL`) — no API key required. "Ticks a box" = a runtime hook fires and/or an evidence artifact is produced; it is **not** a conformity assessment.
 
 **Files:**
 
@@ -20,10 +20,10 @@ If you need to prove compliance to an auditor or understand how the compliance p
 python examples/compliance/22_eu_ai_act_finance_showcase.py
 ```
 
-It explicitly validates all 23 requirements from Nannini et al. (2026):
+It explicitly validates 26 runtime rows:
 
 **Original 12 steps:**
-1. **Art. 15(4)**: JIT + trust-based privilege (`CredentialVault.get_with_trust()`)
+1. **Art. 15(5)** (cybersecurity — NHI least privilege): JIT + trust-based privilege (`CredentialVault.get_with_trust()`)
 2. **GDPR Art. 17**: PII redaction + erasable per-subject memory (`SessionMemoryNode`)
 3. **Art. 12**: Causal audit logging + per-step integrity (`verify_step_integrity()`)
 4. **Art. 9 & 14**: PolicyRegistry + RiskScorerNode
@@ -34,20 +34,23 @@ It explicitly validates all 23 requirements from Nannini et al. (2026):
 9. **Step 9**: ComplianceManifestGenerator (auto-detects adjacent legislation)
 10. **prEN 18283**: BiasFilterNode
 
-**v2.2.0 gap-closure (A–L):**
-11. **Art. 9 FRIA**: FundamentalRightsImpactNode (6 EU Charter dimensions)
-12. **Art. 9 PMM**: BehavioralEnvelopeMonitor (output variance vs. baseline)
-13. **Art. 12 depth**: `log_plan_switch()` for RouterNode branch-switch events
+**Gap-closure rows (A–O):**
+11. **Art. 9(2)(a)** runtime fundamental-rights screening: FundamentalRightsImpactNode (6 EU Charter dimensions) — *not* the Art. 27 FRIA
+12. **Art. 9(9) PMM**: BehavioralEnvelopeMonitor (output variance vs. baseline)
+13. **Art. 12 depth**: `log_plan_switch()` for branch-switch events
 14. **Art. 13 deployer**: DeployerTransparencyNode (instructions for use)
-15. **Art. 14 boundary**: `automation_boundary` + `decision_type` on HumanJuryNode
-16. **Art. 25(4)**: SupplierAgreementRegistry (written agreement enforcement)
+15. **Art. 14 boundary**: `automation_boundary="always_human"` + a real out-of-band decision via `human_decision_provider` (no auto-approve)
+16. **Art. 25(4)**: SupplierAgreementRegistry (written agreement enforcement; FOSS carve-out — Lár itself is outside 25(4))
 17. **Art. 3(23) tools**: DynamicToolDiscoveryMonitor (post-conformity additions)
 18. **Art. 3 boundary**: MultiAgentBoundaryNode (INTERNAL vs. EXTERNAL_MARKET)
-19. **Art. 73–74**: IncidentReporterNode (executor hook — auto-fires on exceptions)
+19. **Art. 73**: IncidentReporterNode (executor hook; conservative 48h/360h ceiling + all three Art. 73 legal deadlines per record)
 20. **GDPR Art. 17 memory**: SessionMemoryNode (write/read/erase/audit modes)
-21. **Art. 15(4) trust**: `get_with_trust()` — trust-level-gated credential access
-22. **Art. 5 auto**: ProhibitedPracticeGuard executor hook (fires on every LLM output)
-23. **Art. 50(2)**: SyntheticMarkerNode (AI content marking)
+21. **Art. 15(5) trust**: `get_with_trust()` — trust-level-gated credential access
+22. **Art. 5 auto**: ProhibitedPracticeGuard executor hook (incl. the 2 Dec 2026 Omnibus NCII/CSAM additions)
+23. **Art. 50(2)**: SyntheticMarkerNode METADATA (machine-readable marking)
+24. **Art. 50(1)/(4)**: SyntheticMarkerNode VISIBLE (human-readable disclosure / deep-fake label)
+25. **Art. 27**: Article27FRIANode — the deployer Fundamental Rights Impact Assessment (scope-gated; writes `fria_art27.md`)
+26. **Art. 11 / Annex IV §2(b)**: ComplianceManifestGenerator feeds the technical-documentation components inventory
 
 ---
 
@@ -145,7 +148,7 @@ The `PIIRedactionEngine` strips all configured PII keys **before** the HMAC sign
 
 ---
 
-### Problem 2 — Art. 15(4): Static Credentials = Catastrophic Attack Surface
+### Problem 2 — Art. 15(5): Static Credentials = Catastrophic Attack Surface
 
 > *"Systems must enforce the principle of least privilege. Providing an agent with static, high-level API keys creates a catastrophic attack surface for prompt injection or autonomous drift."*
 
@@ -248,7 +251,7 @@ This is saved as a separate HMAC-signed `authority_ledger.json` — the action-l
 ## The Execution Order: A Compliance Walkthrough
 
 ```
-[A] CredentialVault          → Art. 15(4): JIT NHI token, no static credentials
+[A] CredentialVault          → Art. 15(5): JIT NHI token, no static credentials
 [B] LLMNode                  → domain-aware analysis of the case
 [C] FunctionalNode (parse)   → extract risk_level, recommendation, confidence
 [D] RiskScorerNode           → Art. 14: route to HumanJuryNode if PRE_EXECUTION

@@ -4,10 +4,15 @@ from lar.state import GraphState
 
 class BiasFilterNode(BaseNode):
     """
-    Evaluates state variables against fairness criteria to detect potential bias.
-    If bias is detected (simulated here via keyword heuristics or a threshold),
-    it routes to a human jury for oversight.
-    Operationalizes prEN 18283 (Bias Management).
+    Runtime bias **keyword gate**: scans a text output for protected-characteristic
+    terms and, on a hit, routes to a human jury for oversight.
+
+    Scope of the claim: this is a lightweight detection aid that *supports* — it
+    does **not** by itself satisfy — the Art. 10(2)(f)-(g) "examination in view of
+    possible biases" obligation or conformance to prEN 18283 (bias management).
+    A substring match over-triggers (e.g. "regardless of age or gender") and
+    under-triggers (bias expressed in neutral wording). Treat a clean pass as
+    "no obvious protected term surfaced", not "the decision is unbiased".
     """
     def __init__(self, 
                  input_key: str, 

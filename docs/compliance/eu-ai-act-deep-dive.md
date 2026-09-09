@@ -9,7 +9,7 @@ Lár was explicitly re-engineered to solve the unique, agent-specific legal chal
 ## 1. Action-Chain Causal Auditability (Art. 12)
 
 **The Problem:** 
-The EU AI Act's logging requirements (Article 12, operationalized via prEN ISO/IEC 24970) demand sufficient traceability. The paper notes: *"logging must capture not only each individual step but the causal relationships between them: why did the agent select this tool rather than that one? ... none produce audit trails that meet Article 12’s requirement."* Furthermore, because agents can hallucinate or misreport their actions, the audit must independently verify the system state.
+The EU AI Act's logging requirements (Article 12, operationalized via prEN ISO/IEC DIS 24970) demand sufficient traceability. The paper notes: *"logging must capture not only each individual step but the causal relationships between them: why did the agent select this tool rather than that one? ... none produce audit trails that meet Article 12’s requirement."* Furthermore, because agents can hallucinate or misreport their actions, the audit must independently verify the system state.
 
 **The Lár Solution: Causal Trace Logging**
 
@@ -42,10 +42,12 @@ The EU AI Act's logging requirements (Article 12, operationalized via prEN ISO/I
 **HMAC-SHA256 signature of full log:** `55931245a2c8117f1c1dc4f6b4499b866f272d99bd9273cd01d313e435a658a5`
 
 
-## 2. Privilege Minimisation Outside the Model (Art. 15(4))
+## 2. Privilege Minimisation Outside the Model (Art. 15(5))
+
+> **Citation note.** In Regulation (EU) 2024/1689 as enacted, **Art. 15(5)** is the cybersecurity paragraph ("resilient against attempts by unauthorised third parties … data poisoning … adversarial examples"); Art. 15(4) is robustness / error-resilience / feedback loops. Least privilege for tool credentials is not verbatim 15(5) text — it is a proportionate technical measure that *supports* 15(5), aligned with **prEN 18282** (itself scoped to Art. 15(5)) and the Cyber Resilience Act's least-privilege principle. Earlier revisions of this page cited "15(4)"; corrected repo-wide in the 2026-09 conformance pass.
 
 **The Problem:**
-Agents interact with the world via "tools". Under the AI Cyber Resilience standard (prEN 18282), systems must enforce the principle of least privilege. Providing an agent with static, high-level API keys creates a catastrophic attack surface for prompt injection or autonomous drift.
+Agents interact with the world via "tools". Under the AI cybersecurity standard (prEN 18282), systems should enforce the principle of least privilege. Providing an agent with static, high-level API keys creates a catastrophic attack surface for prompt injection or autonomous drift.
 
 **The Lár Solution: The Credential Vault**
 Lár implements a `CredentialVault` directly inside the `ToolNode`. 
@@ -321,3 +323,24 @@ Every human decision now produces an `AuthorityRecord` containing:
 The ledger is then saved as a HMAC-SHA256 signed JSON file alongside the `AuditLogger`'s Causal Trace — completing the full evidence chain from **action proposal → risk assessment → human determination → execution outcome** required by Articles 12–14.
 
 **See the full example:** `examples/compliance/21_authority_and_trifecta.py`
+
+---
+
+## 11. The Deployer's Fundamental Rights Impact Assessment (Art. 27)
+
+**The distinction:** §7 above (`FundamentalRightsImpactNode`) is a *runtime screen* mapped to Art. 9(2)(a) — a provider-side risk-management input. It is **not** the Act's named FRIA. The **Article 27** Fundamental Rights Impact Assessment is a **deployer** obligation, owed by (i) public bodies, (ii) private providers of public services, and (iii) deployers doing credit scoring (Annex III 5(b)) or life & health insurance risk pricing (Annex III 5(c)) — before first use.
+
+**The Lár Solution: `Article27FRIANode`**
+
+Scope-gated on `deployer_class`. For an in-scope deployer it generates the Art. 27(1)(a)–(f) template — deployer processes; period and frequency of use; categories of affected natural persons; the specific fundamental-rights risks (informed by the Art. 13 provider information); the human-oversight measures; and the measures on materialisation, including internal governance and complaint mechanisms — reports completeness, records the Art. 27(3) authority-notification duty, and carries an Art. 27(4) DPIA cross-reference (reinforced by the Digital Omnibus). `as_markdown()` produces the filing-ready document; the enterprise backbone writes `enterprise_audit/fria_art27.md`.
+
+Lár generates and completeness-checks the template. It does not perform the assessment — the deployer supplies the substantive content and files it with the market surveillance authority.
+
+---
+
+## 12. Digital Omnibus (Regulation (EU) 2026/1744) — what changed
+
+- **Annex III high-risk obligations deferred** to **2 December 2027** (Annex I embedded high-risk to 2 Aug 2028). This page's Art. 12–15 machinery is what applies from that date.
+- **Two new Art. 5 prohibitions** — non-consensual intimate imagery and AI-generated CSAM — from **2 December 2026**. `ProhibitedPracticeGuard` gains `NCII` / `CSAM` heuristic categories.
+- **Art. 27(4)** — a FRIA may incorporate or cross-refer a GDPR Art. 35 DPIA; **Annex VIII registration simplified**; **SME / small-mid-cap relief** (lighter technical documentation, proportionate QMS, cybersecurity presumption of conformity).
+- **Art. 50 unchanged** — applies from 2 Aug 2026; 2 Dec 2026 grace for the 50(2) machine-readable marking of generative systems already on the market. `SyntheticMarkerNode` METADATA = 50(2); VISIBLE = 50(1)/(4).

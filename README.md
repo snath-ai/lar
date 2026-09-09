@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/snath-ai/.github/main/assets/lar-logo.png" width="80" alt="Lár Logo" />
 </p>
-<p align="center"><em>Lár: The PyTorch for Agents — The First EU AI Act-Ready Agent Execution Engine</em></p>
+<p align="center"><em>Lár: The PyTorch for Agents — an agent execution engine built for EU AI Act evidence</em></p>
 <p align="center">
   <a href="https://pypi.org/project/lar-engine/">
     <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/lar-engine?style=for-the-badge&color=blue">
@@ -10,16 +10,18 @@
     <img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/lar-engine?style=for-the-badge&color=blueviolet">
   </a>
   <a href="https://docs.snath.ai/compliance/eu-ai-act-deep-dive/">
-    <img alt="EU AI Act Ready" src="https://img.shields.io/badge/EU%20AI%20Act-Ready%20Aug%202026-green?style=for-the-badge">
+    <img alt="EU AI Act evidence infrastructure" src="https://img.shields.io/badge/EU%20AI%20Act-evidence%20infrastructure-green?style=for-the-badge">
   </a>
   <a href="https://github.com/sponsors/axdithyaxo">
     <img alt="Sponsor" src="https://img.shields.io/badge/Support-GitHub%20Sponsors-pink?style=for-the-badge&logo=github">
   </a>
 </p>
 
-# Lár — An EU AI Act-Ready Agent Execution Engine
+# Lár — an agent execution engine built for EU AI Act evidence
 
-The EU AI Act's Art. 50/GPAI/penalty regime took effect August 2, 2026. Teams building AI agents in finance, healthcare, legal, and enterprise need to prove to regulators exactly what their agent did, why, and what it cost — on every run. Lár is built for that from the ground up. ("First" / "existing frameworks cannot do this" claims about the entire framework landscape were removed here — not independently verifiable, and other frameworks can be wired to produce audit trails too, typically via a separate add-on rather than the executor itself.)
+Teams building AI agents in finance, healthcare, legal, and enterprise need to prove to regulators exactly what their agent did, why, and what it cost — on every run. Lár is built for that from the ground up. ("First" / "existing frameworks cannot do this" claims were removed — other frameworks can be wired to produce audit trails too, typically via a separate add-on rather than the executor itself.)
+
+**Where the AI Act stands (post Digital Omnibus, Regulation (EU) 2026/1744, in force 27 Jul 2026):** Article 5 prohibitions apply since Feb 2025 (non-consensual intimate imagery and AI-CSAM added from 2 Dec 2026); GPAI obligations since Aug 2025; **Article 50 transparency since 2 Aug 2026** (2 Dec 2026 grace for the machine-readable 50(2) marking); **standalone Annex III high-risk obligations apply from 2 December 2027** (deferred from 2 Aug 2026), and Annex I embedded high-risk from 2 Aug 2028. Lár's role in all of this is to produce the *evidence* — it is a software component in the Art. 25 value chain, not the "provider" (see [Compliance & Safety](#compliance--safety)).
 
 Lár is a ground-up agent execution engine where **auditability is structural, not an add-on**. Every design decision — deterministic graphs, step-level state diffs, cryptographic audit trails, topology validation, human oversight primitives — exists to satisfy EU AI Act requirements out of the box.
 
@@ -34,7 +36,7 @@ Lár is the execution spine of a three-part system. Each repo is independent and
 
 | Repository | Role |
 | :--- | :--- |
-| **[Lár](https://github.com/snath-ai/lar)** ← you are here | The execution spine — deterministic graph engine, 20 EU AI Act compliance primitives, HMAC audit trail |
+| **[Lár](https://github.com/snath-ai/lar)** ← you are here | The execution spine — deterministic graph engine, ~24 EU AI Act compliance primitives, HMAC audit trail |
 | **[Lár-JEPA](https://github.com/snath-ai/Lar-JEPA)** | The world model — 10 ABCs spanning the full inference-time contract (divergence routing, modal encoding, fault localisation, adapter routing) |
 | **[Lár DMN](https://github.com/snath-ai/DMN)** | The memory blueprint — `AbstractDMN` + `AbstractAdapterRouter`; domain implementations own storage and LoRA fitting; zero runtime dependencies |
 
@@ -42,9 +44,9 @@ The industry is building the Brain (LLMs, JEPAs). We are building the Nervous Sy
 
 ---
 
-## The 21 EU AI Act Compliance Primitives (v2.2.0)
+## The EU AI Act Compliance Primitives
 
-Lár ships a complete **Enterprise Compliance Backbone** — 21 primitives covering all requirements mapped by Nannini et al. (2026), the definitive compliance architecture paper for AI agents under EU law. Validated live against `ollama/phi4:latest` and `ollama/llama3.2:latest`:
+Lár ships an **Enterprise Compliance Backbone** — a set of primitives, each mapped to a provision of Regulation (EU) 2024/1689 (as amended by the Digital Omnibus, Regulation (EU) 2026/1744). "Mapped" means a runtime hook fires and/or an evidence artifact is produced — it is **not** a conformity assessment, and it does not by itself discharge the obligation. Architecture cross-referenced to Nannini et al. (2026). Validated live against `ollama/phi4:latest` (override with `LAR_SHOWCASE_MODEL`):
 
 **Core primitives (v2.1.x)**
 
@@ -53,29 +55,30 @@ Lár ships a complete **Enterprise Compliance Backbone** — 21 primitives cover
 | **Art. 12** | Causal audit logging + per-step integrity | `GraphExecutor` → HMAC-SHA256 signed JSON trace + `verify_step_integrity()` |
 | **Art. 14** | Human oversight interrupt + automation boundary | `HumanJuryNode(automation_boundary=…)` + `AuthorityLedger` (Fourth Tier) |
 | **Art. 3(23)** | Substantial modification guard | `AdaptiveNode` + `TopologyValidator` + `RuntimeStateVersioner` |
-| **Art. 9** | Risk management gate + FRIA | `RiskScorerNode` + `PolicyRegistry` + `FundamentalRightsImpactNode` |
-| **Art. 15(4)** | JIT + trust-based privilege minimisation | `CredentialVault` — `get()` and `get_with_trust()` |
+| **Art. 9(2)(a)** | Risk-management gate + runtime fundamental-rights screen | `RiskScorerNode` + `PolicyRegistry` + `FundamentalRightsImpactNode` *(not the Art. 27 FRIA — see below)* |
+| **Art. 15(5)** | Cybersecurity — NHI least privilege (JIT + trust-gated) | `CredentialVault` — `get()` and `get_with_trust()` |
 | **GDPR Art. 17** | PII redaction + erasable per-subject memory | `PIIRedactionEngine` + `SessionMemoryNode` |
-| **Art. 50(2)** | Synthetic content marking | `SyntheticMarkerNode` |
-| **prEN 18283** | Runtime bias detection | `BiasFilterNode` |
+| **Art. 50(2) / 50(1)/(4)** | Synthetic content marking (machine-readable + visible) | `SyntheticMarkerNode` (`METADATA` / `VISIBLE`) |
+| **Art. 10(2)(f)-(g)** | Runtime bias keyword gate (supports prEN 18283) | `BiasFilterNode` |
 | **Art. 14 (fractal)** | Meaningful HITL in parallel agents | `BranchTriageNode` |
 | **AEPD Rule of 2** | Lethal trifecta block | `LethalTrifectaGuard` |
 | **Art. 50 / Art. 13** | Third-party + deployer transparency | `TransparencyEngine` + `DeployerTransparencyNode` |
 | **Step 9** | External action inventory + adjacent legislation | `ComplianceManifestGenerator` (auto-detects DORA, MiFID II, ePrivacy…) |
 | **Art. 12/14** | Stakeholder authority record | `AuthorityLedger` |
 
-**New in v2.2.0 — gap closure**
+**Gap-closure primitives**
 
 | Article | Requirement | Lár Primitive |
 | :--- | :--- | :--- |
-| **Art. 9 FRIA** | Fundamental rights impact (6 EU Charter dimensions) | `FundamentalRightsImpactNode` |
-| **Art. 9 PMM** | Stochastic output variance monitoring | `BehavioralEnvelopeMonitor` |
-| **Art. 25(4)** | Written supplier agreement enforcement | `SupplierAgreementRegistry` |
+| **Art. 27** | **Deployer** Fundamental Rights Impact Assessment (the *named* FRIA) | `Article27FRIANode` — scope-gated on `deployer_class`; generates & completeness-checks the 27(1)(a)-(f) template; writes `fria_art27.md` |
+| **Art. 9(2)(a)** | Runtime fundamental-rights screen (6 EU Charter dimensions) — *not* Art. 27 | `FundamentalRightsImpactNode` |
+| **Art. 9(9) PMM** | Stochastic output variance monitoring | `BehavioralEnvelopeMonitor` |
+| **Art. 25(4)** | Written supplier agreement enforcement (FOSS carve-out — Lár itself is exempt) | `SupplierAgreementRegistry` |
 | **Art. 3(23)** | Post-conformity tool addition detection | `DynamicToolDiscoveryMonitor` |
 | **Art. 3** | Sub-agent boundary classification | `MultiAgentBoundaryNode` |
-| **Art. 73–74** | Real-time incident detection + reporting deadlines | `IncidentReporterNode` (executor hook — fires automatically) |
-| **Art. 5** | Prohibited practice guard | `ProhibitedPracticeGuard` (executor hook — fires automatically) |
-| **Art. 15(5)** | Cybersecurity & prompt injection guard | `PromptInjectionGuard` (adversarial input interception) |
+| **Art. 73** | Real-time incident detection (conservative 48h/360h ceiling + all three Art. 73 legal deadlines per record) | `IncidentReporterNode` (executor hook) |
+| **Art. 5** (incl. 2 Dec 2026 Omnibus) | Prohibited-practice guard — social scoring, manipulation, vulnerability exploitation, **NCII**, **CSAM** | `ProhibitedPracticeGuard` (executor hook) |
+| **Art. 15(5)** | Cybersecurity & prompt-injection guard | `PromptInjectionGuard` (adversarial input interception) |
 
 **[Read the EU AI Act Deep Dive →](https://docs.snath.ai/compliance/eu-ai-act-deep-dive/)** | **[Nannini et al. (2026) Full Mapping →](https://docs.snath.ai/compliance/paper-compliance-mapping/)** | **[Real, Executed Failure-Mode Tests →](examples/failure_modes/)**
 
@@ -83,7 +86,7 @@ Lár ships a complete **Enterprise Compliance Backbone** — 21 primitives cover
 
 ## See It Running: The Finance Showcase
 
-One command runs a live SME credit decision through the compliance primitives and produces three HMAC-signed audit artefacts:
+One command runs a live SME credit decision through the compliance primitives and produces HMAC-signed audit artefacts (causal trace, authority ledger, action-inventory manifest) plus the deployer Art. 27 FRIA:
 
 ```bash
 python examples/compliance/22_eu_ai_act_finance_showcase.py
@@ -105,7 +108,7 @@ Every step produces a real Article 12 causal trace, a real Article 14 AuthorityL
 
 **[Full showcase breakdown — execution trace, real JSON artefacts, 12-step coverage map →](https://docs.snath.ai/compliance/finance-showcase/)**
 
-> **Open-source vs. enterprise:** All 20 compliance primitives (`FundamentalRightsImpactNode`, `IncidentReporterNode`, `BehavioralEnvelopeMonitor`, `SessionMemoryNode`, `BranchTriageNode`, `CredentialVault`, etc.) are in `lar.compliance` and fully open-source under Apache 2.0. The finance showcase uses `build_and_run` from `lar.enterprise`, a convenience wrapper in the enterprise tier. Open-source users assemble the same pipeline from primitives — the step-by-step guide walks you through it: **[Build a Compliant Agent from Scratch →](https://docs.snath.ai/guides/build-compliant-agent/)**
+> **Open-source vs. enterprise:** All ~24 compliance primitives (`FundamentalRightsImpactNode`, `IncidentReporterNode`, `BehavioralEnvelopeMonitor`, `SessionMemoryNode`, `BranchTriageNode`, `CredentialVault`, etc.) are in `lar.compliance` and fully open-source under Apache 2.0. The finance showcase uses `build_and_run` from `lar.enterprise`, a convenience wrapper in the enterprise tier. Open-source users assemble the same pipeline from primitives — the step-by-step guide walks you through it: **[Build a Compliant Agent from Scratch →](https://docs.snath.ai/guides/build-compliant-agent/)**
 
 ### The High-Stakes Loan Underwriter (Compliance-by-Design vs. LLM-as-Judge)
 
@@ -147,7 +150,7 @@ This table was revised after an independent verification pass (this repo's own C
 | **Debugging** | Stack trace from inside `AgentExecutor`. | Exact node, exact error, exact state — in the log. |
 | **Auditability** | Built-in tracing exists; LangSmith is the polished, marketed observability product and has a paid tier. | Built-in. The `GraphExecutor` flight log is the audit trail — not an add-on, the control-flow mechanism itself. |
 | **Multi-Agent** | AutoGen's `GroupChat` / CrewAI's hierarchical process pick among pre-defined agents dynamically. | Deterministic assembly line — you define the exact path (or `AdaptiveNode` composes and *validates* new structure before running it — see below). |
-| **Compliance** | No built-in EU AI Act primitives. | 20 compliance primitives, cryptographic logs, Art. 14 oversight — mapped to Nannini et al. (2026)'s 12-step architecture. |
+| **Compliance** | No built-in EU AI Act primitives. | ~24 compliance primitives, cryptographic logs, Art. 14 oversight — mapped to Nannini et al. (2026)'s 12-step architecture. |
 | **Cost** | Costs an LLM call if you choose to route via a prompt (a common but not universal pattern). | Code-based routing — $0.00/route, by default. |
 | **Scale / recursion** | **Corrected**: LangGraph does NOT crash by default — verified directly, 25/26/100/500-step graphs all complete with no explicit config. `recursion_limit` is a real, opt-in safety feature, not a default trap. | Verified directly too: v2.2.3 fixed a real bug where Lár's own fatigue detection false-tripped on 60+ instances of the same reusable node class (see `examples/failure_modes/4_recursion_limit.py`). |
 | **Crash Recovery** | **Corrected**: LangGraph ships a real, automatic checkpointer — state is persisted every step, keyed by `thread_id`, and resumes from the last successful step automatically. This is currently *more* automatic than Lár's own resumability pattern (see next row). | Lár's state is a plain serializable dict, so save/restore is simple to build — but the current examples require the developer to manually track and hardcode the resume entry point (see `examples/patterns/9_resumable_graph.py`). Not automatic yet. |
@@ -250,7 +253,7 @@ Lár v2.1.0 introduces native support for **Scientific and Biological AI Archite
 1. **Route Tensors Deterministically:** Pass gigabyte-sized biological or scientific tensors across nodes without serialization crashes.
 2. **Audit Latent Space:** Cryptographically log the exact multidimensional shape and type of massive data structures moving through the pipeline without blowing out memory (e.g., `{"__type__": "Tensor", "shape": [1, 768]}`).
 
-Lár is the first EU AI Act-ready engine built not just for LLMs, but for real mathematical world models. For a complete heterogeneous cognitive architecture built on this foundation, see **[Lár-JEPA](https://github.com/snath-ai/Lar-JEPA)**.
+Lár is built not just for LLMs, but for real mathematical world models. For a complete heterogeneous cognitive architecture built on this foundation, see **[Lár-JEPA](https://github.com/snath-ai/Lar-JEPA)**.
 
 ---
 
@@ -354,7 +357,7 @@ for step in executor.run_step_by_step(adaptive, {"doc_type": "financial", "docum
 
 **The real unlock** is combining `AdaptiveNode` with `BatchNode`. The LLM can decide both how many workers to spawn *and* that they should run in parallel — covering case complexity you'd need a combinatorial explosion of static branches to replicate.
 
-**This stays compliant regardless of graph shape.** Every generated spec is logged to the HMAC-signed Causal Trace before any node executes (Art. 12). `TopologyValidator` is pure Python — deterministic, not probabilistic — so the safety decision is never delegated to an LLM. All 13 compliance primitives (`HumanJuryNode`, `PIIRedactionEngine`, `BiasFilterNode`, etc.) work inside generated subgraphs exactly as they do in static ones. The graph shape changes at runtime; the compliance guarantees don't.
+**This stays compliant regardless of graph shape.** Every generated spec is logged to the HMAC-signed Causal Trace before any node executes (Art. 12). `TopologyValidator` is pure Python — deterministic, not probabilistic — so the safety decision is never delegated to an LLM. All compliance primitives (`HumanJuryNode`, `PIIRedactionEngine`, `BiasFilterNode`, etc.) work inside generated subgraphs exactly as they do in static ones. The graph shape changes at runtime; the compliance guarantees don't.
 
 In fractal agents (manager `AdaptiveNode` + `BatchNode` of specialist `AdaptiveNode`s), wire `BranchTriageNode` between `BatchNode` and the human jury. Without it the human sees a rolled-up score — they don't know which parallel branch triggered the alert. That's not meaningful oversight under Art. 14. With it, the jury context includes per-branch findings before `ReduceNode` compresses them away.
 
@@ -365,7 +368,7 @@ See: [`examples/adaptive/`](examples/adaptive/) | [`examples/compliance/23_fract
 ## Compliance & Safety
 
 > [!IMPORTANT]
-> **Who is the "Provider"?** Under the EU AI Act (Art. 3), Lár is a software component, not an AI system. The organisation deploying a high-risk agent is the legal **Provider**. Lár provides the 13 architectural primitives to generate the *evidence* (audit logs, manifests, oversight records) required for a conformity assessment.
+> **Who is the "Provider"?** Under the EU AI Act (Art. 3), Lár is a software component, not an AI system. The organisation deploying a high-risk agent is the legal **Provider**. Lár provides the compliance primitives to generate the *evidence* (audit logs, manifests, oversight records) required for a conformity assessment.
 
 > [!WARNING]
 > **Legal Disclaimer:** Lár is open-source infrastructure, not legal advice. Using Lár does not automatically guarantee compliance. Organisations are solely responsible for legal review and conformity assessments.
@@ -404,7 +407,7 @@ python examples/compliance/11_verify_audit_log.py secure_logs/run_xyz.json your_
 When you run a fully compliant, resumable agent (like `27_ultimate_resumable_enterprise.py`), the output isn't just print statements—it produces concrete, cryptographically sealed JSON artifacts designed for legal and compliance review. 
 
 We have provided real output samples generated by `phi4:latest` in the [**`examples/compliance/sample_auditor_reports/`**](examples/compliance/sample_auditor_reports/) directory:
-1. **`sample_compliance_manifest.json`**: A high-level regulatory map proving that all 23 EU AI Act primitives (bias filters, PII redactors, supplier registries) successfully fired during the run.
+1. **`sample_compliance_manifest.json`**: A high-level regulatory map showing which EU AI Act primitives (bias filters, PII redactors, supplier registries) successfully fired during the run.
 2. **`sample_authority_ledger.json`**: The immutable, cryptographically signed ledger proving *who* approved the high-risk action, *what* their role was, and *when* they approved it.
 3. **`sample_causal_trace.json`**: A massive, detailed execution log capturing the exact state changes, inputs, and outputs of every single node in the graph (with PII automatically stripped) for deep forensic analysis.
 
@@ -471,7 +474,7 @@ Compliance pattern library:
 | **13** | **[`12_transparency_disclosure.py`](examples/compliance/12_transparency_disclosure.py)** | Transparency Engine (Art. 13) |
 | **14** | **[`13_risk_scored_routing.py`](examples/compliance/13_risk_scored_routing.py)** | Risk-Scored Routing (Art. 14) |
 | **15** | **[`14_runtime_drift_detection.py`](examples/compliance/14_runtime_drift_detection.py)** | Drift Detection (Art. 3(23)) |
-| **16** | **[`15_jit_credential_vault.py`](examples/compliance/15_jit_credential_vault.py)** | JIT Credential Vault (Art. 15(4)) |
+| **16** | **[`15_jit_credential_vault.py`](examples/compliance/15_jit_credential_vault.py)** | JIT Credential Vault (Art. 15(5)) |
 | **17** | **[`16_pii_redaction.py`](examples/compliance/16_pii_redaction.py)** | PII Redaction (GDPR Art. 17) |
 | **18** | **[`17_causal_trace_logging.py`](examples/compliance/17_causal_trace_logging.py)** | Causal Trace Logging (Art. 12) |
 | **19** | **[`18_synthetic_content_marking.py`](examples/compliance/18_synthetic_content_marking.py)** | Synthetic Content Marking (Art. 50) |

@@ -23,7 +23,7 @@ Lár ships a complete, production-ready **Enterprise Compliance Backbone** — 2
 | `ComplianceManifest` (Annex IV auto-generation) | Art. 11 — Technical Documentation |
 | `SyntheticMarkerNode` | Art. 50(2) — Synthetic Content Marking |
 | `BiasFilter` | prEN 18283 — Bias Management |
-| `CredentialVault` (JIT provisioning) | Art. 15(4) — Privilege Minimisation |
+| `CredentialVault` (JIT provisioning) | Art. 15(5) — Privilege Minimisation |
 | `RuntimeStateVersioner` (drift detection) | Art. 3(23) — Substantial Modification |
 | `AuthorityLedger` — HMAC-signed decision record | Art. 12 / 14 — Fourth-Tier Oversight |
 | `BranchTriageNode` — per-branch findings before jury | Art. 14 — Fractal Human Oversight |
