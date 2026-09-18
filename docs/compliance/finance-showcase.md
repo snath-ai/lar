@@ -1,6 +1,6 @@
 # EU AI Act Finance Showcase
 
-> **v2.2.0** — One command runs a live SME credit decision through all **23 requirements** from Nannini et al. (2026) using `ollama/phi4:latest` (fully local, no API key needed) and produces three HMAC-signed audit artefacts. Lár ships **20 compliance primitives** — all open-source.
+> One command runs a live SME credit decision through **26 runtime rows** mapped to Regulation (EU) 2024/1689 (as amended by the Digital Omnibus, Regulation (EU) 2026/1744), using `ollama/phi4:latest` by default (override with `LAR_SHOWCASE_MODEL`), and produces four artefacts: an HMAC-signed causal trace, an authority ledger, an action-inventory manifest, and the deployer's Art. 27 Fundamental Rights Impact Assessment (`fria_art27.md`). "Row covered" = a runtime hook fires and/or an evidence artifact is produced — **not** a conformity assessment. All primitives are open-source.
 
 ```bash
 python examples/compliance/22_eu_ai_act_finance_showcase.py
@@ -8,24 +8,26 @@ python examples/compliance/22_eu_ai_act_finance_showcase.py
 
 **Source:** [`examples/compliance/22_eu_ai_act_finance_showcase.py`](https://github.com/snath-ai/lar/blob/main/examples/compliance/22_eu_ai_act_finance_showcase.py)
 
-Any model supported by LiteLLM works. To switch models, set `BACKBONE_MODEL`:
+Any model supported by LiteLLM works. To switch models, set `LAR_SHOWCASE_MODEL`:
 
 ```bash
-# Local (default)
+# Local (default: ollama/phi4:latest)
 python examples/compliance/22_eu_ai_act_finance_showcase.py
 
+# Smaller / faster local model
+LAR_SHOWCASE_MODEL=ollama/llama3.2:1b python examples/compliance/22_eu_ai_act_finance_showcase.py
+
 # Cloud
-BACKBONE_MODEL=gpt-4o python examples/compliance/22_eu_ai_act_finance_showcase.py
-BACKBONE_MODEL=gemini/gemini-1.5-pro python examples/compliance/22_eu_ai_act_finance_showcase.py
+LAR_SHOWCASE_MODEL=gpt-4o python examples/compliance/22_eu_ai_act_finance_showcase.py
 ```
 
 ---
 
-## What It Validates (v2.2.0 — 23 Requirements)
+## What It Validates (26 runtime rows)
 
-The showcase runs a high-risk credit application (Annex III, point 5(b) — creditworthiness assessment) through every compliance primitive in sequence, then verifies the three output artefacts against their regulatory obligations.
+The showcase runs a high-risk credit application (Annex III, point 5(b) — creditworthiness assessment) through every compliance primitive in sequence, then verifies the output artefacts against their regulatory obligations. FINANCE / credit scoring means the deployer owes an **Art. 27 FRIA** — the showcase generates and completeness-checks it (`fria_art27.md`).
 
-**Original 12 steps (v2.1.x)**
+**Original 12 steps**
 
 | # | Primitive | Article / Standard | Validated |
 |:---|:---|:---|:---|
@@ -34,28 +36,31 @@ The showcase runs a high-risk credit application (Annex III, point 5(b) — cred
 | S4 | `PolicyRegistry` + `RiskScorerNode` | Art. 9 + Art. 14 — risk management | `computed_oversight_level` written to state |
 | S5 | `PIIRedactionEngine` + `BiasFilterNode` | prEN 18284/18283 / Art. 10 | SSN + Name stripped; bias scan on LLM output |
 | S6 | `AuditLogger` + `HumanJuryNode` + `AuthorityLedger` | Art. 12–14 — trustworthiness | HMAC trace + structural HITL + Fourth Tier record |
-| S7 | `CredentialVault` | prEN 18282 / Art. 15(4) | JIT NHI provisioning — agent holds no standing credentials |
+| S7 | `CredentialVault` | prEN 18282 / Art. 15(5) | JIT NHI provisioning — agent holds no standing credentials |
 | S8 | Secure-by-design architecture | CRA Annex I | Credential minimisation + HMAC signing |
 | S9 | `ComplianceManifestGenerator` | Step 9 — adjacent legislation | DORA, MiFID II, GDPR auto-detected from domain |
 | S10 | Manifest + Ledger + Causal Trace | Annex IV | Three Annex IV documentation inputs signed |
 | S11 | `RuntimeStateVersioner` | Art. 3(23) | Drift report against conformity baseline |
 
-**v2.2.0 gap-closure (rows A–L)**
+**Gap-closure rows A–O**
 
 | # | Primitive | Article / Standard | Validated |
 |:---|:---|:---|:---|
-| A | `FundamentalRightsImpactNode` | Art. 9 FRIA — 6 EU Charter dimensions | `fria_passed = True` after LLM output scan |
-| B | `BehavioralEnvelopeMonitor` | Art. 9 PMM — output variance | Confidence score checked against baseline envelope |
+| A | `FundamentalRightsImpactNode` | Art. 9(2)(a) — runtime FR screen (**not** the Art. 27 FRIA) | `fria_passed` written after LLM output scan |
+| B | `BehavioralEnvelopeMonitor` | Art. 9(9) PMM — output variance | Confidence score checked against baseline envelope |
 | C | `AuditLogger.verify_step_integrity()` | Art. 12 — per-step integrity | State diff recomputed; MISMATCH → tamper alert |
 | D | `AuditLogger.log_plan_switch()` | Art. 12 — causal chain depth | Branch-switch events in trace |
 | E | `DeployerTransparencyNode` | Art. 13 — instructions for use | Structured disclosure → `state["deployer_instructions"]` |
-| F | `HumanJuryNode(automation_boundary=…)` | Art. 14 — automation boundary | Per-decision-type policy (`always_human` / `auto_if_low_risk`) |
-| G | `SupplierAgreementRegistry` | Art. 25(4) — written agreements | `assert_agreement(tool_name)` before every external call |
+| F | `HumanJuryNode(automation_boundary="always_human")` | Art. 14 — automation boundary | Halts with no reviewer + no TTY; a real decision arrives via `human_decision_provider` and is signed into the AuthorityLedger with a rationale |
+| G | `SupplierAgreementRegistry` | Art. 25(4) — written agreements (FOSS carve-out noted) | `assert_agreement(tool_name)` before every external call |
 | H | `DynamicToolDiscoveryMonitor` | Art. 3(23) — post-conformity tool addition | Flags tools added since baseline |
 | I | `MultiAgentBoundaryNode` | Art. 3 — sub-agent boundaries | `INTERNAL` vs `EXTERNAL_MARKET` declaration per sub-agent |
-| J | `IncidentReporterNode` (executor hook) | Art. 73–74 — incident reporting | Auto-fires on unhandled exceptions; 24h/72h deadlines in record |
+| J | `IncidentReporterNode` (executor hook) | Art. 73 — incident reporting | Conservative 48h/360h ceiling + all three Art. 73 legal deadlines + `provider_must_confirm_applicable_paragraph` per record |
 | K | `SessionMemoryNode` | GDPR Art. 17 — right to erasure | Per-subject compartment; `erase` mode deletes on request |
-| L | `CredentialVault.get_with_trust()` | Art. 15(4) — trust-based privilege | Sensitive credentials blocked until trust_level="HIGH" |
+| L | `CredentialVault.get_with_trust()` | Art. 15(5) — cybersecurity / trust-gated privilege | Sensitive credentials blocked until trust_level="HIGH" |
+| M | `Article27FRIANode` | Art. 27 — **deployer** Fundamental Rights Impact Assessment | Scope-gated on `deployer_class`; generates & completeness-checks the 27(1)(a)-(f) template; writes `fria_art27.md` |
+| N | `ProhibitedPracticeGuard` | Art. 5 (+ 2 Dec 2026 Omnibus) | Heuristic scan incl. `NCII` / `CSAM` categories |
+| O | `SyntheticMarkerNode` ×2 | Art. 50(2) machine-readable + Art. 50(1)/(4) visible | Both markings applied to the final output |
 
 ---
 
@@ -159,7 +164,7 @@ The paper (Section 8.1) defines a 12-step conformity assessment sequence. Here i
 | **4** | Risk management: prEN 18228 / Art. 9 | `PolicyRegistry` + `RiskScorerNode` | Runtime |
 | **5** | Data governance: prEN 18284 + prEN 18283 | `PIIRedactionEngine` + `BiasFilterNode` | Runtime |
 | **6** | Trustworthiness: Art. 12–14 | `AuditLogger` + `HumanJuryNode` + `AuthorityLedger` | Runtime |
-| **7** | Cybersecurity: prEN 18282 / Art. 15(4) | `CredentialVault` (JIT NHI) | Runtime |
+| **7** | Cybersecurity: prEN 18282 / Art. 15(5) | `CredentialVault` (JIT NHI) | Runtime |
 | **8** | CRA applicability | Secure-by-design architecture | Docs |
 | **9** | Adjacent legislation inventory | `ComplianceManifestGenerator` | Runtime |
 | **10** | Conformity assessment artefacts | Manifest + Ledger + Trace → Annex IV | Artefacts |

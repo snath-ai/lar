@@ -3,7 +3,9 @@
 > **Instructions for the Provider (You):**
 > Under the EU AI Act (Article 11), the legal "Provider" (the organisation placing the High-Risk AI System on the market) must draw up technical documentation in accordance with Annex IV *before* conformity assessment.
 > 
-> **Lár generates the architectural and action-inventory evidence for this document automatically.** You must fill in the business, data, and testing details.
+> **Lár auto-generates the action-inventory section (§2 below — Annex IV §2(b), components and their interactions) and parts of §4–6 (oversight records, causal trace).** Everything else — provider identity, intended purpose, data governance, training data, testing results, risk-management documentation, the conformity assessment itself — is yours to complete. Lár produces evidence; it does not produce the technical documentation.
+>
+> Separately, if the **deployer** is a public body, a private provider of public services, or a credit-scoring / life-&-health-insurance risk deployer, they owe an **Article 27 Fundamental Rights Impact Assessment** — `Article27FRIANode` generates that template (`fria_art27.md`); it is a deployer document, not part of this provider technical file.
 
 ---
 

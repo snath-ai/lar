@@ -11,7 +11,7 @@ Every design decision — deterministic graphs, step-level state diffs, cryptogr
 
 ## Compliance by Design
 
-Lár ships a complete, production-ready **Enterprise Compliance Backbone** — 20 compliance primitives in `lar.compliance` (verified by direct count during this session's independent audit; corrected from an earlier "13," and the "first agentic framework" claim removed as not independently verifiable):
+Lár ships a complete, production-ready **Enterprise Compliance Backbone** — 22 compliance primitives in `lar.compliance`:
 
 | Primitive | EU AI Act Article |
 |---|---|
@@ -23,7 +23,7 @@ Lár ships a complete, production-ready **Enterprise Compliance Backbone** — 2
 | `ComplianceManifest` (Annex IV auto-generation) | Art. 11 — Technical Documentation |
 | `SyntheticMarkerNode` | Art. 50(2) — Synthetic Content Marking |
 | `BiasFilter` | prEN 18283 — Bias Management |
-| `CredentialVault` (JIT provisioning) | Art. 15(4) — Privilege Minimisation |
+| `CredentialVault` (JIT provisioning) | Art. 15(5) — Privilege Minimisation |
 | `RuntimeStateVersioner` (drift detection) | Art. 3(23) — Substantial Modification |
 | `AuthorityLedger` — HMAC-signed decision record | Art. 12 / 14 — Fourth-Tier Oversight |
 | `BranchTriageNode` — per-branch findings before jury | Art. 14 — Fractal Human Oversight |
@@ -58,7 +58,7 @@ Lár supports **DeepSeek R1**, **OpenAI o1**, and **Liquid Thinking** out of the
 
 ## EU AI Act Ready (August 2026 Enforcement)
 
-Lár ships a complete, production-ready **Compliance Backbone** — 20 primitives in `lar.compliance`, including:
+Lár ships a complete, production-ready **Compliance Backbone** — 22 primitives in `lar.compliance`, including:
 
 *   **Immutable Audit Trails (Art. 12)**: Cryptographically signed causal traces.
 *   **Action-Level Authority Ledger (Art. 14)**: The "Fourth Tier" of human oversight tracking.

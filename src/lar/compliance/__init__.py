@@ -15,6 +15,7 @@ from .branch_triage import BranchTriageNode
 
 # v2.2.0 — EU AI Act gap-closure primitives
 from .fria_node import FundamentalRightsImpactNode, FRIAViolation
+from .fria_art27_node import Article27FRIANode, Art27FRIAIncompleteError
 from .session_memory_node import SessionMemoryNode
 from .supplier_agreement_registry import SupplierAgreementRegistry, AgreementNotFoundError
 from .deployer_transparency_node import DeployerTransparencyNode
@@ -42,6 +43,7 @@ __all__ = [
     "ProhibitedPracticeGuard", "ProhibitedPracticeError",
     # v2.2.0 gap-closure nodes
     "FundamentalRightsImpactNode", "FRIAViolation",
+    "Article27FRIANode", "Art27FRIAIncompleteError",
     "SessionMemoryNode",
     "SupplierAgreementRegistry", "AgreementNotFoundError",
     "DeployerTransparencyNode",

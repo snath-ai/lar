@@ -1,9 +1,9 @@
-# Compliance & Safety (EU AI Act Ready - Aug 2026)
+# Compliance & Safety (EU AI Act — evidence infrastructure)
 
 !!! warning "Legal Disclaimer"
     Lár is open-source software infrastructure, not legal or compliance advice. Using Lár does not automatically guarantee compliance with the EU AI Act, GDPR, HIPAA, or any other regulation. Organizations are solely responsible for ensuring their AI systems undergo proper legal review and conformity assessments.
 
-Lár is engineered to meet the stringent requirements of the **EU AI Act (2026)** and **FDA 21 CFR Part 11** for High-Risk AI Systems.
+Lár is engineered to meet the requirements of the **EU AI Act (Regulation (EU) 2024/1689, as amended by the Digital Omnibus 2026/1744)** and **FDA 21 CFR Part 11** for High-Risk AI Systems.
 
 Unlike "Black Box" frameworks that obfuscate decision paths, Lár is a "Glass Box" engine designed for forensic auditability.
 
@@ -11,7 +11,7 @@ Unlike "Black Box" frameworks that obfuscate decision paths, Lár is a "Glass Bo
 
 ## EU AI Act Alignment
 
-The EU AI Act (fully enforceable August 2026) imposes strict obligations on "High-Risk" systems (e.g., Medical Devices, Employment, Credit Scoring, Critical Infrastructure).
+The EU AI Act imposes obligations (standalone Annex III high-risk obligations apply from 2 December 2027 after the Digital Omnibus deferral; Art. 5 since Feb 2025, GPAI since Aug 2025, Art. 50 since Aug 2026) on "High-Risk" systems (e.g., Medical Devices, Employment, Credit Scoring, Critical Infrastructure).
 
 ### Understanding Your Role (Art. 3)
 
@@ -36,28 +36,29 @@ Lár handles the **mechanical infrastructure** of compliance. It provides the ar
 In short: Lár provides the "flight recorder" and "emergency brakes." The organization must bring the safe model, the responsible human operators, and the governance policies.
 *   **Lár (The Framework):** Lár acts as a component supplier. We provide the architectural primitives (nodes, executor, loggers) that generate the forensic *evidence* you need to pass a conformity assessment. 
 
-Lár implements a complete **"Fourth Tier"** compliance architecture natively, providing 20 production-ready primitives that seamlessly integrate into the execution graph:
+Lár implements a complete **"Fourth Tier"** compliance architecture natively, providing production-ready primitives that seamlessly integrate into the execution graph:
 
 | Primitive | EU AI Act / Regulatory Match | Description |
 | :--- | :--- | :--- |
 | **`PolicyRegistry`** | Art. 9, 14 | Maps actions to risk tiers and determines oversight requirements. |
 | **`RiskScorerNode`** | Art. 14 | Pre-execution dynamic risk scoring and human-in-the-loop routing. |
 | **`RuntimeStateVersioner`** | Art. 3(23) | Detects "Substantial Modifications" (behavioral drift) during runtime. |
-| **`CredentialVault`** | Art. 15(4) | Non-Human Identity (NHI) Just-in-Time privilege minimization. |
+| **`CredentialVault`** | Art. 15(5) | Non-Human Identity (NHI) Just-in-Time privilege minimization. |
 | **`TransparencyEngine`** | Art. 13, 50 | Automated disclosure flagging for third-party interactions. |
 | **`PIIRedactionEngine`** | GDPR Art. 5, 17 | Right to Erasure: Cleans PII from states before cryptographic logging. |
 | **`AuditLogger` (Causal Trace)** | Art. 12 | Immutable State-Diff logs capturing explicit model reasoning traces. |
 | **`SyntheticMarkerNode`** | Art. 50(2) | Injects visible disclaimers or C2PA metadata into generated content. |
-| **`BiasFilterNode`** | prEN 18283 | Evaluates state variables for bias heuristics before final output. |
+| **`BiasFilterNode`** | Art. 10(2)(f)-(g); prEN 18283 (supporting) | Runtime bias keyword gate before final output — supports, does not by itself satisfy, prEN 18283 / Art. 10. |
 | **`PromptInjectionGuard`** | Art. 15(5) | Detects and blocks inputs designed to cause adversarial model failure. |
 | **`BranchTriageNode`** | Art. 14 (fractal) | Post-`BatchNode` primitive for parallel agents. Preserves per-dimension branch evidence before `ReduceNode` compression, ensuring the human jury sees individual branch findings — not only the consolidated score. Sets `branch_critical` for early-exit HITL routing. |
 | **`ComplianceManifestGenerator`** | Step 9, All | Statically walks the graph and auto-generates the exhaustive regulatory action inventory for auditors. |
 | **`LethalTrifectaGuard`** | GDPR Art. 5, Art. 14 | Runtime pre-execution guard enforcing the AEPD "Rule of 2" — blocks any action that combines untrusted input + sensitive data + autonomous effect without prior human approval. |
 | **`AuthorityLedger`** | Art. 12, 14 | The "Fourth Tier" — captures who exercised authority, their role, rationale, and risk score into a tamper-evident, HMAC-signed oversight record on every `HumanJuryNode` decision. |
-| **`FundamentalRightsImpactNode`** | Art. 9 FRIA; EU Charter Arts. 1, 7/8, 11, 21, 47 | Runtime FRIA gate: scans text outputs across six EU Charter dimensions (dignity, privacy, non-discrimination, expression, justice, data protection) before proceeding. |
-| **`ProhibitedPracticeGuard`** | Art. 5 | Detects prohibited AI practices at runtime: social scoring, subliminal manipulation, and exploitation of vulnerable groups. Raises `ProhibitedPracticeError` on a match. |
-| **`IncidentReporter` + `IncidentReporterNode`** | Art. 72–74; ISO 9001 Cl. 9 | Real-time incident detection and structured JSONL logging with EU-mandated reporting deadlines (CRITICAL/HIGH: 24 h). `IncidentReporter` generates Post-Market Monitoring Markdown reports from audit logs. |
-| **`MultiAgentBoundaryNode`** | Art. 3(1), Recital 12, Art. 25 | Records Art. 25 boundary classification (INTERNAL / EXTERNAL_MARKET) for every sub-agent call; warns when an external agent lacks a conformity ID. |
+| **`FundamentalRightsImpactNode`** | Art. 9(2)(a) risk factor; EU Charter Arts. 1, 7/8, 11, 21, 47 | Runtime fundamental-rights *screen*: scans text outputs across six EU Charter dimensions before proceeding. **Not** the Art. 27 FRIA. |
+| **`Article27FRIANode`** | Art. 27 — deployer Fundamental Rights Impact Assessment | Scope-gated on `deployer_class`; generates & completeness-checks the 27(1)(a)-(f) template; writes `fria_art27.md`. Lár produces the template, not the assessment. |
+| **`ProhibitedPracticeGuard`** | Art. 5 | Detects prohibited-practice phrasing at runtime: social scoring, subliminal manipulation, exploitation of vulnerable groups, plus the 2 Dec 2026 Omnibus additions (NCII, AI-CSAM). Raises `ProhibitedPracticeError` on a match. |
+| **`IncidentReporter` + `IncidentReporterNode`** | Art. 72–74; ISO 9001 Cl. 9 | Real-time incident detection and structured JSONL logging with a conservative 48h/360h deadline ceiling plus all three Art. 73 legal deadlines per record. `IncidentReporter` generates Post-Market Monitoring Markdown reports from audit logs. |
+| **`MultiAgentBoundaryNode`** | Art. 3(1), Art. 25 | Records Art. 25 boundary classification (INTERNAL / EXTERNAL_MARKET) for every sub-agent call; warns when an external agent lacks a conformity ID. |
 | **`SupplierAgreementRegistry`** | Art. 25(4) | Maintains signed written agreements with tool suppliers. `assert_agreement()` blocks execution if an agreement is missing or expired. Exports a Markdown table for the compliance manifest. |
 | **`DynamicToolDiscoveryMonitor`** | Art. 3(23), Art. 9 | Compares the live tool catalogue against the conformity-assessed baseline. Sets `substantial_modification_flag` and optionally raises `UndisclosedToolError` when new tools appear. |
 | **`DeployerTransparencyNode`** | Art. 13, Annex IV | Generates a machine-readable Art. 13 instructions-for-use disclosure (intended purpose, known limitations, human oversight requirements, prohibited uses) per session. |
@@ -66,9 +67,9 @@ Lár implements a complete **"Fourth Tier"** compliance architecture natively, p
 
 ## Enterprise Reference Implementation
 
-> The canonical, working reference that ticks every compliance box the April 2026 EU AI Act research paper identifies.
+> The canonical, working reference that maps each primitive to a provision of Regulation (EU) 2024/1689 (as amended); a mapped row = a runtime hook + evidence, not a conformity assessment.
 
-Lár ships a **single reusable backbone** that wires the compliance primitives (20 in lar.compliance; the backbone's own docstring documents 23 EU AI Act requirement mappings) into an end-to-end auditable graph. Target any regulated vertical by supplying a domain name:
+Lár ships a **single reusable backbone** that wires the compliance primitives (in lar.compliance) — 26 runtime rows into an end-to-end auditable graph. Target any regulated vertical by supplying a domain name:
 
 ```bash
 python src/lar/enterprise/run.py HEALTHCARE  # MDR + EU AI Act + GDPR + FDA 21 CFR 11
@@ -119,7 +120,7 @@ python examples/compliance/22_eu_ai_act_finance_showcase.py
 ```
 
 It explicitly validates:
-1. **Article 15(4)**: JIT Privilege (CredentialVault)
+1. **Article 15(5)**: JIT Privilege (CredentialVault)
 2. **GDPR Article 17**: PII Redaction
 3. **Article 12**: Causal Audit Logging
 4. **Article 9 & 14**: Policy Registry & Risk Scoring
@@ -412,12 +413,13 @@ guard = ProhibitedPracticeGuard(input_key="final_output", next_node=output_node)
 
 ---
 
-## 7. Art. 9 FRIA: Fundamental Rights Impact Assessment
-**Requirement**: Art. 9 requires providers to assess the impact of high-risk AI systems on fundamental rights as part of the risk management system.
+## 7. Fundamental rights — two distinct obligations
 
-**Lár Solution**: `FundamentalRightsImpactNode`
+### 7a. Art. 9(2)(a) — runtime fundamental-rights screen (provider)
 
-A runtime FRIA gate that scans text outputs across **six EU Charter dimensions** using configurable regex heuristics:
+**Requirement**: Art. 9(2)(a) requires the risk management system to identify the risks a high-risk system can pose to health, safety **or fundamental rights**.
+
+**Lár Solution**: `FundamentalRightsImpactNode` — a runtime *screen* (not the named FRIA) that scans text outputs across **six EU Charter dimensions** using configurable regex heuristics:
 
 | Dimension | EU Charter Article |
 |:---|:---|
@@ -441,10 +443,33 @@ fria = FundamentalRightsImpactNode(
 # Wire after every LLMNode or ToolNode that produces text touching a person.
 ```
 
+### 7b. Art. 27 — Fundamental Rights Impact Assessment (deployer)
+
+**Requirement**: Art. 27 requires *certain deployers* — public bodies, private providers of public services, and deployers doing credit scoring (Annex III 5(b)) or life & health insurance risk pricing (Annex III 5(c)) — to carry out a FRIA **before first use**, covering: (a) deployer processes; (b) period/frequency of use; (c) affected natural persons; (d) specific fundamental-rights risks (informed by the Art. 13 provider information); (e) human-oversight measures; (f) measures on materialisation incl. internal governance and complaint mechanisms. Once done, the deployer notifies the market surveillance authority (Art. 27(3)); it may cross-refer a GDPR Art. 35 DPIA (Art. 27(4), reinforced by the Digital Omnibus).
+
+**Lár Solution**: `Article27FRIANode` — scope-gated on `deployer_class`; generates the 27(1)(a)-(f) template, reports completeness, records the notification duty, and writes `enterprise_audit/fria_art27.md` via `as_markdown()`. Lár generates and checks the template; it does **not** perform the assessment.
+
+```python
+from lar.compliance import Article27FRIANode
+
+fria27 = Article27FRIANode(
+    system_name="Credit Decision Agent",
+    deployer_class="CREDIT_SCORING",       # or PUBLIC_BODY / PRIVATE_PUBLIC_SERVICE / LIFE_HEALTH_INSURANCE
+    annex_iii_point="5(b)",
+    deployment_process="...", usage_period_and_frequency="...",
+    affected_natural_persons=["applicants", "guarantors"],
+    fundamental_rights_risks=["proxy bias (Charter Art. 21)"],
+    human_oversight_measures=["mandatory reviewer approval gate"],
+    measures_on_materialisation=["suspend + notify authority", "complaint channel"],
+    dpia_reference="DPIA-2026-014",
+    strict=True,   # raise if any 27(1) element is missing
+)
+```
+
 ---
 
-## 8. Art. 72–74: Serious Incident Reporting
-**Requirement**: Art. 73–74 require providers to report serious incidents to national authorities within defined deadlines (typically 24 hours for life/safety risks).
+## 8. Art. 72–73: Post-market monitoring & serious incident reporting
+**Requirement**: Art. 73 requires providers to report serious incidents promptly. The deadlines are keyed to incident **type**, not a severity score: Art. 73(2) general default **15 days**; Art. 73(3) widespread infringement / serious incident per Art. 3(49)(b) **2 days**; Art. 73(4) death of a person **10 days**.
 
 **Lár Solution**: `IncidentReporterNode` + `IncidentReporter`
 
@@ -453,15 +478,17 @@ fria = FundamentalRightsImpactNode(
 1. **Graph node** — scans the live `GraphState` for harm signal keys (`_prohibited_practice_flag`, `_trifecta_check`, `fria_findings`, `bias_detected`, `last_error`) and writes structured incident records.
 2. **Executor hook** — `report_runtime_error()` is called by `GraphExecutor` on unhandled exceptions; classifies and records automatically.
 
-Every record written to `.jsonl` includes the EU article reference, severity, and a `reporting_deadline_hours` field:
+Every record written to `.jsonl` includes the EU article reference, a **conservative deadline ceiling** in `reporting_deadline_hours`, the full `art_73_legal_deadlines` map, and `provider_must_confirm_applicable_paragraph: true` — because Lár cannot infer from a generic harm signal whether an incident is legally "widespread" or involved a death:
 
-| Severity | Trigger | Deadline |
+| Lár severity | Trigger | Conservative ceiling |
 |:---|:---|:---|
-| CRITICAL | `ProhibitedPracticeError`, `LethalTrifectaError`, `FRIAViolation` | 24 h |
-| HIGH | `SecurityError`, `AgreementNotFoundError`, `UndisclosedToolError` | 24 h |
-| MEDIUM | State contains trifecta/prohibited flags | 72 h |
+| CRITICAL | `ProhibitedPracticeError`, `LethalTrifectaError`, `FRIAViolation` | 48 h (Art. 73(3) fastest deadline, as a fail-safe) |
+| HIGH | `SecurityError`, `AgreementNotFoundError`, `UndisclosedToolError` | 48 h (same fail-safe — **not** an Art. 73(4) death classification) |
+| MEDIUM | State contains trifecta/prohibited flags | 360 h (Art. 73(2) general default — 15 days) |
 
-**`IncidentReporter`** aggregates run logs and the `AuthorityLedger` post-execution to generate a Post-Market Monitoring (PMM) Markdown report (Art. 72 / ISO 9001 Cl. 9), including rejection rate alerts and drift severity summaries.
+The provider must confirm the applicable Art. 73 paragraph against the incident facts.
+
+**`IncidentReporter`** aggregates run logs and the `AuthorityLedger` post-execution to generate a Post-Market Monitoring (PMM) evidence summary — it **supports** Art. 72 but does not replace the documented post-market monitoring plan (Art. 72(3)).
 
 ---
 
@@ -568,8 +595,9 @@ art13 = DeployerTransparencyNode(
 | **Trifecta Guard** | Runtime AEPD enforcement | Meets GDPR Art. 5, Art. 14 (AEPD Rule of 2). |
 | **Authority Records** | `AuthorityLedger` | Closes the "Fourth Tier" gap — Art. 12/14 action-level evidence chain. |
 | **Prohibited Practices** | `ProhibitedPracticeGuard` | Meets Art. 5 — blocks social scoring, manipulation, vulnerability exploitation at runtime. |
-| **Fundamental Rights** | `FundamentalRightsImpactNode` | Meets Art. 9 FRIA — six EU Charter dimensions scanned per output. |
-| **Incident Reporting** | `IncidentReporterNode` + `IncidentReporter` | Meets Art. 72–74 — structured JSONL with 24 h deadline flags; PMM Markdown reports. |
+| **Fundamental Rights (screen)** | `FundamentalRightsImpactNode` | Art. 9(2)(a) runtime screen — six EU Charter dimensions per output (not the Art. 27 FRIA). |
+| **Fundamental Rights (deployer FRIA)** | `Article27FRIANode` | Art. 27 — generates & completeness-checks the deployer FRIA template; writes `fria_art27.md`. |
+| **Incident Reporting** | `IncidentReporterNode` + `IncidentReporter` | Supports Art. 72–73 — structured JSONL with a conservative deadline ceiling + all three Art. 73 legal deadlines; PMM evidence summary. |
 | **Multi-Agent Boundaries** | `MultiAgentBoundaryNode` | Meets Art. 25 — INTERNAL/EXTERNAL_MARKET classification per sub-agent call. |
 | **Supplier Agreements** | `SupplierAgreementRegistry` | Meets Art. 25(4) — written agreement enforcement; blocks on missing/expired. |
 | **Tool Discovery** | `DynamicToolDiscoveryMonitor` | Meets Art. 3(23) — flags substantial modification when undisclosed tools appear. |

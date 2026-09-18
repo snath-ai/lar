@@ -16,11 +16,14 @@ except ImportError:
 
 class IncidentReporter:
     """
-    Aggregates runtime execution logs and Authority Ledger records to produce 
-    a Post-Market Monitoring (PMM) report.
-    
-    Operationalises EU AI Act Art. 72 (Post-Market Monitoring) and provides 
-    evidence for ISO 9001 Clause 9 (Performance Evaluation).
+    Aggregates runtime execution logs and Authority Ledger records into a
+    Post-Market Monitoring (PMM) evidence summary.
+
+    Scope: this **supports** EU AI Act Art. 72 (post-market monitoring) by
+    collecting the operational data a PMM system consumes. It does not replace
+    the documented **post-market monitoring plan** (Art. 72(3) — template set by
+    Commission implementing act) or the provider's active data-collection duties.
+    Also useful as evidence for ISO 9001 Clause 9 (Performance Evaluation).
     """
     
     def __init__(self, log_dir: str):
@@ -156,31 +159,43 @@ class IncidentReporterNode:
 
     Lár has no way to automatically determine from a generic harm signal
     whether an incident is legally "widespread" or involved a death — that is
-    a factual/legal determination, not a severity score.  DEADLINE_HOURS below
-    is therefore a conservative HEURISTIC mapping from Lár's own internal
-    severity tiers onto the real Art. 73 deadlines (fastest deadline for the
-    most severe automated triggers, general 15-day default otherwise) — it is
-    not itself a legal classification.  Confirm the applicable paragraph against
-    the actual incident facts before relying on any deadline_by value produced
-    here.
+    a factual/legal determination, not a severity score.  ``DEADLINE_HOURS``
+    below is therefore a **conservative ceiling**: Lár's more severe automated
+    triggers are pinned to the *fastest* Art. 73 deadline (2 days) so a provider
+    who acts on the Lár value is never late, and everything else to the 15-day
+    general default.  The real per-paragraph deadlines are attached to every
+    record as ``art_73_legal_deadlines`` and the record is flagged
+    ``provider_must_confirm_applicable_paragraph``.  Lár deliberately does NOT
+    emit the Art. 73(4) "death of a person" 10-day deadline off a generic
+    severity tier — mapping an unclassified signal onto that paragraph would be
+    a false legal classification.
 
-    DEADLINE_HOURS:
-      CRITICAL → 48 h  (Art. 73(3) deadline, applied as a fail-safe ceiling for
-                         Lár's most severe automated triggers)
-      HIGH     → 240 h (Art. 73(4) deadline)
-      MEDIUM   → 360 h (Art. 73(2) general default)
-      LOW      → None  (below Lár's own reportability threshold — not an
-                         Art. 73 category; not a claim that the Act itself
-                         exempts these from reporting)
+    DEADLINE_HOURS (conservative ceiling — not a legal classification):
+      CRITICAL → 48 h   (Art. 73(3) — fastest deadline, applied as a fail-safe)
+      HIGH     → 48 h   (same fail-safe ceiling — do not assume 73(4)/death)
+      MEDIUM   → 360 h  (Art. 73(2) general default — 15 days)
+      LOW      → None   (below Lár's own reportability threshold — NOT a claim
+                          that the Act exempts these from reporting)
     """
 
-    EU_REFERENCE = "Art. 73 EU AI Act — Serious Incident Reporting (heuristic severity mapping — see class docstring)"
+    EU_REFERENCE = (
+        "Art. 73 EU AI Act — Serious Incident Reporting. Deadline shown is a "
+        "conservative ceiling, not a legal classification — see art_73_legal_deadlines."
+    )
 
     DEADLINE_HOURS: Dict[str, Optional[int]] = {
         "CRITICAL": 48,
-        "HIGH": 240,
+        "HIGH": 48,
         "MEDIUM": 360,
         "LOW": None,
+    }
+
+    # The actual Art. 73 deadlines, keyed by INCIDENT TYPE (a factual/legal
+    # determination the provider must make — Lár cannot infer it).
+    ART_73_LEGAL_DEADLINES: Dict[str, str] = {
+        "73(2)_general_default": "15 days (360 h)",
+        "73(3)_widespread_infringement_or_serious_incident_3_49_b": "2 days (48 h)",
+        "73(4)_death_of_a_person": "10 days (240 h)",
     }
 
     # Heuristic harm signals in graph state
@@ -305,11 +320,14 @@ class IncidentReporterNode:
         severity = details.get("severity", "MEDIUM")
         deadline_h = self.DEADLINE_HOURS.get(severity)
         record = {
-            "schema": "lar-incident-v1",
+            "schema": "lar-incident-v2",
             "eu_reference": self.EU_REFERENCE,
             "reported_at": now,
             "severity": severity,
             "reporting_deadline_hours": deadline_h,
+            "reporting_deadline_is_conservative_ceiling": True,
+            "provider_must_confirm_applicable_paragraph": True,
+            "art_73_legal_deadlines": self.ART_73_LEGAL_DEADLINES,
             "deadline_by": (
                 (datetime.datetime.utcnow() + datetime.timedelta(hours=deadline_h)).isoformat() + "Z"
                 if deadline_h else None

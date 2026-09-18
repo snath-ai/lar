@@ -4,25 +4,45 @@ Lár Enterprise Compliance Backbone
 Reusable backbone that wires the compliance primitives into a single auditable graph.
 Drop in a DOMAIN_CONFIG dict to target any regulated vertical.
 
-Paper coverage (Nannini et al., 2026 — all 23 requirements exercised at runtime):
-  Art. 9      → PolicyRegistry + FundamentalRightsImpactNode (FRIA)
-  Art. 9 PMM  → BehavioralEnvelopeMonitor (output variance monitoring)
+Requirement coverage. "Covered" = a runtime hook fires and/or an evidence
+artifact is produced. It does NOT mean the full legal obligation is discharged —
+conformity assessment, the QMS, and the substantive content of every assessment
+remain the customer-provider's / deployer's responsibility. Citations are against
+Regulation (EU) 2024/1689 as amended by the Digital Omnibus, Regulation (EU)
+2026/1744 (in force 27 Jul 2026).
+
+  Art. 9(2)(a) → PolicyRegistry + FundamentalRightsImpactNode
+                 (runtime fundamental-rights screening — NOT the Art. 27 FRIA)
+  Art. 9(9)   → BehavioralEnvelopeMonitor (output variance monitoring)
   Art. 12     → AuditLogger (causal trace + verify_step_integrity + log_plan_switch)
   Art. 13     → DeployerTransparencyNode (instructions for use) + TransparencyEngine
-  Art. 14     → RiskScorerNode + HumanJuryNode (automation_boundary + decision_type)
+  Art. 14     → RiskScorerNode + HumanJuryNode (automation_boundary=always_human
+                by default; a real decision is supplied via human_decision_provider)
   Art. 3(23)  → RuntimeStateVersioner + DriftDetector + DynamicToolDiscoveryMonitor
-  Art. 15(4)  → CredentialVault (get_with_trust — trust-based privilege)
-  Art. 25(4)  → SupplierAgreementRegistry (written agreement enforcement)
-  Art. 50(2)  → SyntheticMarkerNode (C2PA / visible disclaimer)
-  Art. 73-74  → IncidentReporterNode (real-time incident detection + 24/72h deadlines)
+  Art. 15(5)  → CredentialVault (cybersecurity — NHI least privilege; get_with_trust)
+  Art. 25(4)  → SupplierAgreementRegistry (written agreement enforcement; note the
+                FOSS carve-out — Lár itself is outside Art. 25(4))
+  Art. 27     → Article27FRIANode (deployer Fundamental Rights Impact Assessment
+                template — gated on deployer_class; FINANCE/credit-scoring is in scope)
+  Art. 50(1)/(4) → SyntheticMarkerNode VISIBLE (human disclosure / deep-fake label)
+  Art. 50(2)  → SyntheticMarkerNode METADATA (machine-readable marking)
+  Art. 73     → IncidentReporterNode (real-time detection; conservative 48h/360h
+                ceiling + all three Art. 73 legal deadlines attached per record)
   Art. 3      → MultiAgentBoundaryNode (internal vs. market-placed sub-agents)
   GDPR 5/17   → PIIRedactionEngine + SessionMemoryNode (erasable per-subject memory)
-  prEN18283   → BiasFilterNode (bias management)
+  Art. 10(2)(f)-(g) → BiasFilterNode (runtime bias keyword gate; supports prEN 18283)
   Step 9      → ComplianceManifestGenerator (action inventory + adjacent legislation)
   AEPD PoP    → LethalTrifectaGuard (Rule-of-2 runtime block)
   Fourth Tier → AuthorityLedger (stakeholder/role/rationale/risk signed record)
-  Art. 5      → ProhibitedPracticeGuard (auto-wired into executor)
+  Art. 5      → ProhibitedPracticeGuard (auto-wired into executor; incl. the
+                2 Dec 2026 Omnibus NCII/CSAM additions)
   BranchTriage→ BranchTriageNode (fractal agents — see 23_fractal_compliance_showcase.py)
+
+Timeline (post-Omnibus): Art. 5 prohibitions in force since 2 Feb 2025 (NCII/CSAM
+from 2 Dec 2026); GPAI duties since 2 Aug 2025; Art. 50 transparency from
+2 Aug 2026 (2 Dec 2026 grace for the 50(2) marking of systems already on market);
+Annex III high-risk obligations apply from **2 December 2027** (deferred from
+2 Aug 2026); Annex I embedded high-risk from 2 Aug 2028.
 """
 
 from __future__ import annotations
@@ -50,6 +70,7 @@ from lar.compliance import (
     ProhibitedPracticeGuard,
     # v2.2.0 gap-closure
     FundamentalRightsImpactNode,
+    Article27FRIANode,
     SessionMemoryNode,
     SupplierAgreementRegistry,
     DeployerTransparencyNode,
@@ -84,7 +105,8 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "api_credential_val": os.getenv("ENTERPRISE_API_KEY", "mock-jit-token-xyz"),
 
     # ── LLM ───────────────────────────────────────────────────────────────────
-    "model":            "ollama/phi4:latest",
+    # Override for CI / machines without phi4: export LAR_SHOWCASE_MODEL=...
+    "model":            os.getenv("LAR_SHOWCASE_MODEL", "ollama/phi4:latest"),
 
     # ── Prompt ────────────────────────────────────────────────────────────────
     # {case_summary} is injected from state at runtime
@@ -108,6 +130,14 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     # ── Regulatory tags (shown in manifest + ledger) ──────────────────────────
     "regulatory_tags":  ["EU_AI_ACT", "GDPR"],
 
+    # ── Art. 27 FRIA (deployer obligation) ────────────────────────────────────
+    # deployer_class ∈ PUBLIC_BODY | PRIVATE_PUBLIC_SERVICE | CREDIT_SCORING |
+    #                  LIFE_HEALTH_INSURANCE  → Art. 27 FRIA applies.
+    # Anything else (default) → not applicable; the node records the rationale.
+    "deployer_class":   "OUT_OF_SCOPE",
+    "annex_iii_point":  "",
+    "fria_dpia_reference": None,   # Art. 27(4) — cross-refer a GDPR Art. 35 DPIA
+
     # ── Output dir ────────────────────────────────────────────────────────────
     "output_dir":       "enterprise_audit",
     "hmac_secret":      os.getenv("HMAC_SECRET", "change-me-in-prod"),
@@ -124,6 +154,11 @@ DOMAIN_PRESETS: Dict[str, Dict[str, Any]] = {
         "conformity_id":    "CA-FIN-2026",
         "stakeholder_role": "Risk Officer",
         "regulatory_tags":  ["EU_AI_ACT", "GDPR", "MIFID_II", "DORA", "FINRA"],
+        # Creditworthiness evaluation = Annex III 5(b) → the deployer owes an
+        # Art. 27 Fundamental Rights Impact Assessment.
+        "deployer_class":   "CREDIT_SCORING",
+        "annex_iii_point":  "5(b) — evaluation of creditworthiness / credit scoring",
+        "fria_dpia_reference": "DPIA-FIN-2026-014 (GDPR Art. 35) — cross-referenced per Art. 27(4)",
         "pii_keys":         ["account_number", "ssn", "iban", "email", "name", "dob"],
         "bias_terms":       ["race", "gender", "age", "postal_code", "nationality"],
         "analysis_prompt": (
@@ -214,22 +249,28 @@ def build_and_run(
     domain: str = "GENERIC",
     config_overrides: Optional[Dict[str, Any]] = None,
     _mock_inputs: Optional[List[str]] = None,
+    human_decision_provider: Optional[Any] = None,
 ) -> Dict[str, Any]:
     """
-    Build the full 23-requirement paper-mapped compliance graph and execute it for
-    a single case.  Every v2.2.0 node is wired into the live execution path — no
-    requirement is merely declared; every one fires at runtime.
+    Build the full paper-mapped compliance graph and execute it for a single case.
+    Every gap-closure node is wired into the live execution path — no requirement
+    is merely declared; every one fires at runtime.
 
     Args:
         case:             The intake payload (dict). Must contain 'case_summary'.
         domain:           One of FINANCE | HEALTHCARE | PHARMA | LEGAL | HR | GENERIC.
         config_overrides: Any key from DEFAULT_CONFIG to override at call time.
-        _mock_inputs:     For automated testing — replaces builtins.input responses.
+        _mock_inputs:     DEMO ONLY — a flat list ``[decision, rationale, ...]``
+                          used to build a stand-in ``human_decision_provider`` so
+                          the ``always_human`` jury can run without a TTY. A real
+                          deployment passes ``human_decision_provider`` wired to a
+                          reviewer UI / web form / Slack action instead. With
+                          neither, the jury HALTS by design.
+        human_decision_provider: callable ``fn(context) -> (decision, rationale)``.
 
     Returns:
-        dict with keys: run_id, domain, decision, confidence, risk_level,
-                        audit_log_path, authority_ledger_path, manifest_path,
-                        final_state (all state keys after execution).
+        dict with keys: domain, system_name, audit_log_path, authority_ledger_path,
+                        manifest_path, fria_art27_path, final_state, ...
     """
     # ── 0. Config ─────────────────────────────────────────────────────────────
     cfg = build_config(domain)
@@ -238,8 +279,22 @@ def build_and_run(
 
     os.makedirs(cfg["output_dir"], exist_ok=True)
 
-    # ── 0a. Mock input for non-interactive / CI runs ───────────────────────────
-    if _mock_inputs:
+    # ── 0a. Resolve the human-decision source ─────────────────────────────────
+    _orig_input = None
+    if human_decision_provider is None and _mock_inputs:
+        # DEMO: turn [decision, rationale, decision, rationale, ...] into a provider
+        # that travels the SAME validated + ledger-recorded path as a real reviewer.
+        _queue = list(_mock_inputs)
+
+        def _demo_provider(context):
+            dec = _queue.pop(0) if _queue else "approve"
+            rat = _queue.pop(0) if _queue else "Simulated reviewer rationale (demo mode)."
+            return dec, rat
+
+        human_decision_provider = _demo_provider
+        cfg["_demo_human_decision"] = True
+
+        # Keep the legacy builtins.input patch too, for any other input() call.
         _idx = [0]
         _orig_input = builtins.input
         def _fake_input(prompt=""):
@@ -249,21 +304,31 @@ def build_and_run(
             return val
         builtins.input = _fake_input
 
+    cfg["_human_decision_provider"] = human_decision_provider
+
     try:
         return _run(case, cfg)
     finally:
-        if _mock_inputs:
+        if _orig_input is not None:
             builtins.input = _orig_input
 
 
 def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
     print(f"\n{'='*65}")
-    print(f"  Lár Enterprise Compliance Backbone  (v2.2.0 — 23 requirements)")
+    print(f"  Lár Enterprise Compliance Backbone")
     print(f"  Domain : {cfg['domain']}")
     print(f"  System : {cfg['system_name']}")
     print(f"{'='*65}\n")
+    if cfg.get("_demo_human_decision"):
+        print("  " + "!"*61)
+        print("  DEMO MODE — the HumanJuryNode decision below is SIMULATED via a")
+        print("  stand-in human_decision_provider (placeholder for a real reviewer")
+        print("  UI / web form / Slack action). automation_boundary is 'always_human':")
+        print("  with no provider and no TTY this run HALTS by design. Do not read")
+        print("  the AuthorityLedger record from this run as real human oversight.")
+        print("  " + "!"*61 + "\n")
 
-    # ── STEP 7: Credential Vault (Art. 15(4) — NHI privilege + trust gating) ─
+    # ── STEP 7: Credential Vault (Art. 15(5) — NHI least privilege + trust gating) ─
     vault = CredentialVault()
     # Row L: register with HIGH minimum trust level — get_with_trust() enforces this
     vault.register_credential(
@@ -357,7 +422,7 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
         },
     )
 
-    # ── Row B: Behavioral Envelope Monitor (Art. 9 PMM) ─────────────────────
+    # ── Row B: Behavioral Envelope Monitor (Art. 9(9) post-market monitoring) ─
     # Baseline confidence samples from domain conformity assessment runs
     envelope_monitor = BehavioralEnvelopeMonitor(
         metric_key="model_confidence",
@@ -407,6 +472,55 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
         next_node=None,
     )
 
+    # ── Row M: Article 27 FRIA (deployer Fundamental Rights Impact Assessment) ─
+    # Gated on deployer_class. FINANCE (credit scoring, Annex III 5(b)) is in scope.
+    node_fria27 = Article27FRIANode(
+        system_name=cfg["system_name"],
+        deployer_class=cfg.get("deployer_class", "OUT_OF_SCOPE"),
+        intended_purpose=(
+            f"High-risk AI decision support for the {cfg['domain']} domain."
+        ),
+        annex_iii_point=cfg.get("annex_iii_point", ""),
+        deployment_process=(
+            f"The {cfg['stakeholder_role']} runs each intake case through this "
+            f"agent for a recommendation, then reviews and approves/rejects it "
+            f"via the HumanJuryNode before any external write. The AI output is "
+            f"advisory; the human decision is determinative."
+        ),
+        usage_period_and_frequency=(
+            "Continuous during business hours for the lifetime of the deployment; "
+            "one assessment per intake case (est. 50–200/day). Reviewed quarterly."
+        ),
+        affected_natural_persons=[
+            "Applicants / data subjects who are the subject of the case",
+            "Their dependants and guarantors where financially linked",
+            "Members of groups statistically over-represented in adverse outcomes",
+        ],
+        fundamental_rights_risks=[
+            "Non-discrimination (Charter Art. 21) — proxy bias in the recommendation",
+            "Private life / data protection (Charter Arts. 7-8) — processing of PII",
+            "Effective remedy (Charter Art. 47) — opacity of an adverse recommendation",
+            "Consumer protection (Charter Art. 38) — over-reliance on an automated score",
+        ],
+        human_oversight_measures=[
+            f"Mandatory {cfg['stakeholder_role']} approval gate (HumanJuryNode) before any external action",
+            "Reviewer sees the model's recommendation, confidence, and rationale, plus bias-scan and FRIA-screen results",
+            "AuthorityLedger records who decided, their role, rationale, risk score and timestamp",
+            "RiskScorerNode forces PRE_EXECUTION oversight for irreversible / third-party-affecting actions",
+        ],
+        measures_on_materialisation=[
+            "Suspend the deployment and inform the provider and market surveillance authority (Art. 26(5), Art. 73)",
+            "Route affected cases to fully manual review until remediated",
+            "Complaint mechanism: affected persons may contest an adverse outcome and obtain a human re-review",
+            "Internal governance: compliance owner + quarterly FRIA review + incident log triage",
+        ],
+        provider_info_reference="Art. 13 instructions-for-use (see state['deployer_instructions'])",
+        dpia_reference=cfg.get("fria_dpia_reference"),
+        output_key="fria_art27",
+        strict=False,
+        next_node=None,
+    )
+
     # ── Row I: Multi-Agent Boundary Node (Art. 3 sub-agent classification) ───
     node_boundary = MultiAgentBoundaryNode(
         agent_name=cfg["system_name"],
@@ -421,7 +535,7 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
         next_node=None,
     )
 
-    # ── Node A: NHI credential fetch (Art. 15(4) — Row L: get_with_trust) ────
+    # ── Node A: NHI credential fetch (Art. 15(5) — Row L: get_with_trust) ────
     def fetch_credentials(state: GraphState):
         # Row G: assert supplier agreement before calling the LLM gateway
         supplier_registry.assert_agreement("llm_gateway")
@@ -453,8 +567,9 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
         "description": "LLM inference on applicant PII data — directly affects the case subject's outcome.",
     }
 
-    # ── Row A: Fundamental Rights Impact Assessment (Art. 9 FRIA) ────────────
-    # Scans LLM output for EU Charter dimension violations before human sees it
+    # ── Row A: Fundamental-rights screening (Art. 9(2)(a) risk factor) ───────
+    # Runtime heuristic scan of the LLM output for EU Charter red flags before a
+    # human sees it. This is NOT the Art. 27 FRIA (that is node_fria27, above).
     node_fria = FundamentalRightsImpactNode(
         input_key="ai_output",
         next_node=None,
@@ -503,14 +618,18 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
         stakeholder_role=cfg["stakeholder_role"],
         action_description=f"{cfg['domain']} AI case analysis — external action pending",
         risk_score_key="model_confidence",
-        # Row F: per-decision-type automation boundary enforcement.
-        # Showcase uses "auto_first_choice" so the mock input path works in CI.
-        # Production deployments should set "always_human" to block non-interactive runs.
+        # Row F: per-decision-type automation boundary. Default is 'always_human'
+        # for the high-risk case decision: with no human_decision_provider and no
+        # TTY the jury HALTS (RuntimeError) by design — it never rubber-stamps.
+        # The showcase supplies a *simulated* reviewer via human_decision_provider
+        # (see build_and_run's _mock_inputs / human_decision_provider args), which
+        # travels the same validated + AuthorityLedger-recorded path as a real one.
         decision_type="case_analysis",
         automation_boundary={
-            "case_analysis": "auto_first_choice",  # CI/showcase mode
+            "case_analysis": "always_human",
             "output_review": "auto_if_low_risk",
         },
+        human_decision_provider=cfg.get("_human_decision_provider"),
     )
 
     # ── Node E: RiskScorerNode (Art. 14 — routes to jury or proceeds) ────────
@@ -521,7 +640,7 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
         action_type_key="action_type",
     )
 
-    # ── Node F: Bias filter (prEN 18283) ──────────────────────────────────────
+    # ── Node F: Bias filter (Art. 10(2)(f)-(g) — runtime keyword gate) ───────
     node_bias = BiasFilterNode(
         input_key="recommendation",
         sensitive_terms=cfg["bias_terms"],
@@ -595,11 +714,19 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
         block_on_violation=True,
     )
 
-    # ── Node H: Synthetic marker (Art. 50(2)) ─────────────────────────────────
+    # ── Node H: Synthetic marker — Art. 50(1)/(4) human disclosure ───────────
     node_marker = SyntheticMarkerNode(
         input_key="recommendation",
         output_key="final_output",
         marker_type="VISIBLE",
+        next_node=None,
+    )
+
+    # ── Node H2: Synthetic marker — Art. 50(2) machine-readable marking ──────
+    node_marker_meta = SyntheticMarkerNode(
+        input_key="final_output",
+        output_key="final_output_marked",
+        marker_type="METADATA",
         next_node=None,
     )
 
@@ -614,15 +741,16 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
 
     # ── Wire the graph ────────────────────────────────────────────────────────
     #
-    # [deployer] → [boundary] → [creds] → [llm] → [fria] → [parse]
+    # [deployer] → [fria27] → [boundary] → [creds] → [llm] → [fria] → [parse]
     # → [session_write] → [bias] → [risk] → [jury] → [tool_monitor]
-    # → [checks] → [prohibited] → [marker] → [session_erase]
+    # → [checks] → [prohibited] → [marker] → [marker_meta] → [session_erase]
     #
     # BiasFilterNode:  normal → [risk]; bias detected → [jury]
     # RiskScorerNode:  PRE_EXECUTION → [jury]; LOW/MEDIUM → [tool_monitor]
     # HumanJuryNode:   approved → [tool_monitor]
     #
-    node_deployer.next_node     = node_boundary
+    node_deployer.next_node     = node_fria27
+    node_fria27.next_node       = node_boundary
     node_boundary.next_node     = node_creds
     node_creds.next_node        = node_llm
     node_llm.next_node          = node_fria
@@ -635,7 +763,8 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
     node_tool_monitor.next_node = node_checks
     node_checks.next_node       = node_prohibited
     node_prohibited.next_node   = node_marker
-    node_marker.next_node       = node_session_erase
+    node_marker.next_node       = node_marker_meta
+    node_marker_meta.next_node  = node_session_erase
 
     # ── STEP 10: ComplianceManifestGenerator (Step 9 — action inventory) ──────
     manifest = ComplianceManifestGenerator(
@@ -694,14 +823,34 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
     # Capture final state from last executed step
     final_state_dict = all_steps[-1].get("state_after", {}) if all_steps else {}
 
+    # ── Art. 27 FRIA — persist the deployer artifact (Markdown + JSON) ────────
+    fria_art27_path = None
+    fria_record = final_state_dict.get("fria_art27")
+    if fria_record is not None:
+        fria_art27_path = f"{cfg['output_dir']}/fria_art27.md"
+        try:
+            # Rebuild a lightweight state shim for as_markdown()
+            _shim = GraphState()
+            _shim.set("fria_art27", fria_record)
+            with open(fria_art27_path, "w") as _f:
+                _f.write(node_fria27.as_markdown(_shim))
+            with open(f"{cfg['output_dir']}/fria_art27.json", "w") as _f:
+                json.dump(fria_record, _f, indent=2)
+            print(f"  [Article27FRIANode]: FRIA artifact saved to {fria_art27_path}")
+        except Exception as _e:  # pragma: no cover - artifact write is best-effort
+            print(f"  [Article27FRIANode]: could not write FRIA artifact: {_e}")
+
     return {
         "domain":                   cfg["domain"],
         "system_name":              cfg["system_name"],
         "audit_log_path":           audit_log_path,
         "authority_ledger_path":    ledger_path,
         "manifest_path":            manifest_path,
+        "fria_art27_path":          fria_art27_path,
+        "fria_art27":               fria_record,
         "authority_records":        authority_ledger.get_records(),
-        # v2.2.0 runtime verification keys
+        "demo_human_decision":      bool(cfg.get("_demo_human_decision")),
+        # runtime verification keys
         "final_state":              final_state_dict,
         "integrity_results":        integrity_results,
         "incident_log_path":        incident_reporter.incident_log_path,

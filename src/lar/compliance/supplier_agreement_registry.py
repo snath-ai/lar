@@ -3,10 +3,19 @@ lar.compliance.supplier_agreement_registry
 ==========================================
 SupplierAgreementRegistry — Art. 25(4) Written Agreement Enforcement.
 
-EU AI Act Art. 25(4): Where a deployer uses an AI system provided by a provider,
-the parties must define by written agreement which obligations fall on whom.
-Before a ToolNode executes a third-party tool, the registry verifies that a
-current, unexpired written agreement exists.
+EU AI Act Art. 25(4): the provider of a high-risk AI system and any third party
+supplying tools, services, components or processes integrated into it must
+specify, by written agreement, the information / capabilities / technical access
+needed for the provider to comply with the Regulation.
+
+FOSS carve-out: Art. 25(4) explicitly does **not** apply to third parties making
+tools/services/components (other than GPAI models) available under a free and
+open-source licence. Lár itself (Apache-2.0, not a GPAI model) is therefore
+outside the scope of Art. 25(4) as a supplied component. This registry exists
+for the customer-provider's *other* suppliers — the non-FOSS APIs, model
+gateways, and data services their high-risk system integrates. Before a ToolNode
+executes such a third-party tool, the registry verifies a current, unexpired
+written agreement exists.
 
 Wire this into ToolNode via the ``pre_execute_hook`` pattern, or call
 ``registry.assert_agreement(tool_name)`` directly from tool functions.

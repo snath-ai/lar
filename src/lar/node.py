@@ -834,6 +834,8 @@ class HumanJuryNode(BaseNode):
                  # --- Art. 14 Automation Boundary (v2.2.0) ---
                  decision_type: Optional[str] = None,
                  automation_boundary: Optional[Dict[str, str]] = None,
+                 # --- Out-of-band real human decision (v2.3.1) ---
+                 human_decision_provider: Optional[Any] = None,
                  # --- Durable pause/resume (v2.3.0) ---
                  checkpoint_store: Optional[Any] = None,
                  case_id_key: Optional[str] = None):
@@ -866,6 +868,17 @@ class HumanJuryNode(BaseNode):
                         "CREDIT_DECISION": "always_human",
                         "ALERT_REVIEW": "auto_if_low_risk",
                     }
+            human_decision_provider: Optional callable ``fn(context: dict) ->
+                (decision: str, rationale: str)``. When set, the decision is
+                sourced from it and travels the SAME path as an interactive
+                decision — validated against ``choices``, rationale required,
+                AuthorityRecord written — but WITHOUT needing a TTY. This models
+                a real human answering out-of-band (web form, Slack action, API,
+                ``lar.checkpoint.resume_human_decision``). It is NOT an
+                automation-boundary fallback: with ``automation_boundary`` set to
+                ``"always_human"`` and NO provider and no TTY, the node still
+                halts by design. ``context`` is ``{k: state.get(k) for k in
+                context_keys}`` plus ``prompt``/``choices``/``decision_type``.
             checkpoint_store: If provided, the pause is written durably (via
                 ``checkpoint_store.save()``) BEFORE this node blocks on
                 ``input()`` or applies an automation_boundary policy — so the
@@ -909,6 +922,10 @@ class HumanJuryNode(BaseNode):
         # Automation boundary (Art. 14)
         self.decision_type = decision_type
         self.automation_boundary: Dict[str, str] = automation_boundary or {}
+        # Out-of-band real human decision source (not an automation fallback)
+        if human_decision_provider is not None and not callable(human_decision_provider):
+            raise ValueError("human_decision_provider must be callable")
+        self.human_decision_provider = human_decision_provider
         # Durable pause/resume (v2.3.0)
         if checkpoint_store is not None and not case_id_key:
             raise ValueError("case_id_key is required when checkpoint_store is provided")
@@ -966,9 +983,36 @@ class HumanJuryNode(BaseNode):
             print(f"  [HumanJuryNode]: Checkpoint saved for case_id='{case_id}' — "
                   f"this pause now survives a process restart.")
 
-        # 2. Loop until valid input — with automation_boundary policy for non-interactive envs
+        # 2. Resolve the decision.
         rationale = ""
-        if not sys.stdin.isatty():
+
+        # 2a. Out-of-band real human decision (web form / Slack / API / resume).
+        #     Travels the same validation + ledger path as an interactive decision,
+        #     without needing a TTY. This is NOT an automation fallback.
+        if self.human_decision_provider is not None:
+            ctx = {k: state.get(k) for k in self.context_keys}
+            ctx.update({
+                "prompt": self.prompt,
+                "choices": list(self.choices),
+                "decision_type": self.decision_type,
+            })
+            provided = self.human_decision_provider(ctx)
+            if isinstance(provided, (tuple, list)) and len(provided) == 2:
+                user_input, rationale = str(provided[0]).strip().lower(), str(provided[1]).strip()
+            else:
+                user_input, rationale = str(provided).strip().lower(), ""
+            if user_input not in self.choices:
+                raise ValueError(
+                    f"[HumanJuryNode] human_decision_provider returned '{user_input}', "
+                    f"not one of {self.choices}"
+                )
+            if self.authority_ledger and not rationale:
+                rationale = f"No rationale provided. Decision: {user_input}."
+            print(f"  [HumanJuryNode]: Out-of-band human decision '{user_input}' recorded.")
+            state.set(self.output_key, user_input)
+
+        # 2b. Interactive / automation-boundary path.
+        elif not sys.stdin.isatty():
             # Determine fallback policy for this decision_type
             policy = self.automation_boundary.get(
                 self.decision_type or "", "auto_first_choice"

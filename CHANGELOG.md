@@ -2,6 +2,159 @@
 
 All notable changes to Lár are documented here.
 
+## [2.4.0] — 2026-09-09
+
+### EU AI Act conformance pass
+
+Full re-audit of `src/lar/compliance/` against **Regulation (EU) 2024/1689** as
+amended by the **Digital Omnibus, Regulation (EU) 2026/1744** (in force
+27 Jul 2026), cross-checked against EUR-Lex, artificialintelligenceact.eu and the
+CEN-CENELEC JTC 21 work programme. The Aug-2025 citation pass fixed the code but
+never reached the docs; one systemic article-number error was still live; and the
+whole compliance corpus pre-dated the Omnibus deferral of the high-risk regime.
+
+Framing clarified everywhere: **"covered" = a runtime hook fires and/or an
+evidence artifact is produced.** It is not a conformity assessment and does not by
+itself discharge the obligation. Lár is a component in the Art. 25 value chain,
+not the provider.
+
+### Added
+
+- **`Article27FRIANode` (`lar.compliance.fria_art27_node`) — the actual Article 27
+  deployer Fundamental Rights Impact Assessment.** Distinct from
+  `FundamentalRightsImpactNode`, which is the Art. 9(2)(a) *runtime screen* and was
+  never the named FRIA. Scope-gated on `deployer_class` (`PUBLIC_BODY` /
+  `PRIVATE_PUBLIC_SERVICE` / `CREDIT_SCORING` = Annex III 5(b) /
+  `LIFE_HEALTH_INSURANCE` = 5(c)); anything else records an explicit
+  "not applicable" rationale. For an in-scope deployer it generates the
+  Art. 27(1)(a)–(f) template (deployer processes; period/frequency; affected
+  natural persons; specific fundamental-rights risks informed by the Art. 13
+  provider information; human-oversight measures; measures on materialisation incl.
+  internal governance and complaint mechanisms), reports completeness (optional
+  `strict=True` raises `Art27FRIAIncompleteError` on a gap), records the
+  Art. 27(3) authority-notification duty, and carries an Art. 27(4) DPIA
+  cross-reference. `as_markdown()` produces the filing-ready document. Exported
+  from `lar.compliance` alongside `Art27FRIAIncompleteError`.
+- **`HumanJuryNode(human_decision_provider=…)`** — optional callable
+  `fn(context) -> (decision, rationale)` supplying a *real* human decision
+  out-of-band (web form, Slack action, API, `lar.checkpoint.resume_human_decision`).
+  It travels the same path as an interactive decision — validated against
+  `choices`, rationale required, `AuthorityRecord` written — but without needing a
+  TTY. It is **not** an automation-boundary fallback: with `automation_boundary`
+  set to `"always_human"` and no provider and no TTY, the node still halts by
+  design. Purely additive; every existing `HumanJuryNode` call site is unaffected.
+- **`ProhibitedPracticeGuard`** gains `NCII` (non-consensual intimate imagery) and
+  `CSAM` (AI-generated child sexual abuse material) heuristic categories — the
+  Digital Omnibus additions to Art. 5, applicable **2 December 2026**. On by
+  default; `include_omnibus_categories=False` restores the pre-2026 set only.
+- **`SyntheticMarkerNode`** now exposes an `eu_reference` per `marker_type` and
+  writes `state["synthetic_marker_reference"]`; the `METADATA` C2PA manifest
+  carries its Art. 50(2) basis.
+- **`IncidentReporterNode`** records now carry `art_73_legal_deadlines` (all three
+  Art. 73 paragraphs), `reporting_deadline_is_conservative_ceiling: true` and
+  `provider_must_confirm_applicable_paragraph: true` (schema bumped to
+  `lar-incident-v2`).
+- **New tests** — `tests/unit/test_compliance_conformance_fixes.py` (23 tests)
+  locking in the 15(5) correction, `Article27FRIANode` (scope / completeness /
+  strict / markdown), `human_decision_provider`, the NCII/CSAM categories, the
+  50(2)-vs-50(1)/(4) split, and incident-deadline honesty.
+- **`LAR_SHOWCASE_MODEL`** env var overrides the enterprise backbone's LLM
+  (default unchanged: `ollama/phi4:latest`), for CI and machines without phi4.
+
+### Changed
+
+- **BREAKING (enterprise backbone only): the compliance backbone's `HumanJuryNode`
+  now defaults to `automation_boundary={"case_analysis": "always_human"}`** — it
+  previously used `"auto_first_choice"`, which auto-approved the high-risk case
+  decision in non-interactive runs and still wrote an `AuthorityLedger` record
+  with no reachable human. It now **halts** (`RuntimeError`) with no
+  `human_decision_provider` and no TTY. `build_and_run(..., _mock_inputs=[…])`
+  and the finance showcase supply a *simulated* reviewer via
+  `human_decision_provider` (with a loud DEMO banner) so demo runs still complete
+  without demonstrating rubber-stamping. Core `HumanJuryNode` defaults are
+  unchanged; this only affects `lar.enterprise.backbone`.
+- **Cybersecurity citations corrected from Art. 15(4) to Art. 15(5)** across
+  `credential_vault.py` (`EU_REFERENCE` + docstrings + the `PermissionError`
+  message), `manifest.py` (ToolNode / generic-node article + the unvaulted-tools
+  risk flag), `backbone.py`, and ~10 documentation files. In Regulation (EU)
+  2024/1689 as enacted, **15(5)** is cybersecurity (resilience against
+  unauthorised third parties, data/model poisoning, adversarial examples) and
+  15(4) is robustness / error-resilience / feedback loops. `prompt_injection_guard.py`
+  was already correct. `BatchNode` state-isolation in `manifest.py` deliberately
+  **stays at 15(4)** — that is a robustness measure. NHI least privilege is now
+  framed as a *proportionate supporting measure* under 15(5) (aligned with
+  prEN 18282), not as verbatim Article text.
+- **`SyntheticMarkerNode` citations split**: `METADATA` → Art. 50(2)
+  (machine-readable marking, providers of generative systems); `VISIBLE` →
+  Art. 50(1)/(4) (human-readable disclosure to affected persons / deep-fake &
+  public-interest-text labelling). Previously the visible path was filed under
+  50(2). The `c2pa_manifest.generator` string now reads `lar.__version__` instead
+  of a hardcoded `"Lar Framework v1.5.1"`.
+- **`IncidentReporterNode.DEADLINE_HOURS`**: `HIGH` moved from 240 h (the
+  Art. 73(4) "death of a person" deadline) to 48 h. Mapping an unclassified
+  severity tier onto the death paragraph was a false legal classification. Values
+  are now a conservative ceiling only (CRITICAL 48 h, HIGH 48 h, MEDIUM 360 h,
+  LOW none); the real per-paragraph deadlines ride on every record and the
+  provider must confirm the applicable paragraph.
+- **`FundamentalRightsImpactNode`** re-labelled throughout the docs and the
+  backbone as the **Art. 9(2)(a) runtime fundamental-rights screen**, with an
+  explicit "this is NOT the Article 27 FRIA" cross-reference to `Article27FRIANode`.
+  (The node's own docstring was already corrected in 2.2.2; the docs had not
+  caught up and still said "Art. 9 FRIA".)
+- **`BiasFilterNode`** docstring and the manifest entry re-scoped: it is a
+  *runtime bias keyword gate* that **supports**, but does not by itself satisfy,
+  prEN 18283 or the Art. 10(2)(f)-(g) examination for bias.
+- **`ComplianceManifestGenerator`** reference string: "Step 9 — External Action
+  Inventory" → "…feeds Annex IV §2(b) (components and their interactions); the
+  full Annex IV technical documentation remains a provider deliverable". The
+  `BatchNode` inventory entry now cites Art. 15(4) (robustness — state isolation)
+  and `prEN 18229-2` instead of a bare `prEN 18229`.
+- **`IncidentReporter`** (the PMM report generator) docstring: it **supports**
+  Art. 72 by aggregating operational data; it does not replace the documented
+  post-market monitoring plan (Art. 72(3)).
+- **`SupplierAgreementRegistry`** docstring: added the Art. 25(4) **free/open-source
+  carve-out** — Lár itself (Apache-2.0, not a GPAI model) is outside Art. 25(4) as
+  a supplied component; the registry is for the customer-provider's *other*
+  non-FOSS suppliers.
+- **Documentation & README** updated for the **Digital Omnibus**: standalone
+  Annex III high-risk obligations now apply from **2 December 2027** (deferred
+  from 2 Aug 2026), Annex I embedded high-risk from 2 Aug 2028; Art. 5, GPAI and
+  Art. 50 are unaffected (2 Dec 2026 grace for the 50(2) marking of systems
+  already on the market). README badge "EU AI Act — Ready Aug 2026" →
+  "evidence infrastructure"; the "First EU AI Act-Ready" tagline and inflated
+  primitive counts removed; new "Digital Omnibus" sections in
+  `docs/compliance/paper-compliance-mapping.md` and
+  `docs/compliance/eu-ai-act-deep-dive.md`; new Artefact 4 (`fria_art27.md`),
+  red-flag rows and reviewer questions in `docs/compliance/auditor_guide.md`.
+- **`examples/compliance/22_eu_ai_act_finance_showcase.py`** rewritten: 26
+  verification rows (added M = Art. 27 FRIA, N = NCII/CSAM, O = both Art. 50
+  markings), corrected citations, a Digital Omnibus timeline panel, a DEMO-mode
+  explanation, and the `LAR_SHOWCASE_MODEL` override. The backbone now also runs a
+  second `SyntheticMarkerNode` (`METADATA`) so both Art. 50 markings are exercised.
+
+### Fixed
+
+- Stale documentation that contradicted the 2.2.2 code fixes: "Art. 9 FRIA"
+  (now Art. 9(2)(a) screen vs Art. 27 FRIA), invented "24h / 72h" incident
+  deadlines (now the real 48 h / 240 h / 360 h, keyed to incident type), and a
+  "Recital 12 — multi-actor chains" reference in `docs/compliance.md`
+  (Recital 12 is about the definition of "AI system").
+- `docs/compliance/finance-showcase.md` referenced a non-existent `BACKBONE_MODEL`
+  env var; replaced with the real `LAR_SHOWCASE_MODEL`.
+
+### Verified
+
+- `python examples/compliance/22_eu_ai_act_finance_showcase.py` — **24 / 24
+  runtime checks pass** (against a local model).
+- Test suite green, including the 23 new conformance tests.
+
+### Note
+
+pyproject `version` and the release tag are intentionally left for the maintainer
+to bump — this branch layers on top of unreleased 2.3.x checkpoint work.
+
+---
+
 ## [2.3.0] — 2026-08-18
 
 ### Added

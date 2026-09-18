@@ -61,7 +61,7 @@ See `examples/compliance/5_context_contamination_test.py` and `6_zombie_action_t
 | **13** | **[`12_transparency_disclosure.py`](../../examples/compliance/12_transparency_disclosure.py)** | Transparency Engine (Art. 13) |
 | **14** | **[`13_risk_scored_routing.py`](../../examples/compliance/13_risk_scored_routing.py)** | Risk-Scored Routing (Art. 14) |
 | **15** | **[`14_runtime_drift_detection.py`](../../examples/compliance/14_runtime_drift_detection.py)** | Drift Detection (Art. 3(23)) |
-| **16** | **[`15_jit_credential_vault.py`](../../examples/compliance/15_jit_credential_vault.py)** | JIT Credential Vault (Art. 15(4)) |
+| **16** | **[`15_jit_credential_vault.py`](../../examples/compliance/15_jit_credential_vault.py)** | JIT Credential Vault (Art. 15(5)) |
 | **17** | **[`16_pii_redaction.py`](../../examples/compliance/16_pii_redaction.py)** | PII Redaction (GDPR Art. 17) |
 | **18** | **[`17_causal_trace_logging.py`](../../examples/compliance/17_causal_trace_logging.py)** | Causal Trace Logging (Art. 12) |
 | **19** | **[`18_synthetic_content_marking.py`](../../examples/compliance/18_synthetic_content_marking.py)** | Synthetic Content Marking (Art. 50) |

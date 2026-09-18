@@ -1,10 +1,14 @@
 # Lár ↔ Nannini et al. (2026) Compliance Architecture Mapping
 
-This page maps every compliance requirement from **"AI Agents Under EU Law: A Compliance Architecture for AI Providers"** (Nannini, Smith, Maggini et al., April 2026, arXiv:2604.04604v1) to the specific Lár primitive that implements it.
+This page maps each compliance requirement from **"AI Agents Under EU Law: A Compliance Architecture for AI Providers"** (Nannini, Smith, Maggini et al., April 2026, arXiv:2604.04604v1) — a secondary source — to the Lár primitive that addresses it. Article citations are verified against **Regulation (EU) 2024/1689** as amended by the **Digital Omnibus, Regulation (EU) 2026/1744** (in force 27 July 2026).
 
-The paper proposes a 12-step compliance sequence (Section 8.1) and identifies four agent-specific challenges (Section 6). Lár's Enterprise Compliance Backbone **v2.2.0** addresses every step, every challenge, and the 12 additional gap items identified by the audit — **23 requirements total, all fully covered**.
+The paper proposes a 12-step compliance sequence (Section 8.1) and identifies four agent-specific challenges (Section 6). Lár's Enterprise Compliance Backbone addresses every step, every challenge, and 13 additional gap items — **26 rows**.
 
-> **v2.2.0 (May 2026):** Gap-closure release. Added 7 new nodes, hardened the executor with automatic Art. 5 + Art. 73 hooks, and extended 6 existing primitives. See the [v2.2.0 gap-closure section](#v220-gap-closure-requirements) below.
+> **What "covered" means.** A row is covered when a runtime hook fires and/or an evidence artifact is produced. It does **not** mean the underlying legal obligation is discharged. Conformity assessment (Art. 43), the QMS (Art. 17), the EU declaration of conformity (Art. 47), EU-database registration (Art. 49), and the substantive content of every assessment remain the customer-provider's and the deployer's responsibility. Lár is a component in the Art. 25 value chain, not the provider.
+
+> **v2.2.0 (May 2026):** Gap-closure release. Added 7 new nodes, hardened the executor with automatic Art. 5 + Art. 73 hooks, extended 6 existing primitives.
+>
+> **2026-09 conformance pass:** corrected the cybersecurity citation to **Art. 15(5)** (15(4) is robustness/feedback-loops in the enacted text); added **`Article27FRIANode`** for the deployer Art. 27 FRIA; added the 2 Dec 2026 Omnibus **NCII/CSAM** Art. 5 additions to `ProhibitedPracticeGuard`; the backbone jury now defaults to `always_human` with a real out-of-band decision path (no auto-approve); split `SyntheticMarkerNode` citations into Art. 50(2) (machine-readable) vs 50(1)/(4) (visible); made incident deadlines a conservative ceiling carrying all three Art. 73 legal deadlines. See the [Digital Omnibus section](#digital-omnibus-regulation-eu-20261744) below.
 
 ---
 
@@ -100,7 +104,7 @@ The paper notes: *"agents accumulate interaction data... that may contain protec
 
 | Modality | Lár Primitive | Paper Reference |
 |---|---|---|
-| **Retrospective** | `AuditLogger` + HMAC-SHA256 causal trace | Art. 12, prEN ISO/IEC 24970 |
+| **Retrospective** | `AuditLogger` + HMAC-SHA256 causal trace | Art. 12, prEN ISO/IEC DIS 24970 |
 | **Real-time** | `TransparencyEngine` third-party disclosure | Art. 13, Art. 50 |
 | **Pre-execution** | `HumanJuryNode` blocking interrupt | Art. 14(4) |
 | **Authority record** | `AuthorityLedger` (Fourth Tier) | Paper fn. 18 |
@@ -121,7 +125,7 @@ node_jury = HumanJuryNode(
 
 ---
 
-### Step 7 — AI-Specific Cybersecurity (prEN 18282 / Art. 15(4))
+### Step 7 — AI-Specific Cybersecurity (prEN 18282 / Art. 15(5))
 
 **Paper requirement (§6.1):** *"The inability to perform a restricted action [must] be enforced at the API level, where the model's tool interface simply does not expose the restricted capability."* Just-in-time credential provisioning, per-action authorization scoping, audit trails distinguishing user-initiated from AI-initiated actions.
 
@@ -272,13 +276,38 @@ If all three legs are active and no human approval is on record, the guard raise
 
 ## v2.2.0 Gap-Closure Requirements
 
-The following 12 requirements were identified as gaps in v2.1.x and are fully closed in v2.2.0.
+The following requirements were identified as gaps in v2.1.x and addressed in v2.2.0 and the 2026-09 conformance pass.
 
-### A — Art. 9 FRIA: Fundamental Rights Impact Assessment
+### A — Art. 9(2)(a): Runtime Fundamental-Rights Screening (NOT the Art. 27 FRIA)
 
-**Gap:** Art. 9 requires providers to assess impacts on fundamental rights as part of the risk management system. v2.1.x had static design-time documentation but no runtime gate.
+**Gap:** Art. 9(2)(a) requires the risk management system to identify and analyse the risks a high-risk system "can pose to health, safety or fundamental rights". v2.1.x had static design-time documentation but no runtime gate.
 
-**Lár v2.2.0:** `FundamentalRightsImpactNode` — scans AI outputs at runtime against six EU Charter dimensions (Dignity Art. 1, Privacy Art. 7/8, Non-discrimination Art. 21, Expression Art. 11, Justice Art. 47, Data Protection Art. 8). Raises `FRIAViolation` and blocks or logs per configuration.
+**Lár:** `FundamentalRightsImpactNode` — a runtime heuristic that scans AI outputs against six EU Charter dimensions (Dignity Art. 1, Privacy Art. 7/8, Non-discrimination Art. 21, Expression Art. 11, Justice Art. 47, Data Protection Art. 8). Raises `FRIAViolation` and blocks or logs per configuration.
+
+> **This is not the Article 27 FRIA.** The Act's named, standalone *Fundamental Rights Impact Assessment* is **Article 27** — a **deployer** obligation for (i) public bodies, (ii) private providers of public services, and (iii) deployers doing credit scoring (Annex III 5(b)) or life & health insurance risk pricing (Annex III 5(c)). It is implemented separately by **`Article27FRIANode`** (row M).
+
+### M — Art. 27: Deployer Fundamental Rights Impact Assessment
+
+**Gap:** no artifact for the actual Art. 27 FRIA.
+
+**Lár:** `Article27FRIANode` — scope-gated on `deployer_class`; for an in-scope deployer it generates the Art. 27(1)(a)-(f) template (deployer processes; period/frequency; affected persons; specific fundamental-rights risks informed by Art. 13 provider info; human-oversight measures; measures on materialisation incl. governance + complaint mechanisms), flags the Art. 27(3) authority-notification duty, and allows an Art. 27(4) DPIA cross-reference (as reinforced by the Digital Omnibus). `as_markdown()` produces the filing-ready document; the backbone writes `enterprise_audit/fria_art27.md`. It also reports completeness and can run `strict=True` to block on missing elements. Using the node is not the assessment — the deployer supplies the substantive content and files it with the market surveillance authority.
+
+```python
+from lar.compliance import Article27FRIANode
+
+fria27 = Article27FRIANode(
+    system_name="Credit Decision Agent",
+    deployer_class="CREDIT_SCORING",        # Annex III 5(b)
+    annex_iii_point="5(b)",
+    deployment_process="...",               # 27(1)(a)
+    usage_period_and_frequency="...",       # 27(1)(b)
+    affected_natural_persons=["applicants", "guarantors"],   # 27(1)(c)
+    fundamental_rights_risks=["proxy bias (Charter Art. 21)"],  # 27(1)(d)
+    human_oversight_measures=["mandatory reviewer approval gate"],  # 27(1)(e)
+    measures_on_materialisation=["suspend + notify authority", "complaint channel"],  # 27(1)(f)
+    dpia_reference="DPIA-2026-014",         # 27(4)
+)
+```
 
 ```python
 from lar.compliance import FundamentalRightsImpactNode
@@ -441,7 +470,7 @@ boundary = MultiAgentBoundaryNode(
 
 ### J — Art. 73–74: Real-Time Incident Detection
 
-**Gap:** `IncidentReporter` (v2.1.x) was a post-hoc PMM report generator scanning log files. Art. 73 requires *real-time* incident detection with 24h reporting deadlines for serious incidents. No runtime hook existed.
+**Gap:** `IncidentReporter` (v2.1.x) was a post-hoc PMM report generator scanning log files. Art. 73 requires prompt serious-incident reporting. No runtime hook existed. (The real deadlines are keyed to incident *type*, not a severity score: Art. 73(2) general default **15 days**; Art. 73(3) widespread infringement / serious incident per Art. 3(49)(b) **2 days**; Art. 73(4) death of a person **10 days**.)
 
 **Lár v2.2.0:** `IncidentReporterNode` — operates in two modes:
 1. **Graph node mode** — scans state for harm signals (`last_error`, `_prohibited_practice_flag`, `fria_findings`, etc.) after each step.
@@ -458,7 +487,7 @@ incident_reporter = IncidentReporterNode(
 executor = GraphExecutor(incident_reporter=incident_reporter)
 ```
 
-Incident records include the Art. 73 reporting deadline (`24h` for CRITICAL/HIGH, `72h` for MEDIUM) computed at detection time.
+Because Lár cannot infer from a generic harm signal whether an incident is legally "widespread" or involved a death, each record carries a **conservative ceiling** (`48h` for CRITICAL/HIGH, `360h`/15 days for MEDIUM) *plus* the full `art_73_legal_deadlines` map and `provider_must_confirm_applicable_paragraph: true`. Lár deliberately does not assign the Art. 73(4) "death" deadline off a severity tier.
 
 ---
 
@@ -484,7 +513,7 @@ mem_erase = SessionMemoryNode(mode="erase", subject_key="applicant_id")
 
 ---
 
-### L — Art. 15(4): Trust-Based Privilege Restriction
+### L — Art. 15(5): Trust-Based Privilege Restriction
 
 **Gap:** `CredentialVault.get()` provisioned credentials JIT but had no mechanism to restrict sensitive credentials to high-trust execution paths. A compromise path could obtain a payment API key before a HumanJuryNode had approved.
 
@@ -510,11 +539,12 @@ cd lar/
 python examples/compliance/22_eu_ai_act_finance_showcase.py
 ```
 
-The showcase (v2.2.0) runs the FINANCE backbone against a credit application with `ollama/phi4:latest`, validates all 23 Nannini et al. paper-mapped requirements, and produces three audit artifacts in `enterprise_audit/`:
+The showcase runs the FINANCE backbone against a credit application (`ollama/phi4:latest` by default; override with `LAR_SHOWCASE_MODEL`), verifies **26 runtime rows**, and produces four artifacts in `enterprise_audit/`:
 
-- `compliance_manifest.json` — Step 9 action inventory
-- `authority_ledger.json` — Art. 14 oversight records
+- `compliance_manifest.json` — Step 9 action inventory (Annex IV §2(b))
+- `authority_ledger.json` — Art. 12/14 oversight records (real out-of-band decision, not auto-approve)
 - `run_<id>.json` — Art. 12 causal trace (HMAC signed, PII stripped)
+- `fria_art27.md` — the deployer's Art. 27 Fundamental Rights Impact Assessment
 
 To run other domains:
 
@@ -529,10 +559,26 @@ result = build_and_run(case=my_case, domain="LEGAL")
 
 ---
 
+## Digital Omnibus (Regulation (EU) 2026/1744)
+
+The "Digital Omnibus on AI" was published 24 July 2026 and entered into force 27 July 2026. It amends the AI Act. What changed, and how Lár reflects it:
+
+| Change | Effect on Lár |
+|---|---|
+| **Annex III high-risk obligations deferred** — from 2 Aug 2026 to **2 December 2027** (Annex I embedded high-risk to 2 Aug 2028). | Docs/badges no longer say "ready Aug 2026". The Art. 8-15 / 16 / 26 / 27 machinery is what applies from Dec 2027. |
+| **Art. 5 additions** — bans on non-consensual intimate imagery (NCII) and AI-generated CSAM, applicable **2 December 2026**. | `ProhibitedPracticeGuard` gains `NCII` and `CSAM` heuristic categories (on by default; `include_omnibus_categories=False` to disable). |
+| **Art. 27(4) DPIA cross-reference** strengthened — a FRIA may incorporate/cross-refer a GDPR Art. 35 DPIA. | `Article27FRIANode(dpia_reference=...)` records the cross-reference. |
+| **Annex VIII registration simplified**; **SME / small-mid-cap relief** — lighter technical documentation, proportionate QMS, cybersecurity presumption of conformity, priority sandbox access, reduced fine caps (< 750 employees and < €150m turnover). | Not code — but providers using Lár who qualify should apply the lighter Annex IV / QMS route. |
+| **Art. 50 unchanged** — transparency applies from 2 Aug 2026; providers of generative systems already on the market have until **2 December 2026** for the 50(2) machine-readable marking. | `SyntheticMarkerNode` docstring carries the 2 Dec 2026 note; METADATA path = 50(2), VISIBLE path = 50(1)/(4). |
+
+Primary sources: [EUR-Lex — Regulation (EU) 2026/1744](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ%3AL_202601744); [EUR-Lex — Regulation (EU) 2024/1689](https://eur-lex.europa.eu/eli/reg/2024/1689/oj); [Article 15](https://artificialintelligenceact.eu/article/15/), [Article 27](https://artificialintelligenceact.eu/article/27/), [Article 50](https://artificialintelligenceact.eu/article/50/); [CEN-CENELEC JTC 21 work programme](https://adamleonsmith.substack.com/p/the-cen-cenelec-jtc-21-work-programme).
+
+---
+
 ## References
 
 - Nannini, L., Smith, A.L., Maggini, M.J., Panai, E., Feliciano, S., Tiulkanov, A., Maran, E., Gealy, J., Bisconti, P. (2026). *AI Agents Under EU Law: A Compliance Architecture for AI Providers.* arXiv:2604.04604v1.
-- EU AI Act (Regulation 2024/1689). Official Journal of the European Union.
+- EU AI Act (Regulation (EU) 2024/1689) as amended by the Digital Omnibus (Regulation (EU) 2026/1744). Official Journal of the European Union.
 - AEPD (2026). *Guidance on GDPR obligations for agentic AI deployments.* February 2026.
 - Kim et al. (2025). *Systematic survey of the agentic AI attack and defense landscape.*
 - OWASP Agentic Security Initiative (2025). *Top 10 for Agentic Applications.*
