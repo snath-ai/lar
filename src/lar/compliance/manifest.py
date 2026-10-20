@@ -255,6 +255,7 @@ class ComplianceManifestGenerator:
             }
             entries.append(entry)
             entries.extend(self._visit(getattr(node, "next_node", None)))
+            entries.extend(self._visit(getattr(node, "jury_node", None)))
 
         # --- SyntheticMarkerNode ---
         elif node_type == "SyntheticMarkerNode":

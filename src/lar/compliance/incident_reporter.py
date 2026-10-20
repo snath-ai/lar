@@ -302,7 +302,13 @@ class IncidentReporterNode:
             return "CRITICAL"
         if name in ("SecurityError", "AgreementNotFoundError", "UndisclosedToolError"):
             return "HIGH"
-        if state.get("_trifecta_check") or state.get("_prohibited_practice_flag"):
+        trifecta = state.get("_trifecta_check")
+        # Same fix as _classify_severity_from_harm below: _trifecta_check is
+        # written on every LethalTrifectaGuard.check() call, not only on a
+        # violation, so an unrelated exception occurring later in the same
+        # run must not inherit HIGH severity from a leftover, safe check.
+        trifecta_violation = isinstance(trifecta, dict) and trifecta.get("violation")
+        if trifecta_violation or state.get("_prohibited_practice_flag"):
             return "HIGH"
         return "MEDIUM"
 
