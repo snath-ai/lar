@@ -307,7 +307,12 @@ class IncidentReporterNode:
         return "MEDIUM"
 
     def _classify_severity_from_harm(self, harm_type: str, val: Any) -> str:
-        if harm_type in ("PROHIBITED_PRACTICE", "LETHAL_TRIFECTA", "FRIA_VIOLATION"):
+        if harm_type == "LETHAL_TRIFECTA":
+            # LethalTrifectaGuard.check() writes "_trifecta_check" to state on
+            # every call, not only on a violation — classify by the actual
+            # "violation" flag inside it, not merely by the key being present.
+            return "CRITICAL" if isinstance(val, dict) and val.get("violation") else "LOW"
+        if harm_type in ("PROHIBITED_PRACTICE", "FRIA_VIOLATION"):
             return "CRITICAL"
         if harm_type == "RUNTIME_ERROR":
             return "HIGH"

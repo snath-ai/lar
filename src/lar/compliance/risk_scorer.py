@@ -23,8 +23,18 @@ class RiskScorerNode(BaseNode):
 
     def execute(self, state: GraphState) -> Optional[BaseNode]:
         action_type = state.get(self.action_type_key)
-        confidence = state.get(self.confidence_key, 1.0)
-        
+        confidence = state.get(self.confidence_key)
+        if confidence is None:
+            # Fail toward MORE oversight, not less: a caller that forgot to
+            # populate confidence_key should never be silently treated as
+            # maximally confident (which would suppress escalation). Treat
+            # missing confidence as the lowest possible value instead.
+            confidence = 0.0
+            print(
+                f"  [RiskScorerNode] WARNING: no '{self.confidence_key}' in state — "
+                f"treating as confidence=0.0 (forces escalation) rather than assuming full confidence."
+            )
+
         registry = PolicyRegistry()
         policy = registry.get_policy(action_type) if action_type else None
         
