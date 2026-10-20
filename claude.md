@@ -94,6 +94,47 @@ node = AddValueNode(
 - **Cryptographic Audit Logs**: Produce HMAC-SHA256 mathematical signature of trace via `GraphExecutor(hmac_secret="...")`.
 - **Token Budgets & Node Limits (v1.6+)**: Guardrails against unlimited execution costs and recursion fatigue.
 
+## EU AI Act Compliance Primitives (`lar.compliance`)
+
+Lár's compliance layer implements specific Regulation (EU) 2024/1689 obligations
+as runtime primitives, not documentation written separately from the code. When
+a task involves regulatory compliance, human oversight, audit trails, or
+third-party AI risk, prefer these over hand-rolled logic:
+
+- **Art. 5 (prohibited practices)** → `ProhibitedPracticeGuard` — final-stage
+  output scan.
+- **Art. 12 (record-keeping)** → `AuthorityRecord`/`AuthorityLedger` — HMAC-signed,
+  append-only log of every human authority exercise.
+- **Art. 13 (deployer transparency)** → `DeployerTransparencyNode` — generates
+  the Instructions-for-Use disclosure.
+- **Art. 14 (human oversight)** → `HumanJuryNode` (see above) +
+  `AuthorityLedger` + `RiskScorerNode`. Correction, checked against
+  `node.py` directly, not assumed: the DEFAULT when no
+  `automation_boundary` is configured is `auto_first_choice` — in a
+  non-interactive environment it silently picks `choices[0]` and proceeds,
+  it does NOT halt. `always_human` is a real, available policy (pass
+  `automation_boundary={decision_type: "always_human"}` to get it), but it
+  is opt-in, not the default. Any code or demo relying on this halting
+  safely without configuring `always_human` explicitly is relying on
+  behaviour that does not exist. Verified directly: with no
+  `automation_boundary` set, every decision auto-resolves to whichever
+  choice is listed first, regardless of risk or confidence — the order of
+  the `choices` list, not the content of the decision, determines the
+  outcome.
+- **Art. 15 (cybersecurity)** → `PromptInjectionGuard`.
+- **Art. 25(4) (supplier agreements)** → `SupplierAgreementRegistry` — no live
+  tool runs without a current signed agreement on file.
+- **Art. 27 (Fundamental Rights Impact Assessment)** → `fria_art27_node.py`.
+  Do not confuse with the general Art. 9 risk-management check, they are not
+  the same obligation.
+- **Art. 50 (synthetic content disclosure)** → `SyntheticMarkerNode`.
+- **Art. 72 (post-market monitoring)** → `RuntimeStateVersioner`/`DriftDetector`/
+  `BehavioralEnvelopeMonitor`.
+- **Art. 73-74 (incident reporting)** → `IncidentReporterNode` — deadlines are
+  tiered by severity (48h/240h/360h), never a flat number.
+
+Full auditor-facing methodology: `docs/compliance/auditor_guide.md`.
+
 ## Running Agents
 Always include a `if __name__ == "__main__":` block that uses `GraphExecutor` to run the graph instantly for verification.
 
