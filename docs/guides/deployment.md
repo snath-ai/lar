@@ -49,7 +49,7 @@ Deep within the `examples/` folder is **Example 4**. It is a complete, copy-past
     def run_agent(task: str):
         # Run standard Lár execution
         result = list(executor.run_step_by_step(agent, {"task": task}))
-        return result[-1]["state_snapshot"]
+        return result[-1]["state_after"]
         
     if __name__ == "__main__":
         uvicorn.run(app, port=8000)

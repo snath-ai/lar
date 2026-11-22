@@ -2,6 +2,16 @@
 
 All notable changes to Lár are documented here.
 
+## [Unreleased]
+
+### Fixed (documentation)
+- `docs/guides/continuous-operation.md`: the human-approval pause example waited for an outcome
+  (`"halted"`) the executor never emits, so it never paused. It now uses `HumanJuryNode(checkpoint_store=...)`
+  and `resume_human_decision`, and was run end to end.
+- `docs/guides/deployment.md` and `examples/basic/4_fastapi_server.py` read a non-existent
+  `state_snapshot` key (the final state was always empty); they now read `state_after`.
+- New `tests/unit/test_docs_match_code.py` fails if either phantom key returns.
+
 ## [2.5.0] — 2026-11-22 — security hardening
 
 Fixes for the findings of an internal security review (2026-11-21) plus defects found afterwards by

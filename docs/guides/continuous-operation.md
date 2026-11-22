@@ -104,39 +104,45 @@ See: [`examples/compliance/12_post_market_monitoring.py`](../../examples/complia
 The most important pattern for regulated deployments. The agent runs, hits a `HumanJuryNode`, and halts. The process can be killed. When the human responds — minutes, hours, or days later — the graph resumes from exactly that node with exactly that state.
 
 ```python
-import json
-from lar import GraphExecutor, GraphState
+from lar import GraphExecutor, HumanJuryNode, FileCheckpointStore, resume_human_decision
 
-CHECKPOINT = "/var/agent/pending_approval.json"
+store = FileCheckpointStore("/var/agent/checkpoints")
 executor = GraphExecutor(hmac_secret=os.environ["HMAC_SECRET"])
 
-# --- First run: agent hits HumanJuryNode and halts ---
-state = GraphState(initial_state={"application": "SME loan €500k"})
+jury = HumanJuryNode(
+    prompt="Approve this loan?", choices=["approve", "reject"],
+    output_key="jury_decision", context_keys=["application"],
+    next_node=post_approval_node,            # needs a stable _node_id (see below)
+    checkpoint_store=store, case_id_key="case_id",
+    automation_boundary={"loan_review": "always_human"}, decision_type="loan_review",
+)
 
+# --- First run: the agent reaches the HumanJuryNode and pauses ---
+state = {"case_id": "LOAN-77", "application": "SME loan €500k"}
 for step in executor.run_step_by_step(entry_node, state):
-    # Save state after every node — zero overhead
-    with open(CHECKPOINT, "w") as f:
-        json.dump(step["state_after"], f)
+    pass
+# The pause is written to disk BEFORE the node refuses to auto-decide. The step
+# reports outcome "error" (there is no "halted" outcome); the reliable signal is
+# the checkpoint itself:
+if store.exists("LOAN-77"):
+    print("Awaiting human approval. Process may exit.")
 
-    if step["node"] == "HumanJuryNode" and step["outcome"] == "halted":
-        print("Awaiting human approval. Process may exit.")
-        break
-
-# --- Approval webhook received (hours later) ---
-with open(CHECKPOINT) as f:
-    restored = json.load(f)
-
-# Inject the human decision into state
-restored["jury_decision"] = "approve"
-restored["jury_rationale"] = "Risk within policy limits."
-
-for step in executor.run_step_by_step(post_approval_node, restored):
+# --- Approval webhook received (hours later, possibly a different process) ---
+# `reviewer` is the identity YOUR auth layer verified; Lár does not authenticate anyone.
+for step in resume_human_decision(
+    checkpoint_store=store, case_id="LOAN-77", decision="approve",
+    executor=executor, node_registry={"post_approval_node": post_approval_node},
+    stakeholder_id=reviewer, stakeholder_role="CREDIT_OFFICER",
+    rationale="Risk within policy limits.",
+):
     pass
 ```
 
+`resume_human_decision` validates the decision against the node's `choices`, claims the checkpoint atomically (only one resolver wins), resumes at the node routed for that decision, records the human in the `AuthorityLedger` if one is attached, and only deletes the checkpoint after the resumed run finishes. Do **not** hand-write the decision into a JSON file: that skips validation, the claim, and the evidence record.
+
 This is what EU AI Act Art. 14 requires in practice: pause before an irreversible action, await a human determination, resume with that determination as part of the verified state.
 
-See: [`examples/compliance/1_human_in_the_loop.py`](../../examples/compliance/1_human_in_the_loop.py)
+See: [`examples/patterns/11_durable_checkpoint.py`](../../examples/patterns/11_durable_checkpoint.py) (cross-process pause and resume) and [`examples/compliance/1_human_in_the_loop.py`](../../examples/compliance/1_human_in_the_loop.py)
 
 ---
 

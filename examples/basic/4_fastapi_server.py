@@ -75,7 +75,7 @@ async def run_agent(request: AgentRequest):
                  "audit_log": result_log
              }
 
-        final_state = last_step.get("state_snapshot", {})
+        final_state = last_step.get("state_after", {})
         
         return {
             "status": "success",
