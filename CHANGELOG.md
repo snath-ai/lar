@@ -76,6 +76,15 @@ published, so they ship here for the first time. They are included in this relea
   fell back to a default role and resource. Both now treat an unreadable proposal as unreadable
   (rejected or escalated, never defaulted).
 
+### Dependencies
+
+- **Minimum versions raised to patched releases** (these affect everyone who installs Lár):
+  `litellm ^1.100.4`, `urllib3 >=2.8.0`, `filelock >=4.2.1,<5`, `setuptools >=84.1.0,<85`.
+  `filelock` moves to 4.x (the 3.x line cannot receive the fix); Lár uses only `FileLock`.
+- **`poetry.lock` refreshed**: clears all 43 open Dependabot alerts (2 critical, 17 high) in the
+  lock file, including `anyio`, `certifi`, `aiohttp`, `fsspec` and `multidict`. The suite passes
+  unchanged on the new versions.
+
 ### Added
 
 - `BatchNode(on_conflict=..., reducers=...)` and `lar.reducers` (`worst_of`, `any_true`, `all_true`).
