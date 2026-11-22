@@ -1,3 +1,4 @@
+import re
 from typing import List, Optional
 from lar.node import BaseNode, HumanJuryNode
 from lar.state import GraphState
@@ -10,9 +11,11 @@ class BiasFilterNode(BaseNode):
     Scope of the claim: this is a lightweight detection aid that *supports* — it
     does **not** by itself satisfy — the Art. 10(2)(f)-(g) "examination in view of
     possible biases" obligation or conformance to prEN 18283 (bias management).
-    A substring match over-triggers (e.g. "regardless of age or gender") and
-    under-triggers (bias expressed in neutral wording). Treat a clean pass as
-    "no obvious protected term surfaced", not "the decision is unbiased".
+    Matching is whole-word and case-insensitive (v2.4.1): "age" no longer fires on
+    "manager", "percentage" or "average". It still over-triggers on legitimate
+    mentions (e.g. "regardless of age or gender") and under-triggers on bias
+    expressed in neutral wording. Treat a clean pass as "no obvious protected term
+    surfaced", not "the decision is unbiased".
     """
     def __init__(self, 
                  input_key: str, 
@@ -23,12 +26,16 @@ class BiasFilterNode(BaseNode):
         self.sensitive_terms = sensitive_terms or ["race", "gender", "age", "religion", "disability", "ethnicity"]
         self.next_node = next_node
         self.jury_node = jury_node
+        self._patterns = [
+            re.compile(r"(?<![A-Za-z])" + re.escape(t.lower()) + r"(?![A-Za-z])")
+            for t in self.sensitive_terms
+        ]
 
     def execute(self, state: GraphState):
         content = str(state.get(self.input_key, "")).lower()
         
         # Simple heuristic bias detection: check if sensitive terms are present in the output
-        bias_detected = any(term in content for term in self.sensitive_terms)
+        bias_detected = any(p.search(content) for p in self._patterns)
         
         state.set("bias_detected", bias_detected)
         

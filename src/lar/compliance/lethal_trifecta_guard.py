@@ -24,7 +24,7 @@ raises a LethalTrifectaError and blocks execution.
 from __future__ import annotations
 
 import datetime
-from typing import Any, Callable, Optional, TYPE_CHECKING
+from typing import Any, Callable, Iterable, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..state import GraphState
@@ -80,6 +80,7 @@ class LethalTrifectaGuard:
         autonomous_action_fn: Callable[["GraphState"], bool],
         human_approval_state_key: str = "jury_decision",
         block_on_violation: bool = True,
+        approving_values: Iterable[str] = ("approve", "approved"),
     ):
         """
         Args:
@@ -87,15 +88,20 @@ class LethalTrifectaGuard:
             sensitive_data_fn: Callable that returns True if Leg 2 is active.
             autonomous_action_fn: Callable that returns True if Leg 3 is active.
             human_approval_state_key: State key to check for prior human approval.
-                If the value at this key is not None, the guard is satisfied.
+                The guard is satisfied only when the value is one of ``approving_values``.
             block_on_violation: If True, raise LethalTrifectaError on violation.
                 If False, log a warning and allow execution (for audit-only mode).
+            approving_values: Decision values that count as human approval
+                (case-insensitive). Anything else -- including "reject" and an
+                empty value -- does NOT satisfy the guard. (Before v2.4.1 any
+                non-None value, even "reject", counted as approval.)
         """
         self.untrusted_input_fn = untrusted_input_fn
         self.sensitive_data_fn = sensitive_data_fn
         self.autonomous_action_fn = autonomous_action_fn
         self.human_approval_state_key = human_approval_state_key
         self.block_on_violation = block_on_violation
+        self.approving_values = {str(v).strip().lower() for v in approving_values}
 
     def check(self, state: "GraphState", action_label: str = "unknown_action") -> dict:
         """
@@ -117,7 +123,10 @@ class LethalTrifectaGuard:
         all_active = leg1 and leg2 and leg3
 
         # Check if a HumanJuryNode has already approved in this path
-        human_approved = state.get(self.human_approval_state_key) is not None
+        decision = state.get(self.human_approval_state_key)
+        human_approved = decision is True or (
+            isinstance(decision, str) and decision.strip().lower() in self.approving_values
+        )
 
         result = {
             "check_type": "LETHAL_TRIFECTA_AEPD_RULE_OF_2",

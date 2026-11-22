@@ -4,6 +4,7 @@ from typing import List, Dict, Optional, Any
 from deepdiff import DeepDiff
 from pydantic import BaseModel
 from .spec import AgentManifest
+from lar._security import safe_id
 
 class AgentDelta(BaseModel):
     """
@@ -24,6 +25,8 @@ class AgentRegistry:
         os.makedirs(self.storage_dir, exist_ok=True)
 
     def _get_path(self, agent_id: str, version: str) -> str:
+        safe_id(str(agent_id), "agent_id")
+        safe_id(str(version), "version")
         return os.path.join(self.storage_dir, f"{agent_id}_v{version}.json")
 
     def save_agent(self, manifest: AgentManifest):
@@ -44,6 +47,7 @@ class AgentRegistry:
     def list_versions(self, agent_id: str) -> List[str]:
         """Lists all available versions for an agent ID."""
         versions = []
+        safe_id(str(agent_id), "agent_id")
         prefix = f"{agent_id}_v"
         for filename in os.listdir(self.storage_dir):
             if filename.startswith(prefix) and filename.endswith(".json"):

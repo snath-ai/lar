@@ -38,8 +38,10 @@ def test_hmac_signing(clean_logs):
         pass
 
     # Find the log file
-    files = os.listdir(log_dir)
+    # One summary file (run_<id>.json) plus its per-step hash chain (run_<id>.chain.jsonl)
+    files = [f for f in os.listdir(log_dir) if not f.endswith(".chain.jsonl")]
     assert len(files) == 1
+    assert len([f for f in os.listdir(log_dir) if f.endswith(".chain.jsonl")]) == 1
     log_file = os.path.join(log_dir, files[0])
 
     with open(log_file, "r") as f:

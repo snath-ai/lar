@@ -136,7 +136,8 @@ class LLMNode(BaseNode):
                  response_format: Optional[Any] = None,
                  fallbacks: Optional[List[str]] = None,
                  caching: bool = False,
-                 success_callbacks: Optional[List[str]] = None
+                 success_callbacks: Optional[List[str]] = None,
+                 console_prompt_preview: bool = False
                  ):
         """
         Initialize an LLM Execution Node.
@@ -158,6 +159,10 @@ class LLMNode(BaseNode):
             fallbacks (list): Backup models for auto-recovery.
             caching (bool): Enable semantic/exact match caching.
             success_callbacks (list): Observability dashboards (e.g., langfuse, datadog).
+            console_prompt_preview (bool): Echo the first 500 characters of every rendered
+                prompt to stdout. Off by default (v2.4.1): prompts routinely contain personal
+                data and stdout usually lands in container/CI logs. The full prompt is still
+                written to the audit log (subject to its redactor).
         """
         
         # Validation
@@ -186,6 +191,7 @@ class LLMNode(BaseNode):
         self.fallbacks = fallbacks
         self.caching = caching
         self.success_callbacks = success_callbacks
+        self.console_prompt_preview = console_prompt_preview
 
         # 2. Check Cache Key (Identifies the unique model configuration)
         # The key includes model name and system instruction for unique caching
@@ -233,7 +239,10 @@ class LLMNode(BaseNode):
         # See _render_template's docstring / CHANGELOG 2.2.2 for why.
         prompt = _render_template(self.prompt_template, state.get_all())
 
-        print(f"  [LLMNode]: Sending prompt to {self.model_identifier}: {truncate_for_log(prompt)}")
+        if getattr(self, "console_prompt_preview", False):
+            print(f"  [LLMNode]: Sending prompt to {self.model_identifier}: {truncate_for_log(prompt)}")
+        else:
+            print(f"  [LLMNode]: Sending prompt to {self.model_identifier} ({len(prompt)} chars)")
 
         # --- Art. 12 Compliance: persist the full prompt & system instruction to state ---
         # The executor's state_diff will capture these, making the exact LLM call
@@ -426,7 +435,12 @@ class LLMNode(BaseNode):
                 raise e
 
         print(f"  [LLMNode] FATAL: Failed after {self.max_retries} retries.")
-        raise APIError(f"LLMNode failed after {self.max_retries} retries.")
+        raise APIError(
+            status_code=429,
+            message=f"LLMNode failed after {self.max_retries} retries (rate limited).",
+            llm_provider=str(self.model_identifier).split("/")[0] if "/" in str(self.model_identifier) else "unknown",
+            model=str(self.model_identifier),
+        )
 
 class RouterNode(BaseNode):
     """
@@ -506,7 +520,8 @@ class ToolNode(BaseNode):
                  credential_vault: Any = None,
                  credential_key: str = None,
                  affected_parties: str = "USER_ONLY",
-                 transparency_engine: Any = None):
+                 transparency_engine: Any = None,
+                 console_input_preview: bool = False):
         """
         Initialize a Tool Execution Node.
 
@@ -544,15 +559,26 @@ class ToolNode(BaseNode):
         self.credential_key = credential_key
         self.affected_parties = affected_parties
         self.transparency_engine = transparency_engine
+        # Off by default (v2.4.1): tool inputs routinely contain personal data (especially with
+        # input_keys=["__state__"]) and stdout usually lands in container/CI logs.
+        self.console_input_preview = console_input_preview
 
     def execute(self, state: GraphState):
+        _MISSING = object()
+        _cred_prior = _MISSING
+        _cred_injected = False
         try:
             func_name = getattr(self.tool_function, "__name__", str(self.tool_function))
             
             # --- COMPLIANCE: Credential Vault (JIT Provisioning) ---
+            # The secret is placed in state ONLY for the duration of this tool call
+            # and removed in the ``finally`` below, so it can never appear in the
+            # executor's state snapshots (audit log, checkpoints, state_diff).
             if self.credential_vault and self.credential_key:
                 cred = self.credential_vault.get(tool_name=func_name, scope=self.action_type or "default", credential_key=self.credential_key)
+                _cred_prior = state.get(self.credential_key, _MISSING)
                 state.set(self.credential_key, cred)
+                _cred_injected = True
                 
             # --- COMPLIANCE: Transparency Engine ---
             if self.affected_parties in ["THIRD_PARTY", "BOTH"] and self.transparency_engine:
@@ -580,7 +606,10 @@ class ToolNode(BaseNode):
                 else:
                     log_inputs.append(arg)
                     
-            print(f"  [ToolNode]: Running {func_name} with inputs: {truncate_for_log(log_inputs)}")
+            if getattr(self, "console_input_preview", False):
+                print(f"  [ToolNode]: Running {func_name} with inputs: {truncate_for_log(log_inputs)}")
+            else:
+                print(f"  [ToolNode]: Running {func_name} ({len(log_inputs)} input(s))")
             result = self.tool_function(*inputs)
             
             # Special handling for merging dict results
@@ -601,6 +630,12 @@ class ToolNode(BaseNode):
                 return self.error_node
             else:
                 return None
+        finally:
+            if _cred_injected:
+                if _cred_prior is _MISSING:
+                    state.delete(self.credential_key)
+                else:
+                    state.set(self.credential_key, _cred_prior)
 
 class ClearErrorNode(BaseNode):
     """
@@ -632,9 +667,19 @@ class BatchNode(BaseNode):
     while the slow branch is still pending.
     """
     def __init__(self, nodes: List[BaseNode], next_node: BaseNode = None,
-                 branch_timeout: Optional[float] = None):
+                 branch_timeout: Optional[float] = None,
+                 on_conflict: str = "first_wins",
+                 reducers: Optional[Dict[str, Callable[[list], Any]]] = None):
         """
         Args:
+            on_conflict: What to do when two branches write DIFFERENT values to the same state
+                key. ``"first_wins"`` (default, legacy): branch order decides and the conflict is only
+                flagged in ``state['_batch_conflicts']``; with a safety or risk key this silently
+                drops the worse answer (branch 0 = LOW beats branch 1 = HIGH). ``"error"``: raise, so
+                the run stops and is logged, unless a reducer handles that key. Prefer ``"error"``
+                or ``reducers`` for anything where a disagreement matters.
+            reducers: ``{key: fn(values_in_branch_order) -> merged_value}`` resolving a conflict
+                deterministically, e.g. ``{"risk": lar.reducers.worst_of(["LOW", "MEDIUM", "HIGH"])}``.
             nodes: List of nodes to execute in parallel.
             next_node: The single node to execute after all parallel nodes finish.
             branch_timeout: Per-branch timeout in seconds.  ``None`` = no timeout
@@ -655,10 +700,17 @@ class BatchNode(BaseNode):
                     f"nodes[{i}] must be a BaseNode instance, got {type(node).__name__}"
                 )
         self._validate_next_node(next_node)
+        if on_conflict not in ("first_wins", "error"):
+            raise ValueError("on_conflict must be 'first_wins' or 'error'")
+        for k, fn in (reducers or {}).items():
+            if not callable(fn):
+                raise ValueError(f"reducers[{k!r}] must be callable")
 
         self.nodes = nodes
         self.next_node = next_node
         self.branch_timeout = branch_timeout
+        self.on_conflict = on_conflict
+        self.reducers = dict(reducers or {})
 
     def execute(self, state: GraphState):
         MAX_STEPS = 50
@@ -721,6 +773,7 @@ class BatchNode(BaseNode):
         # First pass — detect conflicts across branches before writing anything
         seen: dict = {}
         conflicts: set = set()
+        values_by_key: dict = {}
         for local_state in local_states:
             for k, v in local_state.get_all().items():
                 if k in ("token_budget", "last_error"):
@@ -737,9 +790,20 @@ class BatchNode(BaseNode):
                     if conflict:
                         conflicts.add(k)
                     seen[k] = v
+                    values_by_key.setdefault(k, []).append(v)
 
+        unresolved = sorted(conflicts - set(self.reducers))
+        if unresolved and self.on_conflict == "error":
+            raise RuntimeError(
+                f"[BatchNode] parallel branches disagree on {unresolved}; refusing to let branch order "
+                f"decide. Provide reducers= for these keys or fix the branches."
+            )
         if conflicts:
-            print(f"  [BatchNode] WARN: Merge conflict on keys {conflicts} — first writer wins (branch 0 priority).")
+            resolved = sorted(conflicts & set(self.reducers))
+            if unresolved:
+                print(f"  [BatchNode] WARN: Merge conflict on keys {unresolved} — first writer wins (branch 0 priority).")
+            if resolved:
+                print(f"  [BatchNode]: conflict on {resolved} resolved by reducer.")
             state.set("_batch_conflicts", list(conflicts))
 
         # Second pass — write in order; first writer wins on conflicts
@@ -767,6 +831,9 @@ class BatchNode(BaseNode):
                         state.set(k, v)
                         written.add(k)
                         updates_count += 1
+
+        for k in sorted(conflicts & set(self.reducers)):
+            state.set(k, self.reducers[k](values_by_key[k]))      # deterministic merge, order-independent
 
         if base_budget is not None:
             new_budget = base_budget - total_budget_spent
@@ -838,7 +905,9 @@ class HumanJuryNode(BaseNode):
                  human_decision_provider: Optional[Any] = None,
                  # --- Durable pause/resume (v2.3.0) ---
                  checkpoint_store: Optional[Any] = None,
-                 case_id_key: Optional[str] = None):
+                 case_id_key: Optional[str] = None,
+                 # --- Decision-dependent routing (v2.4.1) ---
+                 decision_routes: Optional[Dict[str, Optional[BaseNode]]] = None):
         """
         Args:
             prompt: The question to ask the human stakeholder.
@@ -861,7 +930,12 @@ class HumanJuryNode(BaseNode):
                 Policies control non-interactive (CI/automated) fallback behaviour:
                   ``"always_human"``      — always require a real human (block in CI)
                   ``"auto_if_low_risk"``  — auto-select first choice only when risk is LOW
-                  ``"auto_first_choice"`` — legacy behaviour (auto-select first choice)
+                  ``"auto_first_choice"`` — EXPLICIT OPT-IN ONLY: auto-select the first
+                                            choice without a human. Never the default.
+                When ``decision_type`` has no entry here the node FAILS CLOSED
+                (behaves as ``always_human``): with no TTY and no
+                ``human_decision_provider`` it halts. (Before v2.4.1 the default was
+                ``auto_first_choice``, which silently approved in every headless run.)
                 Example::
 
                     automation_boundary={
@@ -893,6 +967,13 @@ class HumanJuryNode(BaseNode):
                 re-executes this node.
             case_id_key: State key holding the case/thread identifier used to
                 name the checkpoint. Required if checkpoint_store is set.
+            decision_routes: Optional mapping ``decision -> next node``. A decision
+                found here routes to that node instead of ``next_node``; a value of
+                ``None`` STOPS the run on that decision (e.g.
+                ``{"reject": None}``). Without this, every decision continues to
+                ``next_node``, so a reject must be handled by the graph itself.
+                With ``checkpoint_store`` set, every routed node needs a stable
+                ``_node_id`` so an out-of-process resume can find it.
         """
         # Validation
         if not isinstance(prompt, str) or not prompt:
@@ -931,6 +1012,38 @@ class HumanJuryNode(BaseNode):
             raise ValueError("case_id_key is required when checkpoint_store is provided")
         self.checkpoint_store = checkpoint_store
         self.case_id_key = case_id_key
+        # Decision-dependent routing
+        routes = dict(decision_routes or {})
+        for d, target in routes.items():
+            if not isinstance(d, str):
+                raise ValueError("decision_routes keys must be strings")
+            if d.lower() not in self.choices:
+                raise ValueError(f"decision_routes key {d!r} is not one of the choices {self.choices}")
+            if target is not None and not isinstance(target, BaseNode):
+                raise ValueError(f"decision_routes[{d!r}] must be a BaseNode or None")
+        self.decision_routes = {d.lower(): t for d, t in routes.items()}
+
+    def _route_ids(self) -> Dict[str, Optional[str]]:
+        """decision -> resume ``_node_id`` (or None for 'stop'), for checkpoints."""
+        ids: Dict[str, Optional[str]] = {}
+        for d, target in self.decision_routes.items():
+            if target is None:
+                ids[d] = None
+            else:
+                nid = getattr(target, "_node_id", None)
+                if not nid:
+                    raise RuntimeError(
+                        f"[HumanJuryNode] decision_routes[{d!r}] has no _node_id; set "
+                        f"target._node_id = '<stable-id>' so a resumed run can find it."
+                    )
+                ids[d] = nid
+        return ids
+
+    def _route_for(self, decision: str):
+        """Return the next node for ``decision`` (honours ``decision_routes``)."""
+        if decision in self.decision_routes:
+            return self.decision_routes[decision]
+        return self.next_node
 
     def execute(self, state: GraphState):
         print("\n" + "="*60)
@@ -977,6 +1090,8 @@ class HumanJuryNode(BaseNode):
                     "action_description": self.action_description,
                     "context_keys": self.context_keys,
                     "risk_score_key": self.risk_score_key,
+                    "choices": list(self.choices),
+                    "decision_routes": self._route_ids(),
                 },
             )
             self.checkpoint_store.save(checkpoint)
@@ -1014,8 +1129,9 @@ class HumanJuryNode(BaseNode):
         # 2b. Interactive / automation-boundary path.
         elif not sys.stdin.isatty():
             # Determine fallback policy for this decision_type
+            # FAIL CLOSED: an unconfigured decision type needs a real human.
             policy = self.automation_boundary.get(
-                self.decision_type or "", "auto_first_choice"
+                self.decision_type or "", "always_human"
             )
 
             if policy == "always_human":
@@ -1037,10 +1153,16 @@ class HumanJuryNode(BaseNode):
                         f"human review at risk level '{risk_level}' "
                         f"(automation_boundary policy='auto_if_low_risk')."
                     )
-            else:
-                # Default legacy behaviour: auto-select first choice
+            elif policy == "auto_first_choice":
+                # Explicit opt-in only (never the default): no human involved.
                 user_input = self.choices[0]
-                rationale = "Auto-selected in non-interactive environment."
+                rationale = "Auto-selected in non-interactive environment (explicit auto_first_choice policy)."
+            else:
+                raise ValueError(
+                    f"[HumanJuryNode] unknown automation_boundary policy {policy!r} for "
+                    f"decision_type={self.decision_type!r}. Use always_human, "
+                    f"auto_if_low_risk or auto_first_choice."
+                )
 
             print(f"  [HumanJuryNode]: Non-interactive environment. {rationale}")
             state.set(self.output_key, user_input)
@@ -1085,7 +1207,8 @@ class HumanJuryNode(BaseNode):
                 self.checkpoint_store.delete(case_id)
 
         print("="*60 + "\n")
-        return self.next_node
+        decision = state.get(self.output_key)
+        return self._route_for(decision)
 
 class FunctionalNode(BaseNode):
     """

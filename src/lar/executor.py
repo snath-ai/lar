@@ -5,7 +5,7 @@ from typing import Optional
 from .node import BaseNode
 from .state import GraphState
 from .utils import compute_state_diff
-from .logger import AuditLogger
+from .logger import AuditLogger, _CURRENT_RUN_LOGGER
 from .tracker import TokenTracker
 from .compliance.runtime_versioner import RuntimeStateVersioner
 from .compliance.prohibited_practice_guard import ProhibitedPracticeGuard, ProhibitedPracticeError
@@ -88,9 +88,20 @@ class GraphExecutor:
         # Generate a unique ID for this run (UUIDv4)
         run_id = str(uuid.uuid4())
         
-        # Clear logger history for this run
-        self.logger.clear_history()
-        self.tracker.reset()
+        # Each run gets its OWN logger state (history + hash chain) and token tracker, so two runs
+        # on one executor (a web service handling concurrent requests) can never write steps into
+        # each other's audit record. A custom logger/tracker without fork()/the stock class is used
+        # as before (shared, not concurrency-safe).
+        logger = self.logger.fork() if hasattr(self.logger, "fork") else self.logger
+        logger.clear_history()
+        if hasattr(logger, "begin_run"):
+            logger.begin_run(run_id)
+        if type(self.tracker) is TokenTracker:
+            tracker = TokenTracker()
+            self.tracker = tracker               # exposes the most recently started run's totals
+        else:
+            tracker = self.tracker
+            tracker.reset()
 
         step_index = 0
         node_counts = {}
@@ -143,13 +154,17 @@ class GraphExecutor:
                     print(f"  [GraphExecutor] 🛑 FATIGUE TRIPPED: {msg}")
                     log_entry["outcome"] = "error"
                     log_entry["error"] = msg
-                    self.logger.log_step(log_entry)
+                    logger.log_step(log_entry)
                     yield log_entry
                     break
                 
                 try:
                     # Execute the node
-                    next_node = current_node.execute(state)
+                    _tok = _CURRENT_RUN_LOGGER.set(logger)
+                    try:
+                        next_node = current_node.execute(state)
+                    finally:
+                        _CURRENT_RUN_LOGGER.reset(_tok)
 
                     # --- Art. 5: ProhibitedPracticeGuard auto-hook ---
                     # Scan the output key written by this step (if any) without
@@ -204,7 +219,7 @@ class GraphExecutor:
                     log_entry["run_metadata"] = metadata
                     
                     # Delegate token tracking
-                    self.tracker.add_tokens(metadata)
+                    tracker.add_tokens(metadata)
                 
                 # Clear metadata from the actual state so it doesn't persist
                 state.set("__last_run_metadata", None)
@@ -241,7 +256,7 @@ class GraphExecutor:
                         state.set("drift_report", snap["drift_report"])
 
                 # Delegate logging
-                self.logger.log_step(log_entry)
+                logger.log_step(log_entry)
                 yield log_entry
                 
                 # Resume on the next call
@@ -264,7 +279,7 @@ class GraphExecutor:
                         "outcome": "error",
                         "error": f"Max steps ({max_steps}) exceeded without reaching a stop condition."
                     }
-                    self.logger.log_step(final_log)
+                    logger.log_step(final_log)
                     yield final_log
                     break
 
@@ -272,11 +287,17 @@ class GraphExecutor:
             # --- AUTO-SAVE LOG ON FINISH (OR INTERRUPT) ---
             summary = {
                 "total_steps": step_index,
-                **self.tracker.get_summary()  # Unpack token summary
+                **tracker.get_summary()  # Unpack token summary
             }
             # Only save if we actually ran something
-            if step_index >= 0:
-                self.logger.save_to_file(run_id, user_id=self.user_id, summary=summary)
+            try:
+                if step_index >= 0:
+                    logger.save_to_file(run_id, user_id=self.user_id, summary=summary)
+            finally:
+                if logger is not self.logger:
+                    # compatibility: callers that read executor.logger.history after a run see the last finished run
+                    self.logger.history = logger.history
+                    self.logger._run_id = getattr(logger, "_run_id", None)
 
     def resume_step_by_step(self, checkpoint, node_registry: dict, max_steps: int = 100):
         """

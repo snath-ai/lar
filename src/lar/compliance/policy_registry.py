@@ -27,6 +27,17 @@ class PolicyRegistry:
             cls._instance._policies = {}
         return cls._instance
 
+    @classmethod
+    def isolated(cls) -> "PolicyRegistry":
+        """
+        A private, empty registry that is NOT the process-wide singleton. Use one per
+        run/tenant and pass it to ``RiskScorerNode(registry=...)`` so concurrent runs
+        cannot overwrite or ``clear()`` each other's policies.
+        """
+        inst = object.__new__(cls)
+        inst._policies = {}
+        return inst
+
     def register(self, action_type: str, policy: ActionPolicy) -> None:
         """Register a new policy for an action type."""
         self._policies[action_type] = policy

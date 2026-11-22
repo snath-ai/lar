@@ -129,7 +129,9 @@ class TestPIIRedactionEngine:
         assert defaults.issubset(eng.sensitive_keys)
 
     def test_custom_sensitive_keys_replace_defaults(self):
-        eng = PIIRedactionEngine(sensitive_keys=["patient_id"])
+        # Key-list semantics only: pattern scanning is switched off here (it is on by
+        # default since v2.4.1 and would also catch the e-mail address).
+        eng = PIIRedactionEngine(sensitive_keys=["patient_id"], redact_patterns=False)
         result = eng.process_dict({"patient_id": "P-9999", "email": "doc@hosp.com"})
         assert result["patient_id"] == "[REDACTED]"
         assert result["email"] == "doc@hosp.com"  # not in custom list
@@ -328,13 +330,22 @@ class TestRiskScorerNode:
     def setup_method(self):
         PolicyRegistry().clear()
 
-    def test_no_policy_defaults_retrospective_routes_to_next(self):
+    def test_no_policy_fails_toward_oversight_and_routes_to_jury(self):
+        # An unclassified action is NOT low risk: with no registered policy the
+        # scorer must escalate to a human, regardless of confidence.
         next_node = AddValueNode(key="routed_to", value="next")
         jury_node = AddValueNode(key="routed_to", value="jury")
         node = RiskScorerNode(next_node=next_node, jury_node=jury_node)
         final = _run_node(node, {})
-        assert final["routed_to"] == "next"
-        assert final["computed_oversight_level"] == "RETROSPECTIVE"
+        assert final["routed_to"] == "jury"
+        assert final["computed_oversight_level"] == "PRE_EXECUTION"
+
+    def test_unregistered_action_low_confidence_still_escalates(self):
+        next_node = AddValueNode(key="routed_to", value="next")
+        jury_node = AddValueNode(key="routed_to", value="jury")
+        node = RiskScorerNode(next_node=next_node, jury_node=jury_node)
+        final = _run_node(node, {"action_type": "wire_transfer", "model_confidence": 0.1})
+        assert final["routed_to"] == "jury"
 
     def test_irreversible_action_escalates_to_pre_execution(self):
         PolicyRegistry().register(
