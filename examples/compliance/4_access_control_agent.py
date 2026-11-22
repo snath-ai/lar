@@ -47,8 +47,9 @@ class ProposerParserNode(BaseNode):
                 data = json.loads(raw)
         except:
              # Fallback for demo stability
-            print("  -> Parser Failed. Using fallback.")
-            data = {"user": "Unknown", "role": "viewer", "resource": "dev-db"}
+            # NEVER substitute a valid-looking access request for one we could not read.
+            print("  -> Parser Failed. Marking the request unreadable (the jury will escalate it).")
+            data = {"parse_error": True}
             
         print(f"  -> Parsed: {json.dumps(data)}")
         state.set("proposal", data)
@@ -62,8 +63,14 @@ class AccessPolicyJury(BaseNode):
 
     def execute(self, state: Dict[str, Any]) -> Dict[str, Any]:
         proposal = state.get("proposal", {})
-        role = proposal.get("role", "").lower()
-        resource = proposal.get("resource", "").lower()
+        if proposal.get("parse_error") or not proposal.get("role") or not proposal.get("resource"):
+            print("\n[Jury] Request unreadable or incomplete.")
+            print("  -> ⚠️  VERDICT: ESCALATE (cannot evaluate policy on missing fields)")
+            state.set("verdict", "ESCALATE")
+            state.set("reason", "Request could not be read; a person must decide.")
+            return self.next_node
+        role = str(proposal.get("role", "")).lower()
+        resource = str(proposal.get("resource", "")).lower()
         
         print(f"\n[Jury] Evaluating Policy for {role} access to {resource}...")
         

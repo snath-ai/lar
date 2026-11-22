@@ -48,8 +48,10 @@ class JsonParserNode(BaseNode):
                 data = json.loads(match.group(0))
             else:
                 # Fallback for demo safety
-                print("  [Parser] ⚠️ Failed to parse JSON. using fallback.")
-                data = {"action": "refund", "amount": 0, "reason": "Parsing Error"}
+                # NEVER turn "could not read the proposal" into a valid-looking proposal (the old
+                # fallback was a $0 refund, which the jury then APPROVED). Mark it unreadable instead.
+                print("  [Parser] ⚠️ Failed to parse JSON. Marking the proposal unreadable.")
+                data = {"parse_error": True}
         
         state.set("proposal", data)
         print(f"  [Parser] Parsed Proposal: {json.dumps(data)}")
@@ -62,8 +64,17 @@ class JuryNode(BaseNode):
 
     def execute(self, state: Dict[str, Any]) -> Dict[str, Any]:
         proposal = state.get("proposal", {})
-        amount = proposal.get("amount", 0)
-        
+        amount = proposal.get("amount")
+
+        # INVARIANT 0: an unreadable or malformed proposal is never approved, and never defaulted to $0.
+        if (proposal.get("parse_error") or isinstance(amount, bool)
+                or not isinstance(amount, (int, float)) or amount <= 0):
+            print("\n[Jury] Proposal missing or malformed.")
+            print("  -> ❌ VERDICT: REJECTED (no valid positive amount)")
+            state.set("verdict", "REJECTED")
+            state.set("rejection_reason", "Proposal could not be read as a valid positive amount; sent for review.")
+            return self.next_node
+
         print(f"\n[Jury] Deliberating on proposal: ${amount} refund...")
         
         # INVARIANT: Refunds over $500 require Human Override (or are rejected)

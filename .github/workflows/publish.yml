@@ -5,9 +5,10 @@ on:
   release:
     types: [published]
 
+# Least privilege: read-only by default; only the job that attaches the wheel to the
+# Release is granted write access (see the `publish` job).
 permissions:
-  contents: write   # Needed to upload wheel to the Release
-  packages: write
+  contents: read
 
 jobs:
   build_and_test:
@@ -43,6 +44,8 @@ jobs:
     name: Attach wheel to GitHub Release
     needs: build_and_test
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed only to upload the wheel to the Release
 
     steps:
       - uses: actions/download-artifact@v4
