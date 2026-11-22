@@ -346,8 +346,8 @@ class IncidentReporterNode:
             "webhook_url": self.webhook_url,
             **details,
         }
-        with open(self.incident_log_path, "a") as f:
-            f.write(json.dumps(record) + "\n")
+        from lar._security import secure_append_text
+        secure_append_text(self.incident_log_path, json.dumps(record) + "\n")
         print(
             f"  [IncidentReporterNode] [{severity}] Incident recorded "
             f"(deadline: {deadline_h}h). → {self.incident_log_path}"

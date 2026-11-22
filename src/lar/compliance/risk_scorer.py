@@ -13,7 +13,9 @@ class RiskScorerNode(BaseNode):
                  next_node: BaseNode, 
                  jury_node: HumanJuryNode,
                  confidence_key: str = "model_confidence", 
-                 action_type_key: str = "action_type"):
+                 action_type_key: str = "action_type",
+                 registry: Optional[PolicyRegistry] = None):
+        self.registry = registry
         self.next_node = next_node
         self.jury_node = jury_node
         self.confidence_key = confidence_key
@@ -35,11 +37,18 @@ class RiskScorerNode(BaseNode):
                 f"treating as confidence=0.0 (forces escalation) rather than assuming full confidence."
             )
 
-        registry = PolicyRegistry()
+        registry = self.registry if self.registry is not None else PolicyRegistry()
         policy = registry.get_policy(action_type) if action_type else None
         
-        # Default fallback
-        oversight_level = "RETROSPECTIVE"
+        if policy is None:
+            # FAIL TOWARD OVERSIGHT: an action with no registered policy is unclassified,
+            # not "low risk". (Before v2.4.1 it fell through to RETROSPECTIVE, i.e. no
+            # human review, even at confidence 0.0.)
+            oversight_level = "PRE_EXECUTION"
+            print(f"  [RiskScorerNode] WARNING: no policy registered for action '{action_type}' "
+                  f"- escalating to human review (fail toward oversight).")
+        else:
+            oversight_level = "RETROSPECTIVE"
         
         if policy:
             oversight_level = policy.oversight_level

@@ -41,8 +41,11 @@ node objects from data, which is a much larger and different problem.
 """
 import datetime
 import json
+import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Callable, Dict, Optional
+
+from ._security import safe_id, secure_makedirs, secure_write_text
 
 
 class Checkpoint:
@@ -101,22 +104,33 @@ class FileCheckpointStore:
     Default checkpoint store: one JSON file per ``case_id`` on local disk.
 
     This is deliberately the simplest thing that is still genuinely durable
-    across a process restart — it is NOT a distributed store, has no
-    locking, and is not safe for concurrent writers to the same case_id.
-    For multi-instance deployments, implement this same four-method
-    interface against a real database or object store.
+    across a process restart. It is NOT a distributed store: the atomic
+    ``claim`` below stops two resumers on the SAME host from both resolving
+    one case, but multi-instance deployments must implement this same
+    interface (``save``/``load``/``delete``/``exists`` plus ``claim``/
+    ``commit``/``release``) against a real database with compare-and-set.
+
+    Security properties (v2.4.1):
+      - ``case_id`` is validated (``lar._security.safe_id``): it can never
+        contain a path separator or ``..``, so it cannot address a file
+        outside ``directory``.
+      - Files are created ``0600`` and the directory ``0700``.
+      - Checkpoints hold the FULL run state in clear text. Treat the
+        directory like a database of the data your graph handles.
     """
 
     def __init__(self, directory: str = "lar_checkpoints"):
         self.directory = Path(directory)
-        self.directory.mkdir(parents=True, exist_ok=True)
+        secure_makedirs(self.directory)
 
     def _path(self, case_id: str) -> Path:
-        return self.directory / f"{case_id}.json"
+        return self.directory / f"{safe_id(case_id, 'case_id')}.json"
+
+    def _claimed_path(self, case_id: str) -> Path:
+        return self.directory / f"{safe_id(case_id, 'case_id')}.json.claimed"
 
     def save(self, checkpoint: Checkpoint) -> None:
-        with open(self._path(checkpoint.case_id), "w") as f:
-            json.dump(checkpoint.to_dict(), f, indent=2)
+        secure_write_text(self._path(checkpoint.case_id), json.dumps(checkpoint.to_dict(), indent=2))
 
     def load(self, case_id: str) -> Optional[Checkpoint]:
         path = self._path(case_id)
@@ -133,6 +147,33 @@ class FileCheckpointStore:
     def exists(self, case_id: str) -> bool:
         return self._path(case_id).exists()
 
+    # -- exactly-once resolution -------------------------------------------
+    def claim(self, case_id: str) -> Optional[Checkpoint]:
+        """
+        Atomically take ownership of a pending checkpoint. Returns ``None`` if
+        there is nothing pending or another resumer already claimed it.
+        ``os.replace`` is atomic on POSIX, so only one caller wins.
+        """
+        src, dst = self._path(case_id), self._claimed_path(case_id)
+        try:
+            os.replace(src, dst)
+        except FileNotFoundError:
+            return None
+        with open(dst) as f:
+            return Checkpoint.from_dict(json.load(f))
+
+    def commit(self, case_id: str) -> None:
+        """The claimed case was resolved successfully: remove it for good."""
+        dst = self._claimed_path(case_id)
+        if dst.exists():
+            dst.unlink()
+
+    def release(self, case_id: str) -> None:
+        """Resolution did not complete: put the checkpoint back so nothing is lost."""
+        dst = self._claimed_path(case_id)
+        if dst.exists():
+            os.replace(dst, self._path(case_id))
+
 
 def resume_human_decision(
     checkpoint_store,
@@ -145,52 +186,110 @@ def resume_human_decision(
     stakeholder_role: str = "REVIEWER",
     rationale: str = "",
     max_steps: int = 100,
+    authorize: Optional[Callable[[str, Dict[str, Any]], bool]] = None,
 ):
     """
     Resolves a ``HumanJuryNode`` checkpoint from OUTSIDE the process that
-    created it — e.g. a decision submitted via a web form, API call, or
+    created it -- e.g. a decision submitted via a web form, API call, or
     Slack action, arbitrarily long after the pause and in a different
     process entirely.
 
-    Loads the durable checkpoint, writes ``decision`` to the ``output_key``
-    the paused node was configured with, records an Art. 12/14 authority
-    record if a ledger is attached (so the audit trail is identical whether
-    a decision was resolved in-process via blocking ``input()`` or
-    out-of-process via this function), deletes the resolved checkpoint, and
-    resumes execution from ``next_node`` onward. The paused ``HumanJuryNode``
-    itself is never re-executed — only the state snapshot taken *before* the
-    pause is used, so nothing computed here can be re-derived from state
-    that drifted after the checkpoint was written.
+    Safety properties (v2.4.1):
+      - The decision is validated against the ``choices`` the paused node was
+        configured with (recorded in the checkpoint). Anything else raises
+        ``ValueError`` and the checkpoint stays pending.
+      - ``authorize(stakeholder_id, checkpoint_metadata) -> bool`` lets the
+        caller bind the decision to an authenticated, authorised identity.
+        A falsy result raises ``PermissionError``. When an ``authority_ledger``
+        is attached, an anonymous ``stakeholder_id`` ("UNKNOWN"/empty) is refused.
+        Lár does not authenticate anyone itself: the caller must pass the
+        identity its own auth layer verified.
+      - The checkpoint is *claimed* atomically (exactly one resolver wins) and
+        only deleted after the resumed run finishes. If the run is interrupted
+        before finishing, the checkpoint is released back to pending, so the
+        case is never lost. Custom stores without ``claim`` fall back to the
+        old load-then-delete behaviour.
+      - If the paused node declared ``decision_routes``, the run resumes at the
+        node routed for this decision (or stops, for a route of ``None``) --
+        a "reject" can no longer fall through to the approval path.
 
     Yields the same per-step log entries as ``GraphExecutor.run_step_by_step``.
     """
-    checkpoint = checkpoint_store.load(case_id)
-    if checkpoint is None:
+    pending = checkpoint_store.load(case_id)
+    if pending is None:
         raise ValueError(f"No pending checkpoint for case_id={case_id!r}.")
 
-    output_key = checkpoint.metadata.get("output_key")
+    meta = pending.metadata
+    output_key = meta.get("output_key")
     if not output_key:
         raise ValueError(
             f"Checkpoint for case_id={case_id!r} has no recorded output_key; "
             f"it wasn't created by a checkpoint-enabled HumanJuryNode."
         )
 
-    checkpoint.state[output_key] = decision
-
-    if authority_ledger is not None:
-        risk_score_key = checkpoint.metadata.get("risk_score_key")
-        authority_ledger.record(
-            action_description=checkpoint.metadata.get("action_description", checkpoint.reason),
-            stakeholder_id=stakeholder_id,
-            stakeholder_role=stakeholder_role,
-            decision=decision,
-            rationale=rationale or "Resolved via external resume (out-of-process).",
-            context_snapshot={
-                k: checkpoint.state.get(k) for k in checkpoint.metadata.get("context_keys", [])
-            },
-            risk_score=checkpoint.state.get(risk_score_key) if risk_score_key else None,
+    choices = meta.get("choices")
+    if not choices:
+        raise ValueError(
+            f"Checkpoint for case_id={case_id!r} records no valid choices, so the "
+            f"decision cannot be validated. Re-run the paused node to recreate it."
+        )
+    decision = str(decision).strip().lower()
+    if decision not in choices:
+        raise ValueError(
+            f"Invalid decision {decision!r} for case_id={case_id!r}; allowed: {choices}."
         )
 
-    checkpoint_store.delete(case_id)
+    if authority_ledger is not None and (not stakeholder_id or stakeholder_id == "UNKNOWN"):
+        raise PermissionError(
+            "An identified stakeholder_id is required to resolve a case when an "
+            "authority_ledger is attached (got an anonymous reviewer)."
+        )
+    if authorize is not None and not authorize(stakeholder_id, dict(meta)):
+        raise PermissionError(
+            f"stakeholder {stakeholder_id!r} is not authorised to resolve case_id={case_id!r}."
+        )
 
-    yield from executor.resume_step_by_step(checkpoint, node_registry, max_steps=max_steps)
+    claim = getattr(checkpoint_store, "claim", None)
+    if claim is not None:
+        checkpoint = claim(case_id)
+        if checkpoint is None:
+            raise ValueError(
+                f"case_id={case_id!r} is no longer pending (already resolved or being resolved)."
+            )
+    else:
+        checkpoint = pending
+
+    completed = False
+    try:
+        checkpoint.state[output_key] = decision
+
+        if authority_ledger is not None:
+            risk_score_key = meta.get("risk_score_key")
+            authority_ledger.record(
+                action_description=meta.get("action_description", checkpoint.reason),
+                stakeholder_id=stakeholder_id,
+                stakeholder_role=stakeholder_role,
+                decision=decision,
+                rationale=rationale or "Resolved via external resume (out-of-process).",
+                context_snapshot={k: checkpoint.state.get(k) for k in meta.get("context_keys", [])},
+                risk_score=checkpoint.state.get(risk_score_key) if risk_score_key else None,
+            )
+
+        routes = meta.get("decision_routes") or {}
+        if decision in routes:
+            resume_id = routes[decision]
+            if resume_id is None:
+                completed = True      # routed to "stop": nothing further runs
+                return
+            checkpoint.resume_node_id = resume_id
+
+        yield from executor.resume_step_by_step(checkpoint, node_registry, max_steps=max_steps)
+        completed = True
+    finally:
+        if claim is not None:
+            if completed:
+                checkpoint_store.commit(case_id)
+            else:
+                checkpoint_store.release(case_id)
+        elif completed:
+            checkpoint_store.delete(case_id)

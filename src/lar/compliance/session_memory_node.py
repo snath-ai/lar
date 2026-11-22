@@ -19,12 +19,15 @@ Modes:
 from __future__ import annotations
 
 import datetime
+import hashlib
 import json
 import os
+import time
 from typing import Any, Dict, List, Optional
 
 from lar.node import BaseNode
 from lar.state import GraphState
+from lar._security import secure_makedirs, secure_write_text
 
 
 class SessionMemoryNode(BaseNode):
@@ -76,6 +79,7 @@ class SessionMemoryNode(BaseNode):
         retention_days: int = 90,
         memory_dir: str = "lar_logs/session_memory",
         next_node: Optional[BaseNode] = None,
+        sweep_interval_seconds: int = 3600,
     ):
         """
         Args:
@@ -85,6 +89,10 @@ class SessionMemoryNode(BaseNode):
             retention_days: Entries older than this are automatically expired.
             memory_dir: Directory for per-subject JSON files.
             next_node: Next node after execution.
+            sweep_interval_seconds: How often this node sweeps the WHOLE directory and
+                removes expired entries for every subject (default hourly). Without the
+                sweep, retention would only be enforced when the same subject is touched
+                again, so a stale file could outlive its retention period indefinitely.
         """
         if mode not in self._VALID_MODES:
             raise ValueError(
@@ -96,14 +104,20 @@ class SessionMemoryNode(BaseNode):
         self.retention_days = retention_days
         self.memory_dir = memory_dir
         self.next_node = next_node
-        os.makedirs(self.memory_dir, exist_ok=True)
+        self.sweep_interval_seconds = sweep_interval_seconds
+        self._last_sweep = 0.0
+        secure_makedirs(self.memory_dir)
 
     # ── Internal helpers ──────────────────────────────────────────────────────
 
     def _subject_path(self, subject_id: str) -> str:
-        # Sanitise subject ID for use as a filename
-        safe = "".join(c if c.isalnum() or c in "-_." else "_" for c in str(subject_id))
-        return os.path.join(self.memory_dir, f"{safe}.json")
+        # Readable prefix + hash of the ORIGINAL id. The prefix alone is lossy
+        # ("alice@bank.com" and "alice_bank.com" would collide and one subject
+        # would read the other's memory); the hash makes every id map to its own file.
+        sid = str(subject_id)
+        safe = "".join(c if c.isalnum() or c in "-_" else "_" for c in sid)[:48] or "subject"
+        digest = hashlib.sha256(sid.encode("utf-8")).hexdigest()[:16]
+        return os.path.join(self.memory_dir, f"{safe}-{digest}.json")
 
     def _load(self, subject_id: str) -> Dict:
         path = self._subject_path(subject_id)
@@ -113,8 +127,29 @@ class SessionMemoryNode(BaseNode):
             return json.load(f)
 
     def _save(self, subject_id: str, data: Dict) -> None:
-        with open(self._subject_path(subject_id), "w") as f:
-            json.dump(data, f, indent=2, default=str)
+        secure_write_text(self._subject_path(subject_id), json.dumps(data, indent=2, default=str))
+
+    def sweep_expired(self) -> int:
+        """Remove expired entries for every subject; delete files left empty. Returns files touched."""
+        touched = 0
+        for name in os.listdir(self.memory_dir):
+            if not name.endswith(".json"):
+                continue
+            path = os.path.join(self.memory_dir, name)
+            try:
+                with open(path) as f:
+                    data = json.load(f)
+                before = len(data.get("entries", []))
+                data = self._expire(data)
+                if not data["entries"]:
+                    os.remove(path)
+                    touched += 1
+                elif len(data["entries"]) != before:
+                    secure_write_text(path, json.dumps(data, indent=2, default=str))
+                    touched += 1
+            except (OSError, ValueError, KeyError):
+                continue
+        return touched
 
     def _expire(self, data: Dict) -> Dict:
         """Prune entries older than retention_days."""
@@ -128,6 +163,9 @@ class SessionMemoryNode(BaseNode):
     # ── Execute ───────────────────────────────────────────────────────────────
 
     def execute(self, state: GraphState) -> Optional[BaseNode]:
+        if time.time() - self._last_sweep >= self.sweep_interval_seconds:
+            self.sweep_expired()
+            self._last_sweep = time.time()
         subject_id = state.get(self.subject_key) or "anonymous"
         now = datetime.datetime.utcnow().isoformat()
         data = self._load(subject_id)
@@ -165,9 +203,11 @@ class SessionMemoryNode(BaseNode):
                 os.remove(path)
             state.set("memory_erased", True)
             state.set("memory_erased_subject", subject_id)
+            state.set("memory_erasure_scope", "session_memory_only")
             print(
-                f"  [SessionMemoryNode] ERASED all memory for subject "
-                f"'{subject_id}' — GDPR Art. 17 complied."
+                f"  [SessionMemoryNode] ERASED session memory for subject '{subject_id}'. "
+                f"NOTE: this does not remove copies held elsewhere (audit logs, checkpoints, "
+                f"authority ledger, model-provider logs). Art. 17 needs a process covering those too."
             )
 
         elif self.mode == "audit":

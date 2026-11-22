@@ -2,6 +2,103 @@
 
 All notable changes to Lár are documented here.
 
+## [2.5.0] — 2026-11-22 — security hardening
+
+Fixes for the findings of an internal security review (2026-11-21) plus defects found afterwards by
+running end-to-end scenarios and reading the shipped examples. **Several defaults are now
+fail-closed; read "Behaviour changes" before upgrading.**
+
+**This is the first release since v2.2.3.** The `[2.3.0]` (durable `HumanJuryNode` pause/resume) and
+`[2.4.0]` (EU AI Act conformance pass) entries below were merged to `main` but never tagged or
+published, so they ship here for the first time. They are included in this release's scope.
+
+### Behaviour changes (may break existing code)
+
+- **`HumanJuryNode` no longer auto-selects the first choice when headless.** With no TTY, no
+  `human_decision_provider`, and no `automation_boundary` entry for its `decision_type`, it now
+  halts (it behaves as `always_human`). To keep the old behaviour, opt in explicitly:
+  `automation_boundary={"<decision_type>": "auto_first_choice"}`. Unknown policy names raise.
+- **`LethalTrifectaGuard` only accepts an approving decision** (`approving_values`, default
+  `approve`/`approved`). Previously any non-empty value, including `reject`, counted as approval.
+- **`RiskScorerNode` escalates to human review when no policy is registered** for the action
+  (previously it fell through to "retrospective", i.e. no review).
+- **`AuditLogger` fails closed**: a failed end-of-run write raises `AuditWriteError`
+  (`strict=False` restores the old print-and-continue). It also writes `run_<id>.chain.jsonl`
+  alongside `run_<id>.json`; code that assumed one file per run must skip `*.chain.jsonl`.
+- **`LLMNode` no longer echoes the prompt to stdout** (`console_prompt_preview=True` restores it).
+- **`ToolNode` no longer echoes its inputs to stdout** (`console_input_preview=True` restores it). Found while building an example workflow: with `input_keys=["__state__"]` the whole case, including personal data, was printed.
+- **`PIIRedactionEngine`** now also scrubs known values and e-mail/IBAN/SSN patterns inside free
+  text, and `HASH` mode is a keyed HMAC (random per-process key unless `hash_key` is given).
+- **`BiasFilterNode` matches whole words** (no more `age` inside `manager`).
+- **`SessionMemoryNode` file names changed** (a hash of the subject id is appended, fixing a
+  cross-subject collision). Existing per-subject files are not migrated.
+- Logs, checkpoints, ledgers and session-memory files are created `0600` (directories `0700`).
+
+### Fixed
+
+- Vault credentials injected by `ToolNode` are removed from state after the call, so they can no
+  longer appear in audit logs, state diffs or checkpoints.
+- `FileCheckpointStore` and `AgentRegistry` validate identifiers (no path traversal).
+- `resume_human_decision`: validates the decision against the paused node's `choices`, optional
+  `authorize=` hook, refuses an anonymous reviewer when a ledger is attached, claims the case
+  atomically (`claim`/`commit`/`release`) and only deletes it after the resumed run finishes;
+  honours `decision_routes`.
+- `AuthorityLedger.save()` merges instead of overwriting; records are hash-chained and carry
+  `context_sha256`; legacy ledgers are migrated on load; `AuthorityLedger.verify()` added.
+- `AuthorityLedger` with a `path` is now **write-through**: each decision is on disk the moment it is
+  recorded. Previously it only reached disk on an explicit `save()`, so a crash after an approval (and
+  after the action it authorised) left an action with no record of who approved it. Found by running a
+  pause/resume walkthrough, not by the audit. `save()` now merges with the file under a file lock, so
+  concurrent writers (other instances or processes on one host) cannot erase each other's records.
+  Legacy records get deterministic ids so repeated migration de-duplicates.
+- `LLMNode` retry exhaustion raised `TypeError` instead of `APIError`.
+- Enterprise backbone: a human `reject` now stops the approval path (cleanup only); ledger
+  appends across runs; per-run `PolicyRegistry.isolated()`; plan-switch log reflects the real
+  oversight level; warns when the demo HMAC secret is in use.
+- `SessionMemoryNode`: retention is swept for every subject (not only on access); erasure now
+  states its real scope.
+- `lar new agent` scaffolds a `.gitignore` excluding `.env` and sets `.env` to `0600`.
+- GitHub Actions use least-privilege `permissions`.
+
+- **Concurrent runs no longer share audit state.** `GraphExecutor` forks the logger (`AuditLogger.fork()`)
+  and uses a fresh `TokenTracker` per run. Before, two runs on one executor (a web service handling
+  concurrent requests) wrote steps into each other's hash chain and summary: one customer's steps
+  appeared in another's audit record. Found by reading `examples/basic/4_fastapi_server.py`'s shared-
+  executor pattern, then reproduced. `log_plan_switch` writes to the run that is executing.
+  `executor.tracker` now exposes the most recently started run's totals.
+- **`BatchNode` conflict policy.** Parallel branches that wrote different values to the same key were
+  resolved by branch order (branch 0 = LOW beat branch 1 = HIGH) with only a warning flag. New opt-in
+  `on_conflict="error"` and `reducers={key: fn}` (see `lar.reducers.worst_of`). The legacy
+  `first_wins` default is unchanged; prefer `error` or a reducer for any risk-bearing key.
+
+- Two shipped examples turned a parse failure into a valid-looking request: `compliance/3_juried_layer.py`
+  fell back to `{"amount": 0}` and the jury then **approved** it; `compliance/4_access_control_agent.py`
+  fell back to a default role and resource. Both now treat an unreadable proposal as unreadable
+  (rejected or escalated, never defaulted).
+
+### Dependencies
+
+- **Minimum versions raised to patched releases** (these affect everyone who installs Lár):
+  `litellm ^1.100.4`, `urllib3 >=2.8.0`, `filelock >=4.2.1,<5`, `setuptools >=84.1.0,<85`.
+  `filelock` moves to 4.x (the 3.x line cannot receive the fix); Lár uses only `FileLock`.
+- **`poetry.lock` refreshed**: clears all 43 open Dependabot alerts (2 critical, 17 high) in the
+  lock file, including `anyio`, `certifi`, `aiohttp`, `fsspec` and `multidict`. The suite passes
+  unchanged on the new versions.
+
+### Added
+
+- `BatchNode(on_conflict=..., reducers=...)` and `lar.reducers` (`worst_of`, `any_true`, `all_true`).
+- `HumanJuryNode(decision_routes=...)`, `AuditLogger.verify_chain/verify_signature/begin_run`,
+  `AuthorityLedger(path=...)` / `.verify()`, `PolicyRegistry.isolated()`,
+  `RiskScorerNode(registry=...)`, `lar._security` helpers, and
+  `tests/unit/test_security_hardening.py` (81 regression tests; the suite is 256 tests in CI).
+
+### Not yet addressed
+
+Asymmetric signing / external anchoring, encryption at rest for checkpoints, default spending
+limit, pinning GitHub Actions by commit SHA, PyPI trusted publishing, dependency scanning in CI,
+and replacing the keyword guards with real classifiers.
+
 ## [2.4.0] — 2026-09-09
 
 ### EU AI Act conformance pass

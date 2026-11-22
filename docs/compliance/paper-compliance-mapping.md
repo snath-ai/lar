@@ -387,7 +387,7 @@ art13 = DeployerTransparencyNode(
 **Lár v2.2.0:** `HumanJuryNode(decision_type=…, automation_boundary={…})` — policy map keyed by decision type. Three policies:
 - `"always_human"` — blocks in non-interactive environments (raises `RuntimeError`)
 - `"auto_if_low_risk"` — auto-selects only when `risk_score_key` returns `LOW` or `MINIMAL`
-- `"auto_first_choice"` — legacy behaviour
+- `"auto_first_choice"` — explicit opt-in only (never the default since v2.4.1): auto-selects the first choice with no human involved
 
 ```python
 jury = HumanJuryNode(

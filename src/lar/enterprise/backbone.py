@@ -319,6 +319,11 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
     print(f"  Domain : {cfg['domain']}")
     print(f"  System : {cfg['system_name']}")
     print(f"{'='*65}\n")
+    if cfg.get("hmac_secret") in (None, "", "change-me-in-prod"):
+        print("  " + "!"*61)
+        print("  WARNING: HMAC_SECRET is the public demo default. Anyone can forge a")
+        print("  matching signature. Set the HMAC_SECRET environment variable.")
+        print("  " + "!"*61 + "\n")
     if cfg.get("_demo_human_decision"):
         print("  " + "!"*61)
         print("  DEMO MODE — the HumanJuryNode decision below is SIMULATED via a")
@@ -342,7 +347,9 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
 
     # ── STEP 6b: Authority Ledger (Art. 12/14 — fourth tier) ─────────────────
     ledger_path = f"{cfg['output_dir']}/authority_ledger.json"
-    authority_ledger = AuthorityLedger(hmac_secret=cfg["hmac_secret"])
+    # path= makes the ledger load and APPEND to any existing file, so a later run to the
+    # same output_dir can no longer erase earlier human-decision records.
+    authority_ledger = AuthorityLedger(hmac_secret=cfg["hmac_secret"], path=ledger_path)
 
     # ── STEP 6c: Causal Audit Logger (Art. 12) ────────────────────────────────
     audit_logger = AuditLogger(
@@ -352,8 +359,7 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
     )
 
     # ── STEP 3/4: Policy Registry (Art. 9 / Art. 14 risk taxonomy) ───────────
-    registry = PolicyRegistry()
-    registry.clear()  # reset singleton between runs
+    registry = PolicyRegistry.isolated()  # private to this run; concurrent runs cannot interfere
     registry.register("case_analysis", ActionPolicy(
         domain=cfg["domain"],
         process="analysis",
@@ -638,6 +644,7 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
         jury_node=node_jury,
         confidence_key="model_confidence",
         action_type_key="action_type",
+        registry=registry,
     )
 
     # ── Node F: Bias filter (Art. 10(2)(f)-(g) — runtime keyword gate) ───────
@@ -661,13 +668,14 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
     # ── Node G: Trifecta check + transparency + drift + supplier enforcement ──
     def compliance_checks(state: GraphState):
         # Row D: log plan-switch — jury routed us here from the PRE_EXECUTION path
+        _decision = state.get("jury_decision")
         audit_logger.log_plan_switch(
             from_branch="autonomous_execution",
-            to_branch="jury_approved_execution",
+            to_branch="jury_approved_execution" if _decision else "autonomous_execution",
             reason=(
-                f"RiskScorerNode escalated to HumanJuryNode (oversight_level="
-                f"{cfg['oversight_level']}, risk_tier={cfg['risk_tier']}). "
-                f"Jury decision: {state.get('jury_decision', 'unknown')}."
+                f"RiskScorerNode computed oversight_level="
+                f"{state.get('computed_oversight_level', 'unscored')} "
+                f"(risk_tier={cfg['risk_tier']}). Jury decision: {_decision or 'none (no human review occurred)'}."
             ),
             step=None,
             node="compliance_checks",
@@ -760,6 +768,9 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
     node_bias.next_node         = node_risk
     node_risk.next_node         = node_tool_monitor  # non-PRE_EXECUTION path
     node_jury.next_node         = node_tool_monitor  # post-approval path
+    # A human REJECT must not fall through to the approval path (tool checks, external
+    # write, output marking). Route it straight to cleanup (erase session memory) and stop.
+    node_jury.decision_routes   = {"reject": node_session_erase}
     node_tool_monitor.next_node = node_checks
     node_checks.next_node       = node_prohibited
     node_prohibited.next_node   = node_marker
@@ -814,7 +825,7 @@ def _run(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
     # ── Gather results ─────────────────────────────────────────────────────────
     # Sort by modification time (newest first) — UUID filenames are not chronological
     audit_files = sorted(
-        [f for f in os.listdir(cfg["output_dir"]) if f.startswith("run_")],
+        [f for f in os.listdir(cfg["output_dir"]) if f.startswith("run_") and f.endswith(".json")],
         key=lambda f: os.path.getmtime(os.path.join(cfg["output_dir"], f)),
         reverse=True,
     )
