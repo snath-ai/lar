@@ -1,8 +1,9 @@
 import copy
 import uuid
+import traceback
 import datetime
 from typing import Optional
-from .node import BaseNode
+from .node import BaseNode, PausedForHuman
 from .state import GraphState
 from .utils import compute_state_diff
 from .logger import AuditLogger, _CURRENT_RUN_LOGGER
@@ -58,6 +59,9 @@ class GraphExecutor:
         self.logger = logger if logger is not None else AuditLogger(log_dir, hmac_secret=hmac_secret)
         self.tracker = tracker if tracker is not None else TokenTracker()
         self.max_node_fatigue = max_node_fatigue
+        # How the most recently finished run ended: {status, ended_at_node, reason, run_id, steps}.
+        # With concurrent runs on one executor, read the run log instead (each run saves its own).
+        self.last_run: Optional[dict] = None
         self.versioner = versioner
         # Phase 1 compliance hooks — fire automatically on every step
         self.prohibited_practice_guard = prohibited_practice_guard
@@ -80,7 +84,11 @@ class GraphExecutor:
                 - state_before (dict): Full state snapshot before execution.
                 - state_diff (dict): What changed in this step (added/updated/removed).
                 - run_metadata (dict): Token usage and model info.
-                - outcome (str): \"success\" or \"error\".
+                - outcome (str): \"success\", \"error\" or \"paused\" (a HumanJuryNode waiting for a human).
+                - error_type / traceback (str): present when a node raised an exception.
+
+        Every run also records HOW it ended in the saved log's ``summary`` (and ``self.last_run``):
+        ``status`` is one of completed, failed, paused, fatigue_limit, circuit_breaker, interrupted.
         """
         state = GraphState(initial_state)
         current_node = start_node
@@ -105,6 +113,9 @@ class GraphExecutor:
 
         step_index = 0
         node_counts = {}
+        # Stays "interrupted" if the caller stops consuming the generator or an exception escapes the loop
+        # (for example the audit log could not be written); every normal ending overwrites it.
+        end = {"status": "interrupted" if start_node is not None else "completed", "ended_at_node": None, "reason": None}
         # Per-run instance labelling for fatigue tracking only (never affects
         # log_entry["node"], which stays the plain class name/_node_id as before).
         fatigue_labels = {}   # id(node) -> stable per-run label
@@ -138,6 +149,7 @@ class GraphExecutor:
                 state.set("__node_counts", node_counts)
 
                 state_before = copy.deepcopy(state.get_all())
+                err_writes_before = state.set_count("last_error")
 
                 log_entry = {
                     # ... (same log structure)
@@ -154,6 +166,7 @@ class GraphExecutor:
                     print(f"  [GraphExecutor] 🛑 FATIGUE TRIPPED: {msg}")
                     log_entry["outcome"] = "error"
                     log_entry["error"] = msg
+                    end.update(status="fatigue_limit", ended_at_node=node_name, reason=msg)
                     logger.log_step(log_entry)
                     yield log_entry
                     break
@@ -185,12 +198,18 @@ class GraphExecutor:
                                 self.prohibited_practice_guard.execute(state)
                                 self.prohibited_practice_guard.input_key = _orig_key
 
-                    # Check if the node set an error in the state (graceful error handling)
-                    if state.get("last_error"):
+                    # Did THIS step report an error? ``last_error`` is not cleared by the executor (error
+                    # handlers read it), so a stale value from an earlier, handled step must not turn every
+                    # later step into an "error". Only a fresh write during this step counts.
+                    if state.get("last_error") and state.set_count("last_error") > err_writes_before:
                         log_entry["outcome"] = "error"
                         log_entry["error"] = state.get("last_error")
+                        if next_node is None:
+                            end.update(status="failed", ended_at_node=node_name, reason=str(state.get("last_error")))
                     else:
                         log_entry["outcome"] = "success"
+                        if next_node is None:
+                            end.update(status="completed", ended_at_node=node_name, reason=None)
 
                 except Exception as e:
                     # --- Art. 73: IncidentReporterNode auto-hook ---
@@ -205,9 +224,21 @@ class GraphExecutor:
                             )
                         except Exception:
                             pass  # Never let incident reporter crash the executor
-                    print(f"  [GraphExecutor] CRITICAL ERROR in {node_name}: {e}")
-                    log_entry["outcome"] = "error"
-                    log_entry["error"] = str(e)
+                    if isinstance(e, PausedForHuman):
+                        # A pause is not a failure: the case waits for a person.
+                        print(f"  [GraphExecutor] PAUSED at {node_name}: waiting for a human decision "
+                              f"(durable checkpoint: {e.durable})")
+                        log_entry["outcome"] = "paused"
+                        log_entry["error"] = str(e)
+                        log_entry["durable"] = e.durable
+                        end.update(status="paused", ended_at_node=node_name, reason=str(e))
+                    else:
+                        print(f"  [GraphExecutor] CRITICAL ERROR in {node_name}: {e}")
+                        log_entry["outcome"] = "error"
+                        log_entry["error"] = str(e)
+                        log_entry["error_type"] = type(e).__name__
+                        log_entry["traceback"] = traceback.format_exc()
+                        end.update(status="failed", ended_at_node=node_name, reason=f"{type(e).__name__}: {e}")
                     next_node = None
                 
                 # Capture the state *after* the node runs
@@ -264,7 +295,7 @@ class GraphExecutor:
                 step_index += 1
                 
                 # --- CIRCUIT BREAKER ---
-                if step_index >= max_steps:
+                if current_node is not None and step_index >= max_steps:
                     print(f"  [GraphExecutor]: CIRCUIT BREAKER TRIPPED: Exceeded {max_steps} steps.")
                     
                     # Log the termination event
@@ -279,6 +310,7 @@ class GraphExecutor:
                         "outcome": "error",
                         "error": f"Max steps ({max_steps}) exceeded without reaching a stop condition."
                     }
+                    end.update(status="circuit_breaker", ended_at_node=node_name, reason=final_log["error"])
                     logger.log_step(final_log)
                     yield final_log
                     break
@@ -287,8 +319,12 @@ class GraphExecutor:
             # --- AUTO-SAVE LOG ON FINISH (OR INTERRUPT) ---
             summary = {
                 "total_steps": step_index,
+                "status": end["status"],
+                "ended_at_node": end["ended_at_node"],
+                "reason": end["reason"],
                 **tracker.get_summary()  # Unpack token summary
             }
+            self.last_run = {"run_id": run_id, "steps": step_index, **end}
             # Only save if we actually ran something
             try:
                 if step_index >= 0:

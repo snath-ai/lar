@@ -41,6 +41,8 @@ from .utils import compute_state_diff, apply_diff
 from .formatter import build_log_table, summarize_diff
 from .checkpoint import Checkpoint, FileCheckpointStore, resume_human_decision
 from .patterns import RuleFloor, ProposeValidateNode, check_proposal, ApprovalBinding
+from .node import PausedForHuman
+from . import replay
 
 
 
@@ -56,6 +58,8 @@ __all__ = [
     "ProposeValidateNode",
     "check_proposal",
     "ApprovalBinding",
+    "PausedForHuman",
+    "replay",
     "TokenTracker",
     
     # Node "Lego Bricks"

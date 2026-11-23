@@ -2,6 +2,53 @@
 
 All notable changes to Lár are documented here.
 
+## [Unreleased]
+
+### Added (core, `lar.patterns`)
+- `RuleFloor`: deterministic rules set a minimum caution level; the model can only raise it. An invalid
+  model answer fails toward oversight; flags (tool errors, suspected injection, low confidence) force review.
+- `check_proposal` / `ProposeValidateNode`: validate a model-proposed value against the value computed from
+  facts; the action always uses the computed value. Catches garbled AND readable-but-wrong values.
+- `ApprovalBinding`: bind an approval to the exact facts the reviewer saw, fail closed if they changed or
+  cannot be re-read, and derive a deterministic idempotency key for write-ahead intent.
+- No dependency on `lar.compliance`. Covered by `tests/unit/test_patterns.py`.
+
+### Added (observability)
+- **Run status.** Every run now records how it ended in the saved log's `summary` (and `executor.last_run`):
+  `status` is `completed`, `failed`, `paused`, `fatigue_limit`, `circuit_breaker` or `interrupted`, plus
+  `ended_at_node` and `reason`. Before, "finished" and "stopped quietly" looked the same.
+- `PausedForHuman` (subclass of `RuntimeError`): a `HumanJuryNode` waiting for a human is logged as outcome
+  `paused`, not `error`; `.durable` says whether a checkpoint exists.
+- Step logs of a node that raised now include `error_type` and `traceback`.
+- `lar.replay` (`load_run`, `failing_steps`, `replay_step`): re-run a failing step on the exact state it saw,
+  to reproduce a failure and prove a fix. Limits (redacted values, LLM steps) are documented in the module.
+- `GraphState.set_count(key)`.
+
+### Fixed (found by reading node.py and executor.py; each has a regression test)
+- `RouterNode` with an unknown key and no `default_node` ended the run with outcome `success` (indistinguishable
+  from finishing). It now sets `last_error`, so the step is logged as an error and the run as `failed`.
+- A handled error made EVERY later step log `error` (the stale `last_error` was re-read each step). Only a fresh
+  write during the step counts now; a repeated identical error is still flagged.
+- The circuit breaker reported an error when a run finished exactly at `max_steps`; it now trips only if the run
+  would continue.
+- `LLMNode`: when a provider returned no usage data, the token budget was never charged and `<think>` tags were
+  not stripped. An estimate (about 4 characters per token, flagged `usage_estimated`) is charged and the answer
+  is always cleaned.
+- `BatchNode(branch_timeout=...)` raised `TimeoutError` instead of skipping the slow branch and still waited for
+  it. It now returns at the deadline, records `_batch_timeouts` and `last_error`, and discards that branch's
+  result. A running thread cannot be killed: its side effects can still happen.
+
+### Behaviour changes
+- Headless `HumanJuryNode` halts log outcome `paused` (was `error`); code that matched the exception still works
+  because `PausedForHuman` subclasses `RuntimeError`.
+- Steps after a handled error log `success`, not `error`. `ClearErrorNode` is still needed if a LATER node checks
+  `last_error`.
+- A router mistake is now an error instead of a quiet end.
+
+### Verified, not changed
+- `fallbacks` on `LLMNode` was tested against a local fake provider: a failing primary does fall back.
+- With `stream=True`, `LLMNode` prints the model's full reply to stdout (now stated in the docstring).
+
 ## [2.5.0] — 2026-11-22 — security hardening
 
 Fixes for the findings of an internal security review (2026-11-21) plus defects found afterwards by

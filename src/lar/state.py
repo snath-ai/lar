@@ -13,10 +13,18 @@ class GraphState:
             initial_state (dict, optional): A dictionary of initial data.
         """
         self._state = initial_state or {}
+        # How many times each key has been written through set(). The executor uses this to tell a
+        # NEW error from a stale ``last_error`` left over from an earlier, already-handled step.
+        self._set_counts: dict = {}
 
     def set(self, key: str, value: any):
         """Sets a key-value pair in the state."""
         self._state[key] = value
+        self._set_counts[key] = self._set_counts.get(key, 0) + 1
+
+    def set_count(self, key: str) -> int:
+        """Number of writes to ``key`` through set()/state[key]=... since this state was created."""
+        return self._set_counts.get(key, 0)
 
     def __setitem__(self, key: str, value: any):
         """Allows state['key'] = value syntax."""
