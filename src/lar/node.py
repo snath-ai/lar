@@ -50,6 +50,20 @@ def _render_template(template: str, values: Dict[str, Any]) -> str:
         return "}"
     return _TEMPLATE_TOKEN.sub(repl, template)
 
+class PausedForHuman(RuntimeError):
+    """
+    Raised by ``HumanJuryNode`` when a decision needs a human and none is available right now.
+
+    It is a PAUSE, not a failure: the executor logs outcome ``"paused"`` and run status
+    ``"paused"``. ``durable`` is True when a checkpoint was written, so the case can be resumed
+    later with ``resume_human_decision``; with ``durable=False`` the pause is not recoverable.
+    Subclasses ``RuntimeError`` so existing ``except RuntimeError`` code keeps working.
+    """
+    def __init__(self, message: str, durable: bool = False):
+        super().__init__(message)
+        self.durable = durable
+
+
 # --- The Core API "Contract" ---
 class BaseNode(ABC):
     """
@@ -150,7 +164,9 @@ class LLMNode(BaseNode):
             max_retries (int, optional): Number of times to retry on API errors. Defaults to 3.
             system_instruction (str, optional): System prompt to steer the model's behavior.
             generation_config (dict, optional): LiteLLM-specific parameters (temperature, max_tokens, etc).
-            stream (bool): Stream output chunk-by-chunk to sys.stdout.
+            stream (bool): Stream output chunk-by-chunk to sys.stdout. NOTE: this prints the model's
+                full reply to stdout regardless of ``console_prompt_preview``; do not enable it where
+                stdout is collected (container/CI logs) and replies may contain personal data.
             response_format (type): Pydantic model for structured JSON output.
             
             # --- Enterprise --- 
@@ -358,65 +374,80 @@ class LLMNode(BaseNode):
                 state.set(self.output_key, llm_response_text)
                 
                 # 4. Extract and Log Unified Metadata (CRITICAL for Glass Box)
+                # Everything below runs for EVERY successful response. Before v2.6 it sat inside
+                # ``if response.usage:``, so a provider that omitted usage data skipped the token budget
+                # entirely (an unbounded-spend hole) and left <think> tags in the answer.
                 if response.usage:
                     # LiteLLM provides a unified usage object
                     usage = {
                         "prompt_tokens": response.usage.prompt_tokens,
                         "output_tokens": response.usage.completion_tokens,
                         # FIX: Enforce correct total token sum for transparency
-                        "total_tokens": response.usage.prompt_tokens + response.usage.completion_tokens, 
+                        "total_tokens": response.usage.prompt_tokens + response.usage.completion_tokens,
                         "model": self.model_identifier # Log the model used
                     }
+                else:
+                    # No usage reported: charge a conservative estimate (~4 characters per token)
+                    # instead of nothing, and say so in the log.
+                    est_in = max(1, len(prompt) // 4)
+                    est_out = max(1, len(llm_response_text) // 4)
+                    usage = {
+                        "prompt_tokens": est_in,
+                        "output_tokens": est_out,
+                        "total_tokens": est_in + est_out,
+                        "model": self.model_identifier,
+                        "usage_estimated": True,
+                    }
 
-                    # --- Reasoning Content Support (DeepSeek R1, o1, etc.) ---
-                    # 1. Check for "reasoning_content" in the message object (Standard API)
-                    reasoning = getattr(response.choices[0].message, "reasoning_content", None)
+                # --- Reasoning Content Support (DeepSeek R1, o1, etc.) ---
+                # 1. Check for "reasoning_content" in the message object (Standard API)
+                reasoning = getattr(response.choices[0].message, "reasoning_content", None)
+                
+                # 2. Robust Regex Fallback (Handling malformed tags)
+                clean_answer = llm_response_text.strip() # Initialize with full text
+                if not reasoning: # Only attempt regex if not already found via standard API
+                    # Case A: Standard <think> content </think>
+                    match = re.search(r"<think>(.*?)</think>", llm_response_text, flags=re.DOTALL)
+                    if match:
+                        reasoning = match.group(1).strip()
+                        # Remove the thought block from the final answer
+                        clean_answer = re.sub(r"<think>.*?</think>", "", llm_response_text, flags=re.DOTALL).strip()
                     
-                    # 2. Robust Regex Fallback (Handling malformed tags)
-                    clean_answer = llm_response_text.strip() # Initialize with full text
-                    if not reasoning: # Only attempt regex if not already found via standard API
-                        # Case A: Standard <think> content </think>
-                        match = re.search(r"<think>(.*?)</think>", llm_response_text, flags=re.DOTALL)
-                        if match:
-                            reasoning = match.group(1).strip()
-                            # Remove the thought block from the final answer
-                            clean_answer = re.sub(r"<think>.*?</think>", "", llm_response_text, flags=re.DOTALL).strip()
-                        
-                        # Case B: Opening tag only (Model cutoff or ongoing thought)
-                        elif "<think>" in llm_response_text:
-                            parts = llm_response_text.split("<think>", 1)
-                            # Everything after <think> is reasoning
-                            reasoning = parts[1].strip()
-                            # Everything before is the answer (usually empty, but safe to keep)
-                            clean_answer = parts[0].strip()
-                        
-                        # Case C: Closing tag only (Model started thinking "internally" or hallucinated start)
-                        elif "</think>" in llm_response_text:
-                            parts = llm_response_text.split("</think>", 1)
-                            # Everything before </think> is reasoning
-                            reasoning = parts[0].strip()
-                            # Everything after is the answer
-                            clean_answer = parts[1].strip()
-                        
-                        # Case D: No reasoning tags -> clean_answer remains llm_response_text.strip()
+                    # Case B: Opening tag only (Model cutoff or ongoing thought)
+                    elif "<think>" in llm_response_text:
+                        parts = llm_response_text.split("<think>", 1)
+                        # Everything after <think> is reasoning
+                        reasoning = parts[1].strip()
+                        # Everything before is the answer (usually empty, but safe to keep)
+                        clean_answer = parts[0].strip()
                     
-                    if reasoning:
-                        usage["reasoning_content"] = reasoning
-                        print(f"  [LLMNode]: Captured {len(reasoning)} chars of reasoning trace (Regex).")
+                    # Case C: Closing tag only (Model started thinking "internally" or hallucinated start)
+                    elif "</think>" in llm_response_text:
+                        parts = llm_response_text.split("</think>", 1)
+                        # Everything before </think> is reasoning
+                        reasoning = parts[0].strip()
+                        # Everything after is the answer
+                        clean_answer = parts[1].strip()
+                    
+                    # Case D: No reasoning tags -> clean_answer remains llm_response_text.strip()
+                
+                if reasoning:
+                    usage["reasoning_content"] = reasoning
+                    print(f"  [LLMNode]: Captured {len(reasoning)} chars of reasoning trace (Regex).")
 
-                    # Set the (potentially cleaned) answer to the state
-                    state.set(self.output_key, clean_answer)
-                    print(f"  [LLMNode]: Saved response to state['{self.output_key}']")
+                # Set the (potentially cleaned) answer to the state
+                state.set(self.output_key, clean_answer)
+                print(f"  [LLMNode]: Saved response to state['{self.output_key}']")
 
-                    state.set("__last_run_metadata", usage)
-                    print(f"  [LLMNode]: Logged {usage['total_tokens']} tokens.")
-                    
-                    # --- Token Budget (Economic Constraint) ---
-                    budget = state.get("token_budget")
-                    if budget is not None:
-                        new_budget = budget - usage['total_tokens']
-                        state.set("token_budget", new_budget)
-                        print(f"  [LLMNode]: Token Budget: {budget} -> {new_budget} remaining.")
+                state.set("__last_run_metadata", usage)
+                print(f"  [LLMNode]: Logged {usage['total_tokens']} tokens.")
+                
+                # --- Token Budget (Economic Constraint) ---
+                budget = state.get("token_budget")
+                if budget is not None:
+                    new_budget = budget - usage['total_tokens']
+                    state.set("token_budget", new_budget)
+                    print(f"  [LLMNode]: Token Budget: {budget} -> {new_budget} remaining.")
 
                 return self.next_node
 
@@ -503,7 +534,10 @@ class RouterNode(BaseNode):
             print(f"  [RouterNode]: Route '{route_key}' not found. Using default path.")
             return self.default_node
         else:
-            print(f"  [RouterNode] ERROR: Route '{route_key}' not found and no default path set.")
+            msg = (f"RouterNode: route '{route_key}' is not in path_map {sorted(self.path_map)} "
+                   f"and no default_node is set")
+            print(f"  [RouterNode] ERROR: {msg}")
+            state.set("last_error", msg)        # loud: a routing mistake must not look like a clean finish
             return None
 
 class ToolNode(BaseNode):
@@ -737,32 +771,46 @@ class BatchNode(BaseNode):
 
         timed_out_branches: List[str] = []
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        # NOTE (v2.6): the old code used ``with ThreadPoolExecutor`` and ``as_completed(timeout=...)``.
+        # The timeout was raised by the iterator itself (outside the per-branch ``try``), so it escaped
+        # as an exception, and leaving the ``with`` block waited for the slow thread anyway. Now we
+        # wait with a deadline, record what did not finish, and stop waiting for it. A running Python
+        # thread cannot be killed: a timed-out branch keeps running in the background and any side
+        # effect it has still happens; only its RESULT is discarded.
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
+        try:
             future_to_node = {
                 executor.submit(run_node_safe, node, base_state_dict): (i, node)
                 for i, node in enumerate(self.nodes)
             }
-            pending = {f: meta for f, meta in future_to_node.items()}
-            for future in concurrent.futures.as_completed(pending, timeout=self.branch_timeout):
-                i, node = pending[future]
+            done, not_done = concurrent.futures.wait(future_to_node, timeout=self.branch_timeout)
+            for future in done:
+                i, node = future_to_node[future]
                 node_name = getattr(node, "__name__", node.__class__.__name__)
                 try:
                     ordered_results.append((i, future.result()))
                     print(f"  [BatchNode]: Branch {i} ({node_name}) completed.")
-                except concurrent.futures.TimeoutError:
-                    timed_out_branches.append(node_name)
-                    print(
-                        f"  [BatchNode] TIMEOUT: Branch {i} ({node_name}) exceeded "
-                        f"{self.branch_timeout}s — skipping merge for this branch."
-                    )
                 except Exception as e:
                     failed_branches.append(node_name)
                     print(f"  [BatchNode] ERROR in branch {i} ({node_name}): {e}")
+            for future in not_done:
+                i, node = future_to_node[future]
+                node_name = getattr(node, "__name__", node.__class__.__name__)
+                future.cancel()
+                timed_out_branches.append(node_name)
+                print(
+                    f"  [BatchNode] TIMEOUT: Branch {i} ({node_name}) exceeded "
+                    f"{self.branch_timeout}s — skipping merge for this branch."
+                )
+        finally:
+            # Wait for everything only when there is no deadline; otherwise do not block on stragglers.
+            executor.shutdown(wait=self.branch_timeout is None, cancel_futures=True)
 
         if failed_branches:
             state.set("last_error", f"BatchNode: {len(failed_branches)} branch(es) failed: {failed_branches}")
         if timed_out_branches:
             state.set("_batch_timeouts", timed_out_branches)
+            state.set("last_error", f"BatchNode: {len(timed_out_branches)} branch(es) timed out: {timed_out_branches}")
 
         # Sort by original insertion order so merge is deterministic regardless of completion order
         ordered_results.sort(key=lambda x: x[0])
@@ -1136,10 +1184,11 @@ class HumanJuryNode(BaseNode):
 
             if policy == "always_human":
                 # Strict: block in non-interactive environments — human signature required
-                raise RuntimeError(
+                raise PausedForHuman(
                     f"[HumanJuryNode] decision_type='{self.decision_type}' requires a "
                     f"human decision (automation_boundary policy='always_human') but "
-                    f"running in a non-interactive environment. Halt execution."
+                    f"running in a non-interactive environment. Halt execution.",
+                    durable=self.checkpoint_store is not None,
                 )
             elif policy == "auto_if_low_risk":
                 risk = state.get(self.risk_score_key) if self.risk_score_key else None
@@ -1148,10 +1197,11 @@ class HumanJuryNode(BaseNode):
                     user_input = self.choices[0]
                     rationale = f"Auto-selected '{user_input}' (policy=auto_if_low_risk, risk={risk_level})."
                 else:
-                    raise RuntimeError(
+                    raise PausedForHuman(
                         f"[HumanJuryNode] decision_type='{self.decision_type}' requires "
                         f"human review at risk level '{risk_level}' "
-                        f"(automation_boundary policy='auto_if_low_risk')."
+                        f"(automation_boundary policy='auto_if_low_risk').",
+                        durable=self.checkpoint_store is not None,
                     )
             elif policy == "auto_first_choice":
                 # Explicit opt-in only (never the default): no human involved.

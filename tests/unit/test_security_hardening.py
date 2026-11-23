@@ -55,13 +55,13 @@ class TestH1HeadlessJuryFailsClosed:
         final = steps[-1]["state_after"]
         assert "decision" not in final           # no decision was fabricated
         assert "executed" not in final            # the gated action never ran
-        assert steps[0]["outcome"] == "error"
+        assert steps[0]["outcome"] == "paused"    # v2.6: waiting for a human is a pause, not a failure
 
     def test_always_human_still_halts(self, tmp_path):
         jury = HumanJuryNode(prompt="?", choices=["approve", "reject"], output_key="d",
                              decision_type="CREDIT", automation_boundary={"CREDIT": "always_human"})
         steps = run(jury, log_dir=str(tmp_path))
-        assert steps[0]["outcome"] == "error"
+        assert steps[0]["outcome"] == "paused"
 
     def test_explicit_opt_in_auto_first_choice_still_works(self, tmp_path):
         jury = HumanJuryNode(prompt="?", choices=["approve", "reject"], output_key="d",
